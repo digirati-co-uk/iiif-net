@@ -1,0 +1,18 @@
+﻿namespace IIIF.Presentation
+{
+    /// <summary>
+    /// Contains JSON-LD Contexts for IIIF Presentation API.
+    /// </summary>
+    public static class Context
+    {
+        /// <summary>
+        /// JSON-LD context for IIIF presentation 2.
+        /// </summary>
+        public const string V2 = "http://iiif.io/api/presentation/2/context.json";
+
+        /// <summary>
+        /// JSON-LD context for IIIF presentation 3. 
+        /// </summary>
+        public const string V3 = "http://iiif.io/api/presentation/3/context.json";
+    }
+}
