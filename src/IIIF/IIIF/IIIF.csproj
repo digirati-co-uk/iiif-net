@@ -2,7 +2,15 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
+        <PackageId>iiif-net</PackageId>
+        <Authors>Donald Gray,Tom Crane</Authors>
+        <Company>Digirati</Company>
+        <Description>IIIF Library for .NET Core</Description>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <ProjectUrl>https://github.com/digirati-co-uk/iiif-net</ProjectUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    </PropertyGroup>  
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
