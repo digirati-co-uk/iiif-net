@@ -27,6 +27,8 @@ jobs:
       - name: Check out code
         id: checkout
         uses: actions/checkout@v2
+        run: |
+          git fetch --prune --unshallow
 
       - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
