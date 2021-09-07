@@ -283,6 +283,48 @@ namespace IIIF.Tests
         public void GetShape_Correct(int w, int h, ImageShape expected)
             => new Size(w, h).GetShape().Should().Be(expected);
 
+        [Fact]
+        public void GetSizeIncreasePercent_Correct_SameSize()
+        {
+            // Arrange
+            var large = new Size(100, 200);
+            var small = new Size(100, 200);
+            
+            // Act
+            var difference = Size.GetSizeIncreasePercent(large, small);
+            
+            // Assert
+            difference.Should().Be(0);
+        }
+        
+        [Fact]
+        public void GetSizeIncreasePercent_Correct()
+        {
+            // Arrange
+            var large = new Size(300, 400);
+            var small = new Size(100, 200);
+            
+            // Act
+            var difference = Size.GetSizeIncreasePercent(large, small);
+            
+            // Assert
+            difference.Should().Be(100);
+        }
+        
+        [Fact]
+        public void GetSizeIncreasePercent_Throws_IfSmallerLarger()
+        {
+            // Arrange
+            var large = new Size(300, 400);
+            var small = new Size(100, 800);
+            
+            // Act
+            Action action = () => Size.GetSizeIncreasePercent(large, small);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>();
+        }
+
         private static List<TestSizeData> sampleTestData = new()
         {
             // currW, currH, confW, confH, expectedW, expectedH

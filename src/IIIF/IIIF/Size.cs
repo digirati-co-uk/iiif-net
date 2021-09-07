@@ -8,14 +8,13 @@ namespace IIIF
     /// </summary>
     public class Size
     {
-        [JsonProperty(PropertyName = "width")]
-        public int Width { get; private set; }
-        
+        [JsonProperty(PropertyName = "width")] public int Width { get; private set; }
+
         [JsonProperty(PropertyName = "height")]
         public int Height { get; private set; }
 
         [JsonIgnore] public int MaxDimension => Width > Height ? Width : Height;
-        
+
         public override string ToString() => $"{Width},{Height}";
 
         /// <summary>
@@ -26,12 +25,12 @@ namespace IIIF
             Width = width;
             Height = height;
         }
-        
+
         /// <summary>
         /// Get size object as w,h array
         /// </summary>
         /// <returns></returns>
-        public int[] ToArray() => new[] {Width, Height};
+        public int[] ToArray() => new[] { Width, Height };
 
         /// <summary>
         /// Checks if current Size is confined within specified size.
@@ -55,7 +54,7 @@ namespace IIIF
         /// <returns>New Size object</returns>
         public static Size FromArray(int[] size)
             => new(size[0], size[1]);
-        
+
         /// <summary>
         /// Create new Size object from "w,h" string.
         /// </summary>
@@ -101,15 +100,15 @@ namespace IIIF
         /// <returns>New <see cref="Size"/> object with dimensions bound to specified square.</returns>
         public static Size FitWithin(Size requiredSize, Size imageSize)
         {
-            var scaleW = requiredSize.Width / (double) imageSize.Width;
-            var scaleH = requiredSize.Height / (double) imageSize.Height;
+            var scaleW = requiredSize.Width / (double)imageSize.Width;
+            var scaleH = requiredSize.Height / (double)imageSize.Height;
             var scale = Math.Min(scaleW, scaleH);
             return new Size(
-                (int) Math.Round(imageSize.Width * scale),
-                (int) Math.Round(imageSize.Height * scale)
+                (int)Math.Round(imageSize.Width * scale),
+                (int)Math.Round(imageSize.Height * scale)
             );
         }
-        
+
         /// <summary>
         /// Resize specified image using Width or Height.
         /// Maintains aspect ratio unless both are specified.
@@ -133,6 +132,18 @@ namespace IIIF
         }
 
         /// <summary>
+        /// Get % size difference between larger and smaller size, based on longest edge.
+        /// </summary>
+        public static double GetSizeIncreasePercent(Size largerSize, Size smallerSize)
+        {
+            var largeMax = largerSize.MaxDimension;
+            var smallMax = smallerSize.MaxDimension;
+            if (smallMax > largeMax) throw new InvalidOperationException("Larger size must be larger than smaller");
+
+            return ((largeMax / (double)smallMax) - 1) * 100;
+        }
+
+        /// <summary>
         /// Get the shape of image based on it's dimensions.
         /// </summary>
         public ImageShape GetShape()
@@ -142,7 +153,7 @@ namespace IIIF
             return Width > Height ? ImageShape.Landscape : ImageShape.Portrait;
         }
     }
-    
+
     /// <summary>
     /// Enum representing shape of an image
     /// </summary>
