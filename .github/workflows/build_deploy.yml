@@ -53,7 +53,7 @@ jobs:
         run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore -p:ContinuousIntegrationBuild=true
 
       - name: Test
-        run: dotnet test /p:Configuration=$env:BUILD_CONFIG --no-restore --no-build --verbosity normal
+        run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal
 
       - name: Pack
         run: dotnet pack IIIF/IIIF.csproj --configuration $BUILD_CONFIG -p:Version=$GITVERSION_NUGETVERSION --no-restore --no-build
