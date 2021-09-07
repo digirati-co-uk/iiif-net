@@ -1,0 +1,61 @@
+name: Build and push nuget
+
+on:
+  create:
+    branches:
+      - release/**
+  push:
+    branches:
+      - main
+  pull_requests:
+    branches:
+      - main
+
+jobs:
+  build-push-nuget:
+    env:
+      BUILD_CONFIG: "Release"
+      SOLUTION: "IIIF.sln"
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./src/IIIF
+
+    steps:
+      - name: Check out code
+        id: checkout
+        uses: actions/checkout@v2
+
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: "5.x"
+
+      - name: Determine GitVersion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.5
+
+      - name: Restore dependencies
+        run: nuget restore $SOLUTION
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0.x"
+
+      - name: Build
+        run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore -p:ContinuousIntegrationBuild=true
+
+      - name: Test
+        run: dotnet test /p:Configuration=$env:BUILD_CONFIG --no-restore --no-build --verbosity normal
+
+      - name: Pack
+        run: dotnet pack IIIF/IIIF.csproj --configuration $BUILD_CONFIG -p:Version=$GITVERSION_NUGETVERSION --no-restore --no-build
+
+      - name: Publish Package and Symbols
+        if: startsWith(github.ref, 'refs/heads/release')
+        run: nuget push **\*.*nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
