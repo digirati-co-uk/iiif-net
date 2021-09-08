@@ -16,3 +16,15 @@ The `.Serialisation` namespace contains a number of custom `JsonConverter` imple
 * `[RequiredOutput]` - used on `IEnumerable<T>` properties. Will output `[]` if collection is empty (default is to omit empty lists).
 
 > NOTE: Deserialisation of models is currently not supported.
+
+## Local Build
+
+The `local_build.sh` bash script will build/test/pack for ease of testing.
+
+```bash
+# build version 1.0.0
+$ bash build.sh
+
+# build version 1.2.3
+$ bash build.sh -v 1.2.3
+```
