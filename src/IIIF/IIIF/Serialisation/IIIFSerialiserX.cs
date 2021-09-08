@@ -16,10 +16,10 @@ namespace IIIF.Serialisation
             Converters = new List<JsonConverter>
             {
                 new SizeConverter(), new StringArrayConverter(), new ServiceReferenceConverter(),
-                new ThumbnailConverter()
+                new ThumbnailConverter(), new ImageService2Serialiser()
             }
         };
-        
+
         /// <summary>
         /// Serialise specified iiif resource to json string.
         /// </summary>

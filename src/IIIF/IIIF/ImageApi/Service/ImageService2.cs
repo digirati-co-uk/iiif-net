@@ -18,6 +18,9 @@ namespace IIIF.ImageApi.Service
         
         [JsonProperty(PropertyName = "protocol", Order = 10)]
         public string? Protocol { get; set; }
+        
+        [JsonIgnore]
+        public ProfileDescription ProfileDescription { get; set; }
 
         [JsonProperty(Order = 11)]
         public int Width { get; set; }
