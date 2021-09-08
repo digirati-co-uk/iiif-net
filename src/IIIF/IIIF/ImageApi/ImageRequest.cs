@@ -19,6 +19,11 @@ namespace IIIF.ImageApi
         public string Quality { get; set; }
         public string Format { get; set; }
         public string OriginalPath { get; set; }
+        
+        /// <summary>
+        /// Full image request path, e.g. /0,0,400,400/100,/0/default.jpg
+        /// </summary>
+        public string ImageRequestPath => OriginalPath.Replace(Identifier, string.Empty);
 
         public static ImageRequest Parse(string path, string prefix)
         {
