@@ -26,7 +26,6 @@
 
     <ItemGroup>
       <Folder Include="ImageApi" />
-      <Folder Include="Serialisation" />
     </ItemGroup>
 
 </Project>
