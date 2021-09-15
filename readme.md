@@ -23,8 +23,8 @@ The `local_build.sh` bash script will build/test/pack for ease of testing.
 
 ```bash
 # build version 1.0.0
-$ bash build.sh
+$ bash local_build.sh
 
 # build version 1.2.3
-$ bash build.sh -v 1.2.3
+$ bash local_build.sh -v 1.2.3
 ```

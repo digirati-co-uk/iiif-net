@@ -8,7 +8,7 @@ namespace IIIF.Auth.V1.AccessTokenService
     /// <remarks>
     /// See https://iiif.io/api/auth/1.0/#the-json-access-token-response
     /// </remarks>
-    public class AccessTokenResponse
+    public class AccessTokenResponse : JsonLdBase
     {
         [JsonProperty(PropertyName = "messageId", Order = 1)]
         public string MessageId { get; set; }

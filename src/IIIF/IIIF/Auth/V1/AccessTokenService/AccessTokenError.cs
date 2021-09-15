@@ -10,7 +10,7 @@ namespace IIIF.Auth.V1.AccessTokenService
     /// <remarks>
     /// See https://iiif.io/api/auth/1.0/#access-token-error-conditions
     /// </remarks>
-    public class AccessTokenError
+    public class AccessTokenError : JsonLdBase
     {
         [JsonProperty(PropertyName = "error", Order = 1)]
         [CamelCaseEnum]
