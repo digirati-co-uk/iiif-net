@@ -16,13 +16,13 @@ namespace IIIF.Presentation
         /// <summary>
         /// IIIF Presentation version 2.
         /// </summary>
-        [Display(Description = Context.V2)]
+        [Display(Description = Context.Presentation2Context)]
         V2,
         
         /// <summary>
         /// IIIF Presentation version 3.
         /// </summary>
-        [Display(Description = Context.V3)]
+        [Display(Description = Context.Presentation3Context)]
         V3
     }
 }
