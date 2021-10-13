@@ -28,3 +28,7 @@ $ bash local_build.sh
 # build version 1.2.3
 $ bash local_build.sh -v 1.2.3
 ```
+
+## Deployment
+
+New nuget package is published whenever a new version tag is pushed, using gitversion to derive the version number.
