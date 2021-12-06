@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Newtonsoft.Json;
 
 namespace IIIF.Presentation.V3.Strings
 {
@@ -26,7 +27,8 @@ namespace IIIF.Presentation.V3.Strings
                 valueMap[language].Add(value);
             }
         }
-
+        
+        [JsonConstructor]
         public LabelValuePair(LanguageMap label, LanguageMap value)
         {
             labelMap = label;

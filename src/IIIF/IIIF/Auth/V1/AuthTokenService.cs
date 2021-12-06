@@ -5,9 +5,11 @@ namespace IIIF.Auth.V1
 {
     public class AuthTokenService : ResourceBase, IService
     {
+        public const string AuthToken1Profile = "http://iiif.io/api/auth/1/token";
+        
         public AuthTokenService()
         {
-            Profile = "http://iiif.io/api/auth/1/token";
+            Profile = AuthToken1Profile;
         }
         
         [JsonProperty(PropertyName = "@type", Order = 3)]

@@ -5,9 +5,10 @@ namespace IIIF.Auth.V1
 {
     public class AuthLogoutService: ResourceBase, IService
     {
+        public const string AuthLogout1Profile = "http://iiif.io/api/auth/1/logout";
         public AuthLogoutService()
         {
-            Profile = "http://iiif.io/api/auth/1/logout";
+            Profile = AuthLogout1Profile;
         }
         
         [JsonProperty(PropertyName = "@type", Order = 3)]
