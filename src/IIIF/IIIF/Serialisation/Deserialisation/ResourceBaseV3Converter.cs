@@ -54,12 +54,13 @@ namespace IIIF.Serialisation.Deserialisation
 
             if (jsonObject.ContainsKey("motivation"))
             {
-                resourceBase = jsonObject["motivation"].Value<string>() switch
+                var motivation = jsonObject["motivation"].Value<string>();
+                resourceBase = motivation switch
                 {
                     IIIF.Presentation.V3.Constants.Motivation.Supplementing => new SupplementingDocumentAnnotation(),
                     IIIF.Presentation.V3.Constants.Motivation.Painting => new PaintingAnnotation(),
                     IIIF.Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation(),
-                    _ => null
+                    _ => new UnknownMotivation(motivation)
                 };
             }
 
