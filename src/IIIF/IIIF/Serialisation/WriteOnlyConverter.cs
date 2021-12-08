@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace IIIF.Presentation.V2.Serialisation
+namespace IIIF.Serialisation
 {
     public abstract class WriteOnlyConverter : JsonConverter
     {

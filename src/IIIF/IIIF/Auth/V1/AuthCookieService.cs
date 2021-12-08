@@ -8,10 +8,10 @@ namespace IIIF.Auth.V1
 {
     public class AuthCookieService : ResourceBase, IService
     {
-        private const string LoginProfile = "http://iiif.io/api/auth/1/login";
-        private const string ClickthroughProfile = "http://iiif.io/api/auth/1/clickthrough";
-        private const string KioskProfile = "http://iiif.io/api/auth/1/kiosk";
-        private const string ExternalProfile = "http://iiif.io/api/auth/1/external";
+        public const string LoginProfile = "http://iiif.io/api/auth/1/login";
+        public const string ClickthroughProfile = "http://iiif.io/api/auth/1/clickthrough";
+        public const string KioskProfile = "http://iiif.io/api/auth/1/kiosk";
+        public const string ExternalProfile = "http://iiif.io/api/auth/1/external";
 
         public AuthCookieService(string profile)
         {

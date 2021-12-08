@@ -1,5 +1,6 @@
 using System;
 using IIIF.Presentation.V2.Strings;
+using IIIF.Serialisation;
 using Newtonsoft.Json;
 
 namespace IIIF.Presentation.V2.Serialisation
