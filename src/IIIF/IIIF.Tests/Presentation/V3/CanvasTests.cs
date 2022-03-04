@@ -45,7 +45,7 @@ namespace IIIF.Tests.Presentation.V3
                 Items = new List<Canvas> { targetIsIdOnlyCanvas, referencingCanvas }
             };
 
-            var serialisedManifest = manifest.AsJson();
+            var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
 
             const string expected = @"{
   ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
@@ -116,7 +116,7 @@ namespace IIIF.Tests.Presentation.V3
                 Items = new List<Canvas> { targetIsIdOnlyCanvas, referencingCanvas }
             };
 
-            var serialisedManifest = manifest.AsJson();
+            var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
 
             const string expected = @"{
   ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
