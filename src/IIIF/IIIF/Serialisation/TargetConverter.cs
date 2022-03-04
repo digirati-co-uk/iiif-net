@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using IIIF.Presentation.V3;
+using IIIF.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Range = IIIF.Presentation.V3.Range;
@@ -13,7 +14,8 @@ namespace IIIF.Serialisation
     /// </summary>
     public class TargetConverter : JsonConverter<IStructuralLocation>
     {
-        public override IStructuralLocation? ReadJson(JsonReader reader, Type objectType, IStructuralLocation? existingValue,
+        public override IStructuralLocation? ReadJson(JsonReader reader, Type objectType,
+            IStructuralLocation? existingValue,
             bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.String)
@@ -35,19 +37,20 @@ namespace IIIF.Serialisation
 
             return null;
         }
-        
+
         public override void WriteJson(JsonWriter writer, IStructuralLocation? value, JsonSerializer serializer)
         {
-            if (value is Canvas canvas)
+            if (value is Canvas canvas && (canvas.SerialiseTargetAsId || IsSimpleCanvas(canvas)))
             {
-                if (canvas.Width == null && canvas.Duration == null && (canvas.Items == null || !canvas.Items.Any()))
-                {
-                    writer.WriteValue(canvas.Id);
-                    return;
-                }
+                writer.WriteValue(canvas.Id);
+                return;
             }
+
             // Default, pass through behaviour:
             JObject.FromObject(value, serializer).WriteTo(writer);
         }
+
+        private static bool IsSimpleCanvas(Canvas canvas)
+            => canvas.Width == null && canvas.Duration == null && canvas.Items.IsNullOrEmpty();
     }
 }

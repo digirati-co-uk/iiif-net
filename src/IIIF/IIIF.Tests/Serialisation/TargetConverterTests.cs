@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using IIIF.Presentation.V3;
+using IIIF.Presentation.V3.Annotation;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
 using Xunit;
@@ -28,6 +30,34 @@ namespace IIIF.Tests.Serialisation
             result.Should().Be($"\"{testId}\"");
         }
         
+        [Fact]
+        public void ConvertCanvas_EmptyItems_OutputsIdOnly()
+        {
+            // Arrange
+            const string testId = "https://test.example.com/canvas";
+            var canvas = new Canvas { Id = testId, Items = new List<AnnotationPage>(0) };
+
+            // Act
+            var result = JsonConvert.SerializeObject(canvas, Formatting.None, sut);
+            
+            // Assert
+            result.Should().Be($"\"{testId}\"");
+        }
+        
+        [Fact]
+        public void ConvertCanvas_SerialiseTargetAsIdTrue_OnlyReturnsId()
+        {
+            // Arrange
+            const string testId = "https://test.example.com/canvas";
+            var canvas = new Canvas { Id = testId, Width = 300, Height = 200, SerialiseTargetAsId = true};
+
+            // Act
+            var result = JsonConvert.SerializeObject(canvas, Formatting.None, sut);
+            
+            // Assert
+            result.Should().Be($"\"{testId}\"");
+        }
+
         [Fact]
         public void CanDeserialise_SerialisedIdOnlyCanvas()
         {
