@@ -33,5 +33,12 @@ namespace IIIF.Presentation.V3
         
         [JsonProperty(Order = 300)]
         public List<AnnotationPage>? Items { get; set; }
+
+        /// <summary>
+        /// Used to control serialisation logic for Canvas items that are <see cref="Annotation"/> Targets.
+        /// If true then Target is serialised as simple Id string only.
+        /// </summary>
+        [JsonIgnore]
+        public bool SerialiseTargetAsId { get; set; }
     }
 }
