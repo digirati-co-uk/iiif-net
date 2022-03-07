@@ -15,7 +15,17 @@ The `.Serialisation` namespace contains a number of custom `JsonConverter` imple
 * `[ObjectIfSingle]` - used on `IEnumerable<T>` properties. Will render a single object if `.Count == 1`, else will render an array.
 * `[RequiredOutput]` - used on `IEnumerable<T>` properties. Will output `[]` if collection is empty (default is to omit empty lists).
 
-> NOTE: Deserialisation of models is currently not supported.
+### Helpers
+
+`IIIFSerialiserX` contains 2 extension methods for `JsonLdBase` that help with serialising / deserialising models. These are `AsJson` and `FromJson<TTarget>`:
+
+```cs
+// Serialisation
+string jsonManifest = manifest.AsJson();
+
+// Deserialisation
+Manifest deserialisedManifest = jsonManifest.FromJson<Manifest>();
+```
 
 ## Local Build
 
