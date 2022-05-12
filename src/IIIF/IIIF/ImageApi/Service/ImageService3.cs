@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace IIIF.ImageApi.Service
 {
-    public class ImageService3 : ResourceBase, IService
+    public class ImageService3 : ResourceBase
     {
         public const string Image3Context = "http://iiif.io/api/image/3/context.json";
         public const string ImageProtocol = "http://iiif.io/api/image";
