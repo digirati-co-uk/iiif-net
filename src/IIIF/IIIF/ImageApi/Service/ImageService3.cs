@@ -7,6 +7,9 @@ namespace IIIF.ImageApi.Service
     public class ImageService3 : ResourceBase
     {
         public const string Image3Context = "http://iiif.io/api/image/3/context.json";
+        public const string Level0Profile = "level0";
+        public const string Level1Profile = "level1";
+        public const string Level2Profile = "level2";
         public const string ImageProtocol = "http://iiif.io/api/image";
 
         public override string Type => nameof(ImageService3);

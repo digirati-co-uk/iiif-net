@@ -72,6 +72,14 @@ namespace IIIF.Tests.Serialisation
                                                     Context = ImageService2.Image2Context,
                                                     Width = 1000,
                                                     Height = 1001
+                                                },
+                                                new ImageService3
+                                                {
+                                                    Id = "https://test.example.com/canvas/1/image/3",
+                                                    Profile = ImageService3.Level2Profile,
+                                                    Context = ImageService3.Image3Context,
+                                                    Width = 1000,
+                                                    Height = 1001
                                                 }
                                             },
                                         }

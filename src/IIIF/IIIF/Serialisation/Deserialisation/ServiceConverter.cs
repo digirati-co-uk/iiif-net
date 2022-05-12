@@ -39,12 +39,29 @@ namespace IIIF.Serialisation.Deserialisation
 
             if (service == null)
             {
-                service = jsonObject["@type"].Value<string>() switch
+                var atType = jsonObject["@type"];
+                if (atType != null)
                 {
-                    "SearchService1" => new Search.V1.SearchService(),
-                    nameof(ImageApi.Service.ImageService2) => new ImageApi.Service.ImageService2(),
-                    _ => null
-                };
+                    service = atType.Value<string>() switch
+                    {
+                        "SearchService1" => new Search.V1.SearchService(),
+                        nameof(ImageApi.Service.ImageService2) => new ImageApi.Service.ImageService2(),
+                        _ => null
+                    };
+                }
+            }
+            
+            if (service == null)
+            {
+                var type = jsonObject["type"];
+                if (type != null)
+                {
+                    service = type.Value<string>() switch
+                    {
+                        nameof(ImageApi.Service.ImageService3) => new ImageApi.Service.ImageService3(),
+                        _ => null
+                    };
+                }
             }
 
             // TODO handle ResourceBase items?
