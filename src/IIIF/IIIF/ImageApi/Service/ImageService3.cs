@@ -9,15 +9,10 @@ namespace IIIF.ImageApi.Service
         public const string Image3Context = "http://iiif.io/api/image/3/context.json";
         public const string ImageProtocol = "http://iiif.io/api/image";
 
-        public ImageService3()
-        {
-            Context = Image3Context;
-        }
-
         public override string Type => nameof(ImageService3);
 
-        [JsonProperty(Order = 3)]
-        public string Protocol => ImageProtocol;
+        [JsonProperty(Order = 10)]
+        public string Protocol { get; set; }
 
         [JsonProperty(Order = 11)]
         public int Width { get; set; }
