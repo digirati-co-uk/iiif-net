@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using IIIF.Presentation.V3;
 using IIIF.Utils;
 using Newtonsoft.Json;

@@ -1,5 +1,4 @@
-﻿using IIIF.Presentation.V2.Serialisation;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace IIIF.Serialisation
 {

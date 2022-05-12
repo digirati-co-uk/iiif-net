@@ -14,6 +14,7 @@ namespace IIIF.Serialisation
             NullValueHandling = NullValueHandling.Ignore,
             ContractResolver = new PrettyIIIFContractResolver(),
             Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             Converters = new List<JsonConverter>
             {
                 new SizeConverter(), new StringArrayConverter(), new ServiceReferenceConverter(),

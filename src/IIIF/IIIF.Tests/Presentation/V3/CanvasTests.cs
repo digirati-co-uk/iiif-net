@@ -2,6 +2,7 @@
 using FluentAssertions;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
+using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation;
 using Xunit;
@@ -85,7 +86,7 @@ namespace IIIF.Tests.Presentation.V3
         [Fact]
         public void SerialiseTargetAsId_False_RendersFullCanvasAsTarget()
         {
-            var targetIsIdOnlyCanvas = new Canvas
+            var targetIsFullCanvas = new Canvas
             {
                 Id = "https://test.example.com/canvas/full",
                 Width = 1000,
@@ -102,7 +103,7 @@ namespace IIIF.Tests.Presentation.V3
                         Id = "https://test.example.com/canvas/referencing/page",
                         Items = new List<IAnnotation>
                         {
-                            new PaintingAnnotation { Target = targetIsIdOnlyCanvas, }
+                            new PaintingAnnotation { Target = targetIsFullCanvas, }
                         }
                     }
                 }
@@ -113,7 +114,7 @@ namespace IIIF.Tests.Presentation.V3
                 Context = "http://iiif.io/api/presentation/3/context.json",
                 Id = "https://test.example.com/manifest",
                 Label = new LanguageMap("en", "Test string"),
-                Items = new List<Canvas> { targetIsIdOnlyCanvas, referencingCanvas }
+                Items = new List<Canvas> { targetIsFullCanvas, referencingCanvas }
             };
 
             var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
@@ -147,6 +148,71 @@ namespace IIIF.Tests.Presentation.V3
                 ""width"": 1000,
                 ""height"": 1001
               }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}";
+            
+            serialisedManifest.Should().BeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public void CanSelfReferenceCanvas()
+        {
+            var canvas = new Canvas
+            {
+                Id = "https://test.example.com/canvas/target-id-only",
+                SerialiseTargetAsId = true
+            };
+
+            canvas.Items = new List<AnnotationPage>
+            {
+                new()
+                {
+                    Id = "https://test.example.com/canvas/referencing/page",
+                    Items = new List<IAnnotation>
+                    {
+                        new PaintingAnnotation
+                        {
+                            Id = "https://test.example.com/canvas/referencing/page/anno",
+                            Target = canvas,
+                        }
+                    }
+                }
+            };
+
+            var manifest = new Manifest
+            {
+                Context = "http://iiif.io/api/presentation/3/context.json",
+                Id = "https://test.example.com/manifest",
+                Label = new LanguageMap("en", "Test string"),
+                Items = new List<Canvas> { canvas }
+            };
+
+            var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
+
+            const string expected = @"{
+  ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
+  ""id"": ""https://test.example.com/manifest"",
+  ""type"": ""Manifest"",
+  ""label"": {""en"":[""Test string""]},
+  ""items"": [
+    {
+      ""id"": ""https://test.example.com/canvas/target-id-only"",
+      ""type"": ""Canvas"",
+      ""items"": [
+        {
+          ""id"": ""https://test.example.com/canvas/referencing/page"",
+          ""type"": ""AnnotationPage"",
+          ""items"": [
+            {
+              ""id"": ""https://test.example.com/canvas/referencing/page/anno"",
+              ""type"": ""Annotation"",
+              ""motivation"": ""painting"",
+              ""target"": ""https://test.example.com/canvas/target-id-only""
             }
           ]
         }
