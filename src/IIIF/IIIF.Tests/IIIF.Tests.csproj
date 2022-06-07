@@ -24,8 +24,4 @@
       <ProjectReference Include="..\IIIF\IIIF.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ImageApi" />
-    </ItemGroup>
-
 </Project>
