@@ -3,7 +3,7 @@ using IIIF.Presentation.V2;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
 
-namespace IIIF.ImageApi.Service
+namespace IIIF.ImageApi.V2
 {
     public class ImageService2 : ResourceBase, IService
     {

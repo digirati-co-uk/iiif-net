@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using IIIF.ImageApi.V2;
+using IIIF.ImageApi.V3;
 
 namespace IIIF.ImageApi
 {
@@ -16,13 +18,13 @@ namespace IIIF.ImageApi
         /// <summary>
         /// IIIF Image API version 2.
         /// </summary>
-        [Display(Description = Service.ImageService2.Image2Context)]
+        [Display(Description = ImageService2.Image2Context)]
         V2,
         
         /// <summary>
         /// IIIF Image API version 3.
         /// </summary>
-        [Display(Description = Service.ImageService3.Image3Context)]
+        [Display(Description = ImageService3.Image3Context)]
         V3
     }
 }

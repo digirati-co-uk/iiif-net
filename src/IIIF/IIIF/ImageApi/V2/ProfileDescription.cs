@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace IIIF.ImageApi.Service
+namespace IIIF.ImageApi.V2
 {
     /// <summary>
     /// Specifies additional features that are supported for the image.

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IIIF.ImageApi.Service;
+using IIIF.ImageApi.V3;
 using IIIF.Serialisation;
 using Xunit;
 
