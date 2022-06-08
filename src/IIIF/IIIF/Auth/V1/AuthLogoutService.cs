@@ -6,6 +6,7 @@ namespace IIIF.Auth.V1
     public class AuthLogoutService: ResourceBase, IService
     {
         public const string AuthLogout1Profile = "http://iiif.io/api/auth/1/logout";
+        
         public AuthLogoutService()
         {
             Profile = AuthLogout1Profile;

@@ -12,8 +12,6 @@ namespace IIIF.Auth.V1
         public const string ClickthroughProfile = "http://iiif.io/api/auth/1/clickthrough";
         public const string KioskProfile = "http://iiif.io/api/auth/1/kiosk";
         public const string ExternalProfile = "http://iiif.io/api/auth/1/external";
-        public const string LogoutProfile = "http://iiif.io/api/auth/1/logout";
-        public const string TokenProfile = "http://iiif.io/api/auth/1/token";
 
         public AuthCookieService(string profile)
         {
