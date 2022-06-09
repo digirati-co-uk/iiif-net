@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
-using IIIF.ImageApi.Service;
+using IIIF.ImageApi.V2;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

@@ -1,4 +1,4 @@
-﻿using IIIF.ImageApi.Service;
+﻿using IIIF.ImageApi.V2;
 using IIIF.Presentation.V2.Serialisation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

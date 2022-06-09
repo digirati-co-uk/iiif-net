@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IIIF.ImageApi.Service;
+using IIIF.ImageApi.V2;
 using Xunit;
 
 namespace IIIF.Tests.ImageApi.Service

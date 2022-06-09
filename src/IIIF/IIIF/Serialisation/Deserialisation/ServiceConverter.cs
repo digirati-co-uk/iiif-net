@@ -1,4 +1,6 @@
 ﻿using System;
+using IIIF.ImageApi.V2;
+using IIIF.ImageApi.V3;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -45,7 +47,7 @@ namespace IIIF.Serialisation.Deserialisation
                     service = atType.Value<string>() switch
                     {
                         "SearchService1" => new Search.V1.SearchService(),
-                        nameof(ImageApi.Service.ImageService2) => new ImageApi.Service.ImageService2(),
+                        nameof(ImageService2) => new ImageService2(),
                         _ => null
                     };
                 }
@@ -58,7 +60,7 @@ namespace IIIF.Serialisation.Deserialisation
                 {
                     service = type.Value<string>() switch
                     {
-                        nameof(ImageApi.Service.ImageService3) => new ImageApi.Service.ImageService3(),
+                        nameof(ImageService3) => new ImageService3(),
                         _ => null
                     };
                 }

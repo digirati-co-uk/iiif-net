@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace IIIF.ImageApi.Service
+namespace IIIF.ImageApi
 {
     public class Tile
     {
