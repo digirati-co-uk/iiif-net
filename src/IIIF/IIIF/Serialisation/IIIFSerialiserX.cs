@@ -19,7 +19,7 @@ namespace IIIF.Serialisation
             Converters = new List<JsonConverter>
             {
                 new SizeConverter(), new StringArrayConverter(), new ServiceReferenceConverter(),
-                new ThumbnailConverter(), new ImageService2Serialiser()
+                new ThumbnailConverter(), new ImageService2Converter()
             }
         };
 
@@ -32,7 +32,7 @@ namespace IIIF.Serialisation
             {
                 new AnnotationV3Converter(), new ResourceBaseV3Converter(), new StructuralLocationConverter(),
                 new ExternalResourceConverter(), new PaintableConverter(), new SelectorConverter(),
-                new ServiceConverter()
+                new ServiceConverter(), new ImageService2Converter()
             }
         };
 
