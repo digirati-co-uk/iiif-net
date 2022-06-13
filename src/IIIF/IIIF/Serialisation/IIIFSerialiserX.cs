@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
 
@@ -44,6 +45,22 @@ namespace IIIF.Serialisation
             => JsonConvert.SerializeObject(iiifResource, SerializerSettings);
 
         /// <summary>
+        /// Serialise specified iiif resource to stream.
+        /// </summary>
+        /// <param name="iiifResource">IIIF resource to serialise.</param>
+        /// <param name="stream">Stream to serialise object to</param>
+        /// <returns>Stream representation of iiif resource json.</returns>
+        public static void AsJsonStream(this JsonLdBase iiifResource, Stream stream)
+        {
+            using var sw = new StreamWriter(stream, leaveOpen: true);
+            using var writer = new JsonTextWriter(sw);
+            writer.CloseOutput = false;
+            var serializer = JsonSerializer.Create(SerializerSettings);
+            serializer.Serialize(writer, iiifResource);
+            writer.Flush();
+        }
+
+        /// <summary>
         /// Deserialize specified iiif resource from json string.
         /// </summary>
         /// <param name="iiifResource">IIIF resource to deserialize.</param>
@@ -52,5 +69,20 @@ namespace IIIF.Serialisation
         public static TTarget FromJson<TTarget>(this string iiifResource)
             where TTarget : JsonLdBase
             => JsonConvert.DeserializeObject<TTarget>(iiifResource, DeserializerSettings);
+        
+        /// <summary>
+        /// Deserialize specified iiif resource from stream containing json
+        /// </summary>
+        /// <param name="iiifResource">IIIF resource to deserialize.</param>
+        /// <typeparam name="TTarget">Type of object to deserialize to.</typeparam>
+        /// <returns></returns>
+        public static TTarget FromJsonStream<TTarget>(this Stream iiifResource)
+            where TTarget : JsonLdBase
+        {
+            using var sr = new StreamReader(iiifResource);
+            using var reader = new JsonTextReader(sr);
+            var serializer = JsonSerializer.Create(DeserializerSettings);
+            return serializer.Deserialize<TTarget>(reader);
+        }
     }
 }

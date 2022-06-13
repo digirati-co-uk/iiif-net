@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using FluentAssertions;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
@@ -14,10 +16,11 @@ namespace IIIF.Tests.Serialisation
 {
     public class ManifestSerialisationTests
     {
-        [Fact]
-        public void CanDeserialiseSerialisedManifest()
+        private Manifest sampleManifest;
+
+        public ManifestSerialisationTests()
         {
-            var manifest = new Manifest
+            sampleManifest = new Manifest
             {
                 Context = "http://iiif.io/api/presentation/3/context.json",
                 Id = "https://test.example.com/manifest",
@@ -162,12 +165,28 @@ namespace IIIF.Tests.Serialisation
                     },
                 }
             };
+        }
 
-            var serialisedManifest = manifest.AsJson();
+        [Fact]
+        public void CanDeserialiseSerialisedManifest()
+        {
+            var serialisedManifest = sampleManifest.AsJson();
 
             var deserialised = serialisedManifest.FromJson<Manifest>();
 
-            deserialised.Should().BeEquivalentTo(manifest);
+            deserialised.Should().BeEquivalentTo(sampleManifest);
+        }
+        
+        [Fact]
+        public void CanDeserialiseSerialisedManifest_Stream()
+        {
+            using var memoryStream = new MemoryStream();
+            sampleManifest.AsJsonStream(memoryStream);
+
+            memoryStream.Position = 0;
+            var deserialised = memoryStream.FromJsonStream<Manifest>();
+
+            deserialised.Should().BeEquivalentTo(sampleManifest);
         }
     }
 }
