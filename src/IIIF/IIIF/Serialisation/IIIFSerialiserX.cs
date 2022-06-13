@@ -18,8 +18,8 @@ namespace IIIF.Serialisation
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             Converters = new List<JsonConverter>
             {
-                new SizeConverter(), new StringArrayConverter(), new ServiceReferenceConverter(),
-                new ThumbnailConverter(), new ImageService2Converter()
+                new ImageService2Converter(), new SizeConverter(), new StringArrayConverter(),
+                new ServiceReferenceConverter(), new ThumbnailConverter()
             }
         };
 
@@ -30,9 +30,9 @@ namespace IIIF.Serialisation
             Formatting = Formatting.Indented,
             Converters = new List<JsonConverter>
             {
-                new AnnotationV3Converter(), new ResourceBaseV3Converter(), new StructuralLocationConverter(),
-                new ExternalResourceConverter(), new PaintableConverter(), new SelectorConverter(),
-                new ServiceConverter(), new ImageService2Converter()
+                new ImageService2Converter(), new AnnotationV3Converter(), new ResourceBaseV3Converter(),
+                new StructuralLocationConverter(), new ExternalResourceConverter(), new PaintableConverter(),
+                new SelectorConverter(), new ServiceConverter()
             }
         };
 
