@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using FluentAssertions;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
