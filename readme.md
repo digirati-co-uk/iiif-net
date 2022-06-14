@@ -6,6 +6,71 @@ The different APIs are split by namespace containing name and version.
 
 E.g. `IIIF.Auth.V1`, `IIIF.Presentation.V2`, `IIIF.Presentation.V3`.
 
+## Model Notes
+
+Strongly typed models generally have public properties that map to possible properties as detailed in the relevant IIIF spec, however there are a few differences to this:
+
+### Canvas
+
+To serialise a Presentation3 `Canvas` object as "id" only when used as `Annotation.Target` there are 2 approaches:
+
+* Have a "simple" canvas object, which has no `height`, `width` or `items`.
+* Explicitly set `canvas.SerialiseTargetAsId = true`, this allows reuse of a full `Canvas` object.
+
+E.g. The following would both serialise to `"target": "http://iiif-net.example/canvas1"`
+
+```cs
+# "Simple" canvas
+myAnno.Target = new Canvas{ Id = "http://iiif-net.example/canvas1" };
+
+# Full canvas with SerialiseTargetAsId set
+myAnno.Target = new Canvas
+    { 
+        Id = "http://iiif-net.example/canvas1",
+        Width = 100,
+        Height = 200,
+        SerialiseTargetAsId = true,
+        Items = new List<AnnotationPage>{ new AnnotationPage() } 
+    };
+```
+
+### ImageService2
+
+To conform with https://iiif.io/api/image/2.1/#technical-properties, `ImageService2` has a `Profile` and `ProfileDescription` properties.
+
+These 2 properties are serialised to (and deserialised from) as single `"profile"` property, e.g.:
+
+```cs
+var imageService = new ImageService2
+{
+    Id = "https://example",
+    Profile = "http://iiif.io/api/image/2/level0.json",
+    ProfileDescription = new ProfileDescription
+    {
+        Formats = new[] { "jpg", "png" }, 
+        Qualities = new[] { "color" },
+        Supports = new[] { "sizeByWhListed" }
+    }
+};
+```
+
+will output
+
+```json
+{
+  "@id": "https://example",
+  "@type": "ImageService2",
+  "profile": [
+    "http://iiif.io/api/image/2/level0.json",
+    {
+      "formats": ["jpg", "png"],
+      "qualities": ["color"],
+      "supports": ["sizeByWhListed"]
+    }
+  ]
+}
+```
+
 ## Serialisation
 
 [newtonsoft](https://www.newtonsoft.com/json) is used to aid serialisation of objects. 
