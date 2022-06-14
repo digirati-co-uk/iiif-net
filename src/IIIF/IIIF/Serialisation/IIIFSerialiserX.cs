@@ -54,7 +54,6 @@ namespace IIIF.Serialisation
         {
             using var sw = new StreamWriter(stream, leaveOpen: true);
             using var writer = new JsonTextWriter(sw);
-            writer.CloseOutput = false;
             var serializer = JsonSerializer.Create(SerializerSettings);
             serializer.Serialize(writer, iiifResource);
             writer.Flush();
