@@ -1,4 +1,5 @@
 ﻿using System;
+using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
@@ -36,6 +37,7 @@ namespace IIIF.Serialisation.Deserialisation
             var type = jsonObject["type"].Value<string>();
             resourceBase = type switch
             {
+                nameof(ImageService3) => new ImageService3(),
                 nameof(Agent) => new Agent(),
                 nameof(Annotation) => new Annotation(),
                 nameof(AnnotationCollection) => new AnnotationCollection(),

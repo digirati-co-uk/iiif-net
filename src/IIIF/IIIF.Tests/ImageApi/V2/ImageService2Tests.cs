@@ -2,7 +2,7 @@
 using IIIF.ImageApi.V2;
 using Xunit;
 
-namespace IIIF.Tests.ImageApi.Service
+namespace IIIF.Tests.ImageApi.V2
 {
     public class ImageService2Tests
     {

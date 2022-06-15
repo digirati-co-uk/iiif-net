@@ -19,7 +19,7 @@ namespace IIIF.Tests.Serialisation
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Converters = new List<JsonConverter> { new ImageService2Serialiser() }
+                Converters = new List<JsonConverter> { new ImageService2Converter() }
             };
         }
 
@@ -90,5 +90,93 @@ namespace IIIF.Tests.Serialisation
             // Assert
             result.Should().Be(expected);
         }
+
+        [Fact]
+        public void ReadJson_OutputsExpected_IfNoProfileOrProfileDescription()
+        {
+            // Arrange
+            const string json = "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"width\":0,\"height\":0}";
+            var expected = new ImageService2 { Id = "foo" };
+            
+            // Act
+            var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+            
+            // Assert
+            result.Should().BeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public void ReadJson_OutputsExpected_ProfileOnly()
+        {
+            // Arrange
+            var expected = new ImageService2 { Id = "foo", Profile = "bar" };
+            const string json =
+                "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"profile\":\"bar\",\"width\":0,\"height\":0}";
+            
+            // Act
+            var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+            
+            // Assert
+            result.Should().BeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public void ReadJson_OutputsExpected_ProfileDescriptionOnly()
+        {
+            // Arrange
+            var expected = new ImageService2
+            {
+                Id = "foo",
+                ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 },
+            };
+            const string json =
+                "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"width\":0,\"height\":0,\"profile\":{\"maxHeight\":10,\"maxWidth\":20}}";
+            
+            // Act
+            var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+            
+            // Assert
+            result.Should().BeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public void ReadJson_OutputsExpected_ProfileAndProfileDescription()
+        {
+            // Arrange
+            var expected = new ImageService2
+            {
+                Id = "foo",
+                Profile = "bar",
+                ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 },
+            };
+            const string json =
+                "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"profile\":[\"bar\",{\"maxHeight\":10,\"maxWidth\":20}],\"width\":0,\"height\":0}";
+            
+            // Act
+            var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+            
+            // Assert
+            result.Should().BeEquivalentTo(expected);
+        } 
+        
+        [Fact]
+        public void CanDeserialise_ImageService2()
+        {
+            // Arrange
+            var imageService = new ImageService2
+            {
+                Id = "foo",
+                Profile = "bar",
+                ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 },
+            };
+
+            var serialised = imageService.AsJson();
+            
+            // Act
+            var deserialised = serialised.FromJson<ImageService2>();
+            
+            // Assert
+            deserialised.Should().BeEquivalentTo(imageService);
+        } 
     }
 }
