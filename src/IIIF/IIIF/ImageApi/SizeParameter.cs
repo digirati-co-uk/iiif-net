@@ -55,17 +55,18 @@ namespace IIIF.ImageApi
             return sb.ToString();
         }
 
-        public static SizeParameter Parse(string pathPart)
+        public static SizeParameter Parse(ReadOnlySpan<char> pathPart)
         {
             var size = new SizeParameter();
-            
+
             if (pathPart[0] == '^')
             {
                 size.Upscaled = true;
                 pathPart = pathPart[1..];
             }
 
-            if (pathPart is "max" or "full")
+            if (pathPart.Equals("max".AsSpan(), StringComparison.Ordinal) ||
+                pathPart.Equals("full".AsSpan(), StringComparison.Ordinal))
             {
                 size.Max = true;
                 return size;
@@ -83,16 +84,28 @@ namespace IIIF.ImageApi
                 return size;
             }
 
-            string[] wh = pathPart.Split(',');
-            if (wh[0] != string.Empty)
+            var workingBuilder = new StringBuilder(); 
+            foreach (var t in pathPart)
             {
-                size.Width = int.Parse(wh[0]);
-            }
-            if (wh[1] != string.Empty)
-            {
-                size.Height = int.Parse(wh[1]);
+                if (t == ',')
+                {
+                    if (workingBuilder.Length > 0)
+                    {
+                        size.Width = int.Parse(workingBuilder.ToString());
+                    }
+                    workingBuilder = new StringBuilder();
+
+                    continue;
+                }
+
+                workingBuilder.Append(t);
             }
 
+            if (workingBuilder.Length > 0)
+            {
+                size.Height = int.Parse(workingBuilder.ToString());
+            }
+            
             return size;
         }
     }
