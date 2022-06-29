@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using Xunit;
 
-namespace IIIF.Tests
+namespace IIIF.Tests.ImageApi
 {
     public class SizeTests
     {
@@ -204,6 +204,34 @@ namespace IIIF.Tests
             // Assert
             newSize.Height.Should().Be(height);
             newSize.Width.Should().Be(expectedWidth);
+        }
+
+        [Fact]
+        public void Resize_Percentage_CorrectSmaller()
+        {
+            // Arrange
+            var size = new Size(100, 200);
+            
+            // Act
+            var newSize = Size.ResizePercent(size, 30f);
+            
+            // Assert
+            newSize.Width.Should().Be(30);
+            newSize.Height.Should().Be(60);
+        }
+        
+        [Fact]
+        public void Resize_Percentage_CorrectLarger()
+        {
+            // Arrange
+            var size = new Size(100, 200);
+            
+            // Act
+            var newSize = Size.ResizePercent(size, 130f);
+            
+            // Assert
+            newSize.Width.Should().Be(130);
+            newSize.Height.Should().Be(260);
         }
 
         [Theory]
