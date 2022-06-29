@@ -1,5 +1,7 @@
 # IIIF-net
 
+[![](https://img.shields.io/nuget/v/iiif-net)](https://www.nuget.org/packages/iiif-net/)
+
 This repo contains a collection of POCO's for modelling various IIIF APIs.
 
 The different APIs are split by namespace containing name and version.
