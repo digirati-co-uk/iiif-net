@@ -110,7 +110,7 @@ namespace IIIF
         }
 
         /// <summary>
-        /// Resize specified image using Width or Height.
+        /// Resize specified Size to new Width and/or Height.
         /// Maintains aspect ratio unless both are specified.
         /// </summary>
         public static Size Resize(Size size, int? targetWidth = null, int? targetHeight = null)
@@ -129,6 +129,16 @@ namespace IIIF
             return new Size(
                 targetWidth ?? size.Width * targetHeight!.Value / size.Height,
                 targetHeight ?? size.Height * targetWidth!.Value / size.Width);
+        }
+
+        /// <summary>
+        /// Resize specified Size growing/shrinking by specified % value
+        /// </summary>
+        public static Size ResizePercent(Size size, float percentage)
+        {
+            var width = Convert.ToInt32(size.Width * (percentage / 100));
+            var height = Convert.ToInt32(size.Height * (percentage / 100));
+            return new Size(width, height);
         }
 
         /// <summary>

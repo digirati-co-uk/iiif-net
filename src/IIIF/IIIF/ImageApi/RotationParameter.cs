@@ -15,7 +15,7 @@
             if (pathPart[0] == '!')
             {
                 rotation.Mirror = true;
-                pathPart = pathPart.Substring(1);
+                pathPart = pathPart[1..];
             }
             rotation.Angle = float.Parse(pathPart);
             return rotation;

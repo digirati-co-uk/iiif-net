@@ -29,26 +29,26 @@ namespace IIIF.ImageApi
         {
             if (path[0] == '/')
             {
-                path = path.Substring(1);
+                path = path[1..];
             }
 
             if (prefix.Length > 0)
             {
                 if (prefix[0] == '/')
                 {
-                    prefix = prefix.Substring(1);
+                    prefix = prefix[1..];
                 }
-                if (prefix != path.Substring(0, prefix.Length))
+                if (prefix != path[..prefix.Length])
                 {
                     throw new ArgumentException("Path does not start with prefix", nameof(prefix));
                 }
-                path = path.Substring(prefix.Length);
+                path = path[prefix.Length..];
             }
 
             var request = new ImageRequest { Prefix = prefix };
             var parts = path.Split('/');
             request.Identifier = parts[0];
-            if (parts.Length == 1 || parts[1] == String.Empty)
+            if (parts.Length == 1 || parts[1] == string.Empty)
             {
                 // likely the server will want to redirect this
                 request.IsBase = true;

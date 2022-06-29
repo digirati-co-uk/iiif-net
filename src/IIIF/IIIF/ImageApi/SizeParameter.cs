@@ -19,7 +19,7 @@ namespace IIIF.ImageApi
         
         public bool Confined { get; set; }
         
-        public float PercentScale { get; set; }
+        public float? PercentScale { get; set; }
 
         public override string ToString()
         {
@@ -58,13 +58,14 @@ namespace IIIF.ImageApi
         public static SizeParameter Parse(string pathPart)
         {
             var size = new SizeParameter();
+            
             if (pathPart[0] == '^')
             {
                 size.Upscaled = true;
-                pathPart = pathPart.Substring(1);
+                pathPart = pathPart[1..];
             }
 
-            if (pathPart == "max" || pathPart == "full")
+            if (pathPart is "max" or "full")
             {
                 size.Max = true;
                 return size;
@@ -73,21 +74,21 @@ namespace IIIF.ImageApi
             if (pathPart[0] == '!')
             {
                 size.Confined = true;
-                pathPart = pathPart.Substring(1);
+                pathPart = pathPart[1..];
             }
 
             if (pathPart[0] == 'p')
             {
-                size.PercentScale = float.Parse(pathPart.Substring(4));
+                size.PercentScale = float.Parse(pathPart[4..]);
                 return size;
             }
 
             string[] wh = pathPart.Split(',');
-            if (wh[0] != String.Empty)
+            if (wh[0] != string.Empty)
             {
                 size.Width = int.Parse(wh[0]);
             }
-            if (wh[1] != String.Empty)
+            if (wh[1] != string.Empty)
             {
                 size.Height = int.Parse(wh[1]);
             }
