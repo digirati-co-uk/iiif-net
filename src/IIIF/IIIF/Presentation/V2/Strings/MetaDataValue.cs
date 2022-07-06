@@ -28,7 +28,7 @@ namespace IIIF.Presentation.V2.Strings
         /// Create a new MetaDataValue object from specified LanguageMap.
         /// </summary>
         /// <param name="languageMap">LanguageMap to convert to MetaDataValue</param>
-        /// <param name="ignoreLanguage">If true language not set</param>
+        /// <param name="ignoreLanguage">If true, language not set</param>
         /// <param name="languagePredicate">Optional predicate to filter MetaDataValues.</param>
         /// <returns>Null if LanguageMap null, else new MetaDataValue object </returns>
         public static MetaDataValue? Create(LanguageMap? languageMap, bool ignoreLanguage = false,
