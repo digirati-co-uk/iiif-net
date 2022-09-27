@@ -18,7 +18,7 @@ namespace IIIF.Presentation.V3
         /// You can't always set a navDate as a DateTime/
         /// Not serialised.
         /// </summary>
-        /// TODO - mark as not serialisable
+        [JsonIgnore]
         public DateTime? NavDateDateTime 
         {
             get => navDateInternal;
