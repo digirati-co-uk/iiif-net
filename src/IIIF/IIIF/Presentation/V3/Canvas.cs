@@ -28,7 +28,7 @@ namespace IIIF.Presentation.V3
         /// <summary>
         /// The Duration of the Canvas, in seconds.
         /// </summary>
-        [JsonProperty(Order = 103)]
+        [JsonProperty(Order = 13)]
         public double? Duration { get; set; }
         
         [JsonProperty(Order = 300)]
