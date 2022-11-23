@@ -44,7 +44,7 @@ namespace IIIF.Tests.Serialisation
             imgService2.Service.AddRange(ReusableParts.Auth2Services);
             
             // Act
-            var json = imgService2.AsJson().Replace("\r\n", "\n");;
+            var json = imgService2.AsJson().Replace("\r\n", "\n");
             const string expected = @"{
   ""@id"": ""https://example.org/images/my-image.jpg/v2/service"",
   ""@type"": ""ImageService2"",

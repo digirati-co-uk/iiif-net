@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Auth.V2
 {
-    public class AccessToken2SuccessResponse
+    public class AccessToken2SuccessResponse : JsonLdBase
     {
         [JsonProperty(Order = 10, PropertyName = "accessToken")]
         public string? AccessToken { get; set; }
