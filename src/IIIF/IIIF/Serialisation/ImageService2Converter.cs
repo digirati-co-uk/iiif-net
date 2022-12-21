@@ -29,7 +29,7 @@ namespace IIIF.Serialisation
             imageService.WriteTo(writer);
         }
 
-        public override ImageService2 ReadJson(JsonReader reader, Type objectType, ImageService2 existingValue, bool hasExistingValue,
+        public override ImageService2 ReadJson(JsonReader reader, Type objectType, ImageService2? existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
             var jsonObject = JObject.Load(reader);

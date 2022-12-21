@@ -2,6 +2,6 @@
 {
     public interface IHasIgnorableParameters
     {
-        string[] Ignored { get; set; }
+        string[]? Ignored { get; set; }
     }
 }
