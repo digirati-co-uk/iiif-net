@@ -12,9 +12,9 @@ namespace IIIF.Search.V1
         }
 
         [JsonProperty(Order = 20, PropertyName = "ignored")]
-        public string[] Ignored { get; set; }
+        public string[]? Ignored { get; set; }
 
         [JsonProperty(Order = 40, PropertyName = "terms")]
-        public Term[] Terms { get; set; }
+        public Term[]? Terms { get; set; }
     }
 }

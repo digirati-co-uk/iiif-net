@@ -15,15 +15,15 @@ namespace IIIF.Search.V1
         }
 
         [JsonProperty(Order = 10, PropertyName = "total")]
-        public int Total { get; set; }
+        public int? Total { get; set; }
 
         [JsonProperty(Order = 14, PropertyName = "first")]
-        public string First { get; set; }
+        public string? First { get; set; }
 
         [JsonProperty(Order = 15, PropertyName = "last")]
-        public string Last { get; set; }
+        public string? Last { get; set; }
 
         [JsonProperty(Order = 20, PropertyName = "ignored")]
-        public string[] Ignored { get; set; }
+        public string[]? Ignored { get; set; }
     }
 }
