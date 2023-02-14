@@ -6,7 +6,7 @@ namespace IIIF.Presentation.V3.Content
     {
         public int? Width { get; set; }
         public int? Height { get; set; }
-        public double Duration { get; set; }
+        public double? Duration { get; set; }
 
         public Video() : base(nameof(Video)) { }
     }

@@ -75,28 +75,29 @@ namespace IIIF.Tests.Serialisation
     },
     {
       ""id"": ""https://example.com/image/service/probe"",
-      ""type"": ""AuthProbeService2""
-    },
-    {
-      ""id"": ""https://example.com/login"",
-      ""type"": ""AuthAccessService2"",
-      ""profile"": ""interactive"",
+      ""type"": ""AuthProbeService2"",
       ""service"": [
         {
-          ""id"": ""https://example.com/token"",
-          ""type"": ""AuthTokenService2""
-        },
-        {
-          ""id"": ""https://example.com/logout"",
-          ""type"": ""AuthLogoutService2"",
-          ""label"": {""en"":[""Logout from Example Institution""]}
+          ""id"": ""https://example.com/login"",
+          ""type"": ""AuthAccessService2"",
+          ""profile"": ""interactive"",
+          ""label"": {""en"":[""label property""]},
+          ""service"": [
+            {
+              ""id"": ""https://example.com/token"",
+              ""type"": ""AuthAccessTokenService2""
+            },
+            {
+              ""id"": ""https://example.com/logout"",
+              ""type"": ""AuthLogoutService2"",
+              ""label"": {""en"":[""Logout from Example Institution""]}
+            }
+          ],
+          ""confirmLabel"": {""en"":[""confirmLabel property""]},
+          ""heading"": {""en"":[""heading property""]},
+          ""note"": {""en"":[""note property""]}
         }
-      ],
-      ""confirmLabel"": {""en"":[""ConfirmLabel property""]},
-      ""header"": {""en"":[""Header property""]},
-      ""description"": {""en"":[""Description property""]},
-      ""failureHeader"": {""en"":[""FailureHeader property""]},
-      ""failureDescription"": {""en"":[""FailureDescription property""]}
+      ]
     }
   ]
 }";

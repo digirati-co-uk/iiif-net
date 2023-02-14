@@ -20,10 +20,9 @@ namespace IIIF.Tests.Auth.V2
             
             // Act
             var json = imgService2.AsJson().Replace("\r\n", "\n");
-            const string expected = @"{
+            string expected = @"{
   ""@id"": ""https://example.com/image/service"",
-  ""@type"": ""ImageService2""," + ReusableParts.ExpectedService + @"
-}";
+  ""@type"": ""ImageService2""," + ReusableParts.GetExpectedServiceAsSingle() + "}";
             // Assert
             json.Should().BeEquivalentTo(expected);
         }
@@ -43,7 +42,7 @@ namespace IIIF.Tests.Auth.V2
             var json = imgService3.AsJson().Replace("\r\n", "\n");
             const string expected = @"{
   ""id"": ""https://example.com/image/service"",
-  ""type"": ""ImageService3""," + ReusableParts.ExpectedService + @"
+  ""type"": ""ImageService3""," + ReusableParts.ExpectedServiceAsArray + @"
 }";
             // Assert
             json.Should().BeEquivalentTo(expected);
