@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
@@ -12,21 +13,15 @@ namespace IIIF.Tests.Auth.V2
     public class ProbeServiceTests
     {
         [Fact]
-        public void ProbeService_Can_Be_For_External_Resource()
+        public void ProbeService_Serialises()
         {
             // Arrange
             var probe = new AuthProbeService2
             {
                 Id = "https://example.org/resource1/probe",
                 Label = new LanguageMap("en", "A probe Service"),
-                For = new Image
-                {
-                    Id = "https://example.org/resource1"
-                },
-                Location = new Image
-                {
-                    Id = "https://example.org/resource1-open"
-                }
+                ErrorHeading = new LanguageMap("en", "errorHeading value"),
+                ErrorNote = new LanguageMap("en", "errorNote value")
             };
             
             // Act
@@ -35,14 +30,8 @@ namespace IIIF.Tests.Auth.V2
   ""id"": ""https://example.org/resource1/probe"",
   ""type"": ""AuthProbeService2"",
   ""label"": {""en"":[""A probe Service""]},
-  ""for"": {
-    ""id"": ""https://example.org/resource1"",
-    ""type"": ""Image""
-  },
-  ""location"": {
-    ""id"": ""https://example.org/resource1-open"",
-    ""type"": ""Image""
-  }
+  ""errorHeading"": {""en"":[""errorHeading value""]},
+  ""errorNote"": {""en"":[""errorNote value""]}
 }";
             
             // Assert
@@ -52,29 +41,32 @@ namespace IIIF.Tests.Auth.V2
         
         
         [Fact]
-        public void ProbeService_Can_Be_For_ImageService2()
+        public void ProbeServiceResult_Can_Substitute_ImageService2()
         {
             // Arrange
-            var probe = new AuthProbeService2
+            var probe = new AuthProbeResult2
             {
-                Id = "https://example.org/resource1/probe",
-                Label = new LanguageMap("en", "A probe Service"),
-                For = new ImageService2
+                Status = 401,
+                Substitute = new ImageService2
                 {
                     Id = "https://example.org/imageService2"
-                }
+                },
+                Heading = new LanguageMap("en", "heading value"),
+                Note = new LanguageMap("en", "note value")
             };
             
             // Act
             var json = probe.AsJson().Replace("\r\n", "\n");
             const string expected = @"{
-  ""id"": ""https://example.org/resource1/probe"",
-  ""type"": ""AuthProbeService2"",
-  ""label"": {""en"":[""A probe Service""]},
-  ""for"": {
+  ""@context"": ""http://iiif.io/api/auth/2/context.json"",
+  ""type"": ""AuthProbeResult2"",
+  ""status"": 401,
+  ""substitute"": {
     ""@id"": ""https://example.org/imageService2"",
     ""@type"": ""ImageService2""
-  }
+  },
+  ""heading"": {""en"":[""heading value""]},
+  ""note"": {""en"":[""note value""]}
 }";
             
             // Assert
@@ -82,16 +74,89 @@ namespace IIIF.Tests.Auth.V2
         }
         
         [Fact]
-        public void ProbeService_Can_Be_For_ImageService3()
+        public void ProbeService_Can_Substitute_ImageService3()
+        {
+            // Arrange
+            var probe = new AuthProbeResult2
+            {
+                Status = 401,
+                Substitute = new ImageService3
+                {
+                    Id = "https://example.org/imageService3"
+                },
+                Heading = new LanguageMap("en", "heading value"),
+                Note = new LanguageMap("en", "note value")
+            };
+            
+            // Act
+            var json = probe.AsJson().Replace("\r\n", "\n");
+            const string expected = @"{
+  ""@context"": ""http://iiif.io/api/auth/2/context.json"",
+  ""type"": ""AuthProbeResult2"",
+  ""status"": 401,
+  ""substitute"": {
+    ""id"": ""https://example.org/imageService3"",
+    ""type"": ""ImageService3""
+  },
+  ""heading"": {""en"":[""heading value""]},
+  ""note"": {""en"":[""note value""]}
+}";
+            
+            // Assert
+            json.Should().BeEquivalentTo(expected);
+        }
+        
+        
+        
+        [Fact]
+        public void ProbeService_Can_Provide_Location()
+        {
+            // Arrange
+            var probeResult2 = new AuthProbeResult2
+            {
+                Status = 200,
+                Location = new Video
+                {
+                    Id = "https://example.org/video/12345/file.m3u8"
+                }
+            };
+            
+            // Act
+            var json = probeResult2.AsJson().Replace("\r\n", "\n");
+            const string expected = @"{
+  ""@context"": ""http://iiif.io/api/auth/2/context.json"",
+  ""type"": ""AuthProbeResult2"",
+  ""status"": 200,
+  ""location"": {
+    ""id"": ""https://example.org/video/12345/file.m3u8"",
+    ""type"": ""Video""
+  }
+}";
+            
+            // Assert
+            json.Should().BeEquivalentTo(expected);
+        }
+
+
+        [Fact]
+        public void ProbeService_Can_Provide_AccessService()
         {
             // Arrange
             var probe = new AuthProbeService2
             {
                 Id = "https://example.org/resource1/probe",
-                Label = new LanguageMap("en", "A probe Service"),
-                For = new ImageService3
+                Label = new LanguageMap("en", "A probe service"),
+                Service = new List<IService>()
                 {
-                    Id = "https://example.org/imageService3"
+                    new AuthAccessService2
+                    {
+                        Id = "https://example.com/auth/access",
+                        Profile = AuthAccessService2.InteractiveProfile,
+                        Label = new LanguageMap("en", "label value"),
+                        Heading = new LanguageMap("en", "heading value"),
+                        Note = new LanguageMap("en", "note value"),
+                        ConfirmLabel = new LanguageMap("en", "confirmLabel value")
+                    }
                 }
             };
             
@@ -100,15 +165,24 @@ namespace IIIF.Tests.Auth.V2
             const string expected = @"{
   ""id"": ""https://example.org/resource1/probe"",
   ""type"": ""AuthProbeService2"",
-  ""label"": {""en"":[""A probe Service""]},
-  ""for"": {
-    ""id"": ""https://example.org/imageService3"",
-    ""type"": ""ImageService3""
-  }
+  ""label"": {""en"":[""A probe service""]},
+  ""service"": [
+    {
+      ""id"": ""https://example.com/auth/access"",
+      ""type"": ""AuthAccessService2"",
+      ""profile"": ""interactive"",
+      ""label"": {""en"":[""label value""]},
+      ""confirmlabel"": {""en"":[""confirmLabel value""]},
+      ""heading"": {""en"":[""heading value""]},
+      ""note"": {""en"":[""note value""]}
+    }
+  ]
 }";
-            
+
             // Assert
             json.Should().BeEquivalentTo(expected);
         }
     }
+    
+    
 }

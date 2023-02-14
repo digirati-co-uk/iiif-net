@@ -15,16 +15,10 @@ namespace IIIF.Auth.V2
         [JsonProperty(Order = 101, PropertyName = "confirmLabel")]
         public LanguageMap? ConfirmLabel { get; set; }
 
-        [JsonProperty(Order = 102, PropertyName = "header")]
-        public LanguageMap? Header { get; set; }
+        [JsonProperty(Order = 102, PropertyName = "heading")]
+        public LanguageMap? Heading { get; set; }
         
-        [JsonProperty(Order = 103, PropertyName = "description")]
-        public LanguageMap? Description { get; set; }
-        
-        [JsonProperty(Order = 104, PropertyName = "failureHeader")]
-        public LanguageMap? FailureHeader { get; set; }
-        
-        [JsonProperty(Order = 105, PropertyName = "failureDescription")]
-        public LanguageMap? FailureDescription { get; set; }
+        [JsonProperty(Order = 103, PropertyName = "note")]
+        public LanguageMap? Note { get; set; }
     }
 }

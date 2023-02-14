@@ -5,6 +5,6 @@
     /// </summary>
     public interface ITemporal
     {
-        public double Duration { get; set; }
+        public double? Duration { get; set; }
     }
 }
