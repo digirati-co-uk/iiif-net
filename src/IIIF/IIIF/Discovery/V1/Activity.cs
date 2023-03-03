@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using IIIF.Presentation.V2;
 using IIIF.Presentation.V3;
+using IIIF.Serialisation;
 using Newtonsoft.Json;
 
 namespace IIIF.Discovery.V1
@@ -30,17 +31,18 @@ namespace IIIF.Discovery.V1
         [JsonProperty(Order = 7)]
         public ActivityObject Target { get; set; }
         
-        // TODO - formatter to xsd:datetime
         /// <summary>
         /// The time at which the Activity was finished. 
         /// </summary>
         [JsonProperty(Order = 10)]
+        [JsonConverter(typeof(XsdDateTimeConverter))]
         public DateTime? EndTime { get; set; }
         
         /// <summary>
         /// The time at which the Activity was started.
         /// </summary>
         [JsonProperty(Order = 11)]
+        [JsonConverter(typeof(XsdDateTimeConverter))]
         public DateTime? StartTime { get; set; }
         
         /// <summary>
