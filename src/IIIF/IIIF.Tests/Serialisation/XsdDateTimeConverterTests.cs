@@ -21,7 +21,7 @@ namespace IIIF.Tests.Serialisation
             var result = JsonConvert.SerializeObject(utcDate, Formatting.None, sut);
             
             // Assert
-            result.Should().Be("\"2023-03-03T11:08:37\"");
+            result.Should().Be("\"2023-03-03T11:08:37Z\"");
         }
         
         [Fact]

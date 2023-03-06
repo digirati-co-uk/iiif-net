@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using IIIF.Presentation.V2.Serialisation;
 using Newtonsoft.Json;
 
 namespace IIIF.Serialisation

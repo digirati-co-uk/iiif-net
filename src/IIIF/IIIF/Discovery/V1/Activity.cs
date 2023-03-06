@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using IIIF.Presentation.V2;
 using IIIF.Presentation.V3;
+using IIIF.Presentation.V3.Content;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
 
@@ -11,13 +11,20 @@ namespace IIIF.Discovery.V1
     /// The Activities are the means of describing the changes that have occurred in the content provider’s system.
     /// </summary>
     /// <remarks>See https://iiif.io/api/discovery/1.0/#activities</remarks>
-    public class Activity
+    public class Activity : JsonLdBase
     {
         [JsonProperty(Order = 2)]
         public string? Id { get; set; }
         
         [JsonProperty(Order = 3)]
+        [EnumAsString]
         public ActivityType Type { get; set; }
+        
+        /// <summary>
+        /// A short textual description of the Activity
+        /// </summary>
+        [JsonProperty(Order = 5)]
+        public string? Summary { get; set; }
 
         /// <summary>
         /// The IIIF resource that was affected by the Activity
@@ -44,12 +51,6 @@ namespace IIIF.Discovery.V1
         [JsonProperty(Order = 11)]
         [JsonConverter(typeof(XsdDateTimeConverter))]
         public DateTime? StartTime { get; set; }
-        
-        /// <summary>
-        /// A short textual description of the Activity
-        /// </summary>
-        [JsonProperty(Order = 20)]
-        public string? Summary { get; set; }
 
         /// <summary>
         /// The organization, person, or software agent that carried out the Activity.
@@ -64,7 +65,7 @@ namespace IIIF.Discovery.V1
         public string? Id { get; set; }
         
         [JsonProperty(Order = 3)]
-        public string? Type { get; }
+        public string? Type { get; set; }
 
         [JsonProperty(Order = 4)]
         public string? Canonical { get; set; }
@@ -82,6 +83,7 @@ namespace IIIF.Discovery.V1
         public string? Id { get; set; }
         
         [JsonProperty(Order = 3)]
+        [EnumAsString]
         public ActorType Type { get; set; }
     }
 

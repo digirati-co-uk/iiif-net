@@ -26,7 +26,7 @@ namespace IIIF.Discovery.V1
         /// The Ordered Collection of which this Page is a part.
         /// </summary>
         [JsonProperty(Order = 11)]
-        public List<OrderedCollection> PartOf { get; set; }
+        public OrderedCollection PartOf { get; set; }
         
         /// <summary>
         /// A reference to the previous page in the list of pages.
