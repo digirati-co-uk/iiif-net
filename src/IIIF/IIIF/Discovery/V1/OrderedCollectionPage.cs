@@ -26,7 +26,7 @@ namespace IIIF.Discovery.V1
         /// The Ordered Collection of which this Page is a part.
         /// </summary>
         [JsonProperty(Order = 11)]
-        public OrderedCollection PartOf { get; set; }
+        public OrderedCollection? PartOf { get; set; }
         
         /// <summary>
         /// A reference to the previous page in the list of pages.
@@ -38,7 +38,7 @@ namespace IIIF.Discovery.V1
         /// A reference to the next page in the list of pages.
         /// </summary>
         [JsonProperty(Order = 21)]
-        public OrderedCollectionPage Next { get; set; }
+        public OrderedCollectionPage? Next { get; set; }
 
         /// <summary>
         /// The Activities that are listed as part of this page.

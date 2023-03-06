@@ -40,7 +40,7 @@ namespace IIIF.Discovery.V1
         /// This property is used to refer to a larger Ordered Collection, of which this Ordered Collection is part. 
         /// </summary>
         [JsonProperty(Order = 11)]
-        public List<OrderedCollection> PartOf { get; set; }
+        public List<OrderedCollection>? PartOf { get; set; }
         
         /// <summary>
         /// A link to the first Ordered Collection Page for this Collection.
