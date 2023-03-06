@@ -15,7 +15,8 @@ namespace IIIF.Serialisation
         private static readonly ObjectIfSingleConverter ObjectIfSingleConverter = new();
 
         private static readonly EnumCamelCaseValueConverter EnumCamelCaseValueConverter = new();
-        
+        private static readonly EnumStringValueConverter EnumStringValueConverter = new();
+
         protected override JsonProperty CreateProperty(
             MemberInfo member,
             MemberSerialization memberSerialization)
@@ -40,6 +41,11 @@ namespace IIIF.Serialisation
             if (member.GetCustomAttribute<CamelCaseEnumAttribute>() != null)
             {
                 property.Converter = EnumCamelCaseValueConverter;
+            }
+            
+            if (member.GetCustomAttribute<EnumAsStringAttribute>() != null)
+            {
+                property.Converter = EnumStringValueConverter;
             }
             
             // Don't serialise empty lists, unless they have the [RequiredOutput] attribute
