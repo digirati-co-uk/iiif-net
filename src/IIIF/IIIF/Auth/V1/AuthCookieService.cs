@@ -6,6 +6,10 @@ using Newtonsoft.Json;
 
 namespace IIIF.Auth.V1
 {
+    /// <summary>
+    /// Used to obtain a cookie for interacting with content
+    /// </summary>
+    /// <remarks>https://iiif.io/api/auth/1.0/#access-cookie-service</remarks>
     public class AuthCookieService : ResourceBase, IService
     {
         public const string LoginProfile = "http://iiif.io/api/auth/1/login";

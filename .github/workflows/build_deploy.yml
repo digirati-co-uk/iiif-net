@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Check out code
         id: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -45,9 +45,9 @@ jobs:
         run: nuget restore $SOLUTION
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "5.0.x"
+          dotnet-version: "6.0.x"
 
       - name: Build
         run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore -p:ContinuousIntegrationBuild=true
