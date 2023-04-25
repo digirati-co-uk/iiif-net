@@ -26,7 +26,7 @@ namespace IIIF.Serialisation
             if (pType == null) return property;
             
             // Don't serialise Width or Height if they have a zero value
-            if (member.Name == "Width" || member.Name == "Height")
+            if (member.Name is "Width" or "Height")
             {
                 property.ShouldSerialize = instance =>
                 {
