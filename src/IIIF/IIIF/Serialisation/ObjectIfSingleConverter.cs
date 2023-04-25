@@ -39,18 +39,13 @@ namespace IIIF.Serialisation
         {
             if (reader.TokenType == JsonToken.Null) return null;
 
-            // [ {"foo": "bar"} ]
-            if (reader.TokenType is JsonToken.StartArray)
+            // [ {"foo": "bar"} ] or {"foo": "bar"}
+            if (reader.TokenType is JsonToken.StartArray or JsonToken.StartObject)
             {
-                return Deserialise(reader, objectType, serializer, true);
+                var isArray = reader.TokenType is JsonToken.StartArray;
+                return Deserialise(reader, objectType, serializer, isArray);
             }
 
-            // {"foo": "bar"}
-            if (reader.TokenType == JsonToken.StartObject)
-            {
-                return Deserialise(reader, objectType, serializer, false);
-            }
-            
             // "foo bar" - target type will be List<string>
             if (reader.TokenType == JsonToken.String)
             {
