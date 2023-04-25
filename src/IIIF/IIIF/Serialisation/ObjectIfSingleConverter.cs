@@ -39,19 +39,19 @@ namespace IIIF.Serialisation
         {
             if (reader.TokenType == JsonToken.Null) return null;
 
-            // List<T>
-            if (reader.TokenType == JsonToken.StartArray)
+            // [ {"foo": "bar"} ]
+            if (reader.TokenType is JsonToken.StartArray)
             {
-                return DeserialiseArray(reader, objectType, serializer);
+                return Deserialise(reader, objectType, serializer, true);
             }
 
-            // Single value of T but target type will be a List<T>
+            // {"foo": "bar"}
             if (reader.TokenType == JsonToken.StartObject)
             {
-                return DeserialiseSingle(reader, objectType, serializer);
+                return Deserialise(reader, objectType, serializer, false);
             }
             
-            // Single string - target type will be List<string>
+            // "foo bar" - target type will be List<string>
             if (reader.TokenType == JsonToken.String)
             {
                 return CreateListOfOne(objectType, reader.Value?.ToString());
@@ -63,46 +63,17 @@ namespace IIIF.Serialisation
         public override bool CanConvert(Type objectType)
             => objectType.IsAssignableTo(typeof(IEnumerable));
 
-        private object? DeserialiseArray(JsonReader reader, Type objectType, JsonSerializer serializer)
+        private object? Deserialise(JsonReader reader, Type objectType, JsonSerializer serializer, bool isArray)
         {
-            // e.g. List<IService>
-            if (objectType.GenericTypeArguments[0].IsInterface)
-            {
-                return DeserialiseInterfaceList(JArray.Load(reader), objectType, serializer);
-            }
-
-            // e.g. List<Thumbnail> - we can deserialize directly
-            var jo = JArray.Load(reader);
-            var final = jo.ToObject(objectType);
-            return final;
-        }
-        
-        private object? DeserialiseSingle(JsonReader reader, Type objectType, JsonSerializer serializer)
-        {
-            var jo = JObject.Load(reader);
-            var genericType = objectType.GenericTypeArguments[0];
-
-            if (genericType.IsInterface)
-            {
-                // If interface type then create instance manually.
-                // Note: Calling serializer.Populate here goes into a ObjectIfSingleConverter.ReadJson loop
-                return DeserialiseInterfaceList(new JArray(jo), objectType, serializer);
-            }
-            
-            // Concrete type, deserialise single and create array
-            var deserialised = jo.ToObject(genericType);
-            return CreateListOfOne(objectType, deserialised);
-        }
-
-        private object? DeserialiseInterfaceList(JArray jArray, Type objectType, JsonSerializer serializer)
-        {
-            // This method is used when we have an interface type as generic arg for list (e.g. List<IService>)
-            // This will use other JsonConverters to determine concrete type and deserialise
-            // e.g. is it AuthTokenService, ImageService etc
             var targetType = Activator.CreateInstance(objectType);
             if (targetType == null) return null;
             
-            serializer.Populate(jArray.CreateReader(), targetType);
+            // Remove current type to avoid circular loop
+            var jsonSerializer = serializer.CreateCopy(converter => converter is not ObjectIfSingleConverter);
+
+            // If this is already an array load it as-is, else load the JObject into an array
+            var array = isArray ? JArray.Load(reader) : new JArray(JObject.Load(reader));
+            jsonSerializer.Populate(array.CreateReader(), targetType);
             return targetType;
         }
 
