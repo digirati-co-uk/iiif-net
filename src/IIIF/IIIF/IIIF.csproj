@@ -11,10 +11,16 @@
         <ProjectUrl>https://github.com/digirati-co-uk/iiif-net</ProjectUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <Nullable>enable</Nullable>
+        <PackageTags>iiif</PackageTags>
+        <PackageProjectUrl>https://github.com/digirati-co-uk/iiif-net</PackageProjectUrl>
+        <Description>
+        iiif-net is a collection of POCOs for modelling various IIIF API's and helpers to serialise/deserialise to/from JSON.
+        </Description>
     </PropertyGroup>  
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    </ItemGroup>
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    </ItemGroup>  
 
 </Project>
