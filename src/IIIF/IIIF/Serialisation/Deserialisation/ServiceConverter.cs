@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using IIIF.Auth.V1;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
 using Newtonsoft.Json;
@@ -60,17 +57,30 @@ namespace IIIF.Serialisation.Deserialisation
                 var profile = jsonObject["profile"].Value<string>();
                 service = profile switch
                 {
-                    Auth.V1.AuthLogoutService.AuthLogout1Profile => new AuthLogoutService(),
+                    Auth.V1.AuthLogoutService.AuthLogout1Profile => new Auth.V1.AuthLogoutService(),
                     Auth.V1.AuthTokenService.AuthToken1Profile => new Auth.V1.AuthTokenService(),
+                    Auth.V0.AuthLogoutService.AuthLogout0Profile => new Auth.V0.AuthLogoutService(),
+                    Auth.V0.AuthTokenService.AuthToken0Profile => new Auth.V0.AuthTokenService(),
                     Search.V2.AutoCompleteService.AutoComplete2Profile => new Search.V2.AutoCompleteService(),
                     Search.V1.AutoCompleteService.AutoCompleteService1Profile => new Search.V1.AutoCompleteService(),
-                    Auth.V1.AuthCookieService.LoginProfile => new Auth.V1.AuthCookieService(profile),
-                    Auth.V1.AuthCookieService.ClickthroughProfile => new Auth.V1.AuthCookieService(profile),
-                    Auth.V1.AuthCookieService.KioskProfile => new Auth.V1.AuthCookieService(profile),
-                    Auth.V1.AuthCookieService.ExternalProfile => new Auth.V1.AuthCookieService(profile),
                     Search.V2.SearchService.Search2Profile => new Search.V2.SearchService(),
                     _ => null
                 };
+
+                if (service == null)
+                {
+                    const string auth0 = "http://iiif.io/api/auth/0/";
+                    const string auth1 = "http://iiif.io/api/auth/1/";
+
+                    if (profile.StartsWith(auth0))
+                    {
+                        service = new Auth.V0.AuthCookieService(profile);
+                    }
+                    else if (profile.StartsWith(auth1))
+                    {
+                        service =new Auth.V1.AuthCookieService(profile);
+                    }
+                }
             }
 
             // TODO handle ResourceBase items

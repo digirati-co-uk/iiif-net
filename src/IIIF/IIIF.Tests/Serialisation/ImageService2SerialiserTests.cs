@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
+using IIIF.Auth.V0;
+using IIIF.ImageApi;
 using IIIF.ImageApi.V2;
+using IIIF.Presentation.V2.Strings;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -168,6 +171,58 @@ namespace IIIF.Tests.Serialisation
                 Id = "foo",
                 Profile = "bar",
                 ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 },
+            };
+
+            var serialised = imageService.AsJson();
+            
+            // Act
+            var deserialised = serialised.FromJson<ImageService2>();
+            
+            // Assert
+            deserialised.Should().BeEquivalentTo(imageService);
+        } 
+        
+        [Fact]
+        public void CanDeserialise_ImageService_WithAuth()
+        {
+            // Arrange
+            var imageService = new ImageService2
+            {
+                Id = "foo",
+                Profile = "bar",
+                ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 },
+                Sizes = new List<Size>
+                {
+                    new(100, 200),
+                    new(400, 800),
+                },
+                Tiles = new List<Tile>
+                {
+                    new()
+                    {
+                        Height = 512, Width = 512, ScaleFactors = new[] { 1, 2, 4 }
+                    }
+                },
+                Service = new List<IService>
+                {
+                    new AuthCookieService(AuthCookieService.ClickthroughProfile)
+                    {
+                        Id = "http://clickthrough",
+                        Label = new MetaDataValue("This is the label"),
+                        Description = new MetaDataValue("This is the description"),
+                        Service = new List<IService>
+                        {
+                            new AuthLogoutService
+                            {
+                                Id = "http://clickthrough/logout",
+                            },
+                            new AuthTokenService
+                            {
+                                Id = "http://clickthrough/token",
+                            }
+                        }
+                    }
+                }
             };
 
             var serialised = imageService.AsJson();
