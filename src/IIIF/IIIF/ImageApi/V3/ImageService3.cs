@@ -3,7 +3,7 @@ using IIIF.Presentation.V3;
 
 namespace IIIF.ImageApi.V3;
 
-public class ImageService3 : ResourceBase
+public class ImageService3 : ResourceBase, IService
 {
     public const string Image3Context = "http://iiif.io/api/image/3/context.json";
     public const string Level0Profile = "level0";

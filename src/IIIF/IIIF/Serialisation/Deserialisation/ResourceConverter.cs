@@ -2,16 +2,17 @@
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
+using IIIF.Presentation.V3.Content;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation.Deserialisation;
 
 /// <summary>
-/// JsonConverter to handle reading <see cref="IService"/> objects to concrete type.
+/// JsonConverter to handle reading <see cref="IResource"/> objects to concrete type.
 /// </summary>
-public class ServiceConverter : ReadOnlyConverter<IService>
+public class ResourceConverter : ReadOnlyConverter<IResource>
 {
-    public override IService? ReadJson(JsonReader reader, Type objectType, IService? existingValue,
+    public override IResource? ReadJson(JsonReader reader, Type objectType, IResource? existingValue,
         bool hasExistingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
@@ -22,9 +23,9 @@ public class ServiceConverter : ReadOnlyConverter<IService>
         return service;
     }
 
-    private static IService? IdentifyConcreteType(JObject jsonObject)
+    private static IResource? IdentifyConcreteType(JObject jsonObject)
     {
-        IService? service = null;
+        IResource? service = null;
         var atType = jsonObject["@type"];
         if (atType != null)
             service = atType.Value<string>() switch
@@ -45,9 +46,13 @@ public class ServiceConverter : ReadOnlyConverter<IService>
                 {
                     nameof(ImageService3) => new ImageService3(),
                     nameof(AuthAccessService2) => new AuthAccessService2(),
+                    nameof(AuthAccessTokenError2) => new AuthAccessTokenError2(),
                     nameof(AuthAccessTokenService2) => new AuthAccessTokenService2(),
                     nameof(AuthLogoutService2) => new AuthLogoutService2(),
                     nameof(AuthProbeService2) => new AuthProbeService2(),
+                    nameof(Audio) => new Audio(),
+                    nameof(Video) => new Video(),
+                    nameof(Image) => new Image(),
                     _ => null
                 };
         }

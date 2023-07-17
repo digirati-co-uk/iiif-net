@@ -7,7 +7,7 @@ namespace IIIF.Presentation.V3;
 /// <summary>
 /// Base class for all IIIF presentation resources. 
 /// </summary>
-public abstract class ResourceBase : JsonLdBase, IService
+public abstract class ResourceBase : JsonLdBase, IResource
 {
     /// <summary>
     /// The URI that identifies the resource.

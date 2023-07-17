@@ -15,10 +15,10 @@ public class AuthProbeResult2 : JsonLdBase
     public int Status { get; set; }
 
     [JsonProperty(Order = 20, PropertyName = "substitute")]
-    public List<IService>? Substitute { get; set; }
+    public List<IResource>? Substitute { get; set; }
 
     [JsonProperty(Order = 40, PropertyName = "location")]
-    public IService? Location { get; set; }
+    public IResource? Location { get; set; }
 
     [JsonProperty(Order = 50, PropertyName = "heading")]
     public LanguageMap? Heading { get; set; }

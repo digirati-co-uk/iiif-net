@@ -3,7 +3,7 @@ using IIIF.Presentation.V3.Strings;
 
 namespace IIIF.Auth.V2;
 
-public class AuthAccessTokenError2 : ResourceBase
+public class AuthAccessTokenError2 : ResourceBase, IService
 {
     /// <summary>
     /// The service could not process the access token request.
