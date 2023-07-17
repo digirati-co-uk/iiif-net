@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Serialisation.Deserialisation;
 
 /// <summary>
-/// JsonConverter to handle reading <see cref="IService"/> objects to concrete type.
+/// JsonConverter to handle reading <see cref="IResource"/> objects to concrete type.
 /// </summary>
 public class ResourceConverter : ReadOnlyConverter<IResource>
 {
