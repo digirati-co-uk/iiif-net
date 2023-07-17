@@ -1,4 +1,5 @@
 ﻿using System;
+using IIIF.Auth.V2;
 using IIIF.Presentation.V3.Content;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

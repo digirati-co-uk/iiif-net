@@ -50,6 +50,7 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
             nameof(Manifest) => new Manifest(),
             nameof(SpecificResource) => new SpecificResource(),
             nameof(AuthProbeService2) => new AuthProbeService2(),
+            nameof(AuthAccessTokenError2) => new AuthAccessTokenError2(),
             nameof(TextualBody) => new TextualBody(jsonObject["value"].Value<string>()),
             _ => null
         };

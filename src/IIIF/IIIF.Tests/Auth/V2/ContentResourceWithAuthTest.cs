@@ -26,4 +26,21 @@ public class ContentResourceWithAuthTest
         // Assert
         json.Should().BeEquivalentTo(expected);
     }
+    
+    [Fact]
+    public void ContentResource_Deserialise_With_Auth_Services()
+    {
+        // Arrange
+        var res = new ExternalResource("Text")
+        {
+            Id = "https://example.com/documents/my.pdf",
+            Service = ReusableParts.Auth2Services
+        };
+
+        var serialised = res.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<ExternalResource>();
+        deserialised.Should().BeEquivalentTo(res);
+    }
 }

@@ -31,6 +31,24 @@ public class TokenServiceTests
         // Assert
         json.Should().BeEquivalentTo(expected);
     }
+    
+    [Fact]
+    public void Token_Service_Deserialise_Success_Response()
+    {
+        // Arrange
+        var tokenResp = new AuthAccessToken2
+        {
+            AccessToken = "TOKEN_HERE",
+            ExpiresIn = 999,
+            MessageId = "100"
+        };
+
+        var serialised = tokenResp.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthAccessToken2>();
+        deserialised.Should().BeEquivalentTo(tokenResp);
+    }
 
     [Fact]
     public void Token_Service_Error_Response()
@@ -50,5 +68,20 @@ public class TokenServiceTests
 }";
         // Assert
         json.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void Token_Service_Deserialise_Error_Response()
+    {
+        // Arrange
+        var tokenResp = new AuthAccessTokenError2(
+            AuthAccessTokenError2.InvalidAspect,
+            new LanguageMap("en", "Your credentials are wrong"));
+
+        var serialised = tokenResp.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthAccessTokenError2>();
+        deserialised.Should().BeEquivalentTo(tokenResp);
     }
 }
