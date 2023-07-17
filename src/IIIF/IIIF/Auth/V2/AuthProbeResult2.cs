@@ -11,7 +11,7 @@ public class AuthProbeResult2 : JsonLdBase
     public string Type => nameof(AuthProbeResult2);
 
     [JsonProperty(Order = 10, PropertyName = "status")]
-    public int? Status { get; set; }
+    public int Status { get; set; }
 
     [JsonProperty(Order = 20, PropertyName = "substitute")]
     public JsonLdBase? Substitute { get; set; }

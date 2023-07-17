@@ -149,7 +149,7 @@ public class ProbeServiceTests
                 new AuthAccessService2
                 {
                     Id = "https://example.com/auth/access",
-                    Profile = AuthAccessService2.InteractiveProfile,
+                    Profile = AuthAccessService2.ActiveProfile,
                     Label = new LanguageMap("en", "label value"),
                     Heading = new LanguageMap("en", "heading value"),
                     Note = new LanguageMap("en", "note value"),

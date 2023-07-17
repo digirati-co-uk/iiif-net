@@ -9,10 +9,10 @@ public class AuthAccessToken2 : JsonLdBase
     public string Type => nameof(AuthAccessToken2);
 
     [JsonProperty(Order = 10, PropertyName = "messageId")]
-    public string? MessageId { get; set; }
+    public string MessageId { get; set; }
 
     [JsonProperty(Order = 20, PropertyName = "accessToken")]
-    public string? AccessToken { get; set; }
+    public string AccessToken { get; set; }
 
     [JsonProperty(Order = 30, PropertyName = "expiresIn")]
     public int? ExpiresIn { get; set; }
