@@ -3,7 +3,7 @@ using IIIF.Presentation.V3.Strings;
 
 namespace IIIF.Auth.V2;
 
-public class AuthProbeService2 : ResourceBase
+public class AuthProbeService2 : ResourceBase, IService
 {
     public override string Type => nameof(AuthProbeService2);
 

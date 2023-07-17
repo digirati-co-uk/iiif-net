@@ -64,7 +64,7 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new List<IService>
+            Substitute = new List<IResource>
             {
                 new ImageService2
                 {
@@ -102,7 +102,7 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new List<IService>
+            Substitute = new List<IResource>
             {
                 new ImageService2
                 {
@@ -127,7 +127,7 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new List<IService>
+            Substitute = new List<IResource>
             {
                 new ImageService3
                 {
@@ -165,7 +165,7 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new List<IService>
+            Substitute = new List<IResource>
             {
                 new ImageService3
                 {
@@ -190,7 +190,7 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new List<IService>
+            Substitute = new List<IResource>
             {
                 new Video
                 {

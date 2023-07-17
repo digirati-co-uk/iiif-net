@@ -1,7 +1,6 @@
 ﻿namespace IIIF;
 
-public interface IService
-{
-    string? Id { get; set; }
-    string? Type { get; }
-}
+/// <summary>
+/// Marker interface for anything that can be used as a Service
+/// </summary>
+public interface IService : IResource { }
