@@ -1,14 +1,15 @@
 ﻿using Newtonsoft.Json;
 
-namespace IIIF.Serialisation
+namespace IIIF.Serialisation;
+
+/// <summary>
+/// Converter for <see cref="Size"/> type that writes single line
+/// e.g. {"width":100,"height":200}
+/// </summary>
+public class SizeConverter : WriteOnlyConverter<Size>
 {
-    /// <summary>
-    /// Converter for <see cref="Size"/> type that writes single line
-    /// e.g. {"width":100,"height":200}
-    /// </summary>
-    public class SizeConverter : WriteOnlyConverter<Size>
+    public override void WriteJson(JsonWriter writer, Size? value, JsonSerializer serializer)
     {
-        public override void WriteJson(JsonWriter writer, Size? value, JsonSerializer serializer) 
-            => writer.WriteRawValue(JsonConvert.SerializeObject(value, Formatting.None));
+        writer.WriteRawValue(JsonConvert.SerializeObject(value, Formatting.None));
     }
 }

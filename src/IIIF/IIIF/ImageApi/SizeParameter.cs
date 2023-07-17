@@ -1,99 +1,81 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace IIIF.ImageApi
+namespace IIIF.ImageApi;
+
+/// <summary>
+/// Represents the {size} parameter of a IIIF image request.
+/// </summary>
+/// <remarks>see https://iiif.io/api/image/3.0/#42-size </remarks>
+public class SizeParameter
 {
-    /// <summary>
-    /// Represents the {size} parameter of a IIIF image request.
-    /// </summary>
-    /// <remarks>see https://iiif.io/api/image/3.0/#42-size </remarks>
-    public class SizeParameter
+    public int? Width { get; set; }
+
+    public int? Height { get; set; }
+
+    public bool Max { get; set; }
+
+    public bool Upscaled { get; set; }
+
+    public bool Confined { get; set; }
+
+    public float? PercentScale { get; set; }
+
+    public override string ToString()
     {
-        public int? Width { get; set; }
-        
-        public int? Height { get; set; }
-        
-        public bool Max { get; set; }
-        
-        public bool Upscaled { get; set; }
-        
-        public bool Confined { get; set; }
-        
-        public float? PercentScale { get; set; }
-
-        public override string ToString()
+        var sb = new StringBuilder();
+        if (Upscaled) sb.Append('^');
+        if (Max)
         {
-            var sb = new StringBuilder();
-            if (Upscaled)
-            {
-                sb.Append('^');
-            }
-            if (Max)
-            {
-                sb.Append("max");
-                return sb.ToString();
-            }
-            if (Confined)
-            {
-                sb.Append('!');
-            }
-            if (PercentScale > 0)
-            {
-                sb.Append("pct:" + PercentScale);
-                return sb.ToString();
-            }
-            if (Width > 0)
-            {
-                sb.Append(Width);
-            }
-            sb.Append(',');
-            if (Height > 0)
-            {
-                sb.Append(Height);
-            }
-
+            sb.Append("max");
             return sb.ToString();
         }
 
-        public static SizeParameter Parse(string pathPart)
+        if (Confined) sb.Append('!');
+        if (PercentScale > 0)
         {
-            var size = new SizeParameter();
-            
-            if (pathPart[0] == '^')
-            {
-                size.Upscaled = true;
-                pathPart = pathPart[1..];
-            }
+            sb.Append("pct:" + PercentScale);
+            return sb.ToString();
+        }
 
-            if (pathPart is "max" or "full")
-            {
-                size.Max = true;
-                return size;
-            }
+        if (Width > 0) sb.Append(Width);
+        sb.Append(',');
+        if (Height > 0) sb.Append(Height);
 
-            if (pathPart[0] == '!')
-            {
-                size.Confined = true;
-                pathPart = pathPart[1..];
-            }
+        return sb.ToString();
+    }
 
-            if (pathPart[0] == 'p')
-            {
-                size.PercentScale = float.Parse(pathPart[4..]);
-                return size;
-            }
+    public static SizeParameter Parse(string pathPart)
+    {
+        var size = new SizeParameter();
 
-            string[] wh = pathPart.Split(',');
-            if (wh[0] != string.Empty)
-            {
-                size.Width = int.Parse(wh[0]);
-            }
-            if (wh[1] != string.Empty)
-            {
-                size.Height = int.Parse(wh[1]);
-            }
+        if (pathPart[0] == '^')
+        {
+            size.Upscaled = true;
+            pathPart = pathPart[1..];
+        }
 
+        if (pathPart is "max" or "full")
+        {
+            size.Max = true;
             return size;
         }
+
+        if (pathPart[0] == '!')
+        {
+            size.Confined = true;
+            pathPart = pathPart[1..];
+        }
+
+        if (pathPart[0] == 'p')
+        {
+            size.PercentScale = float.Parse(pathPart[4..]);
+            return size;
+        }
+
+        string[] wh = pathPart.Split(',');
+        if (wh[0] != string.Empty) size.Width = int.Parse(wh[0]);
+        if (wh[1] != string.Empty) size.Height = int.Parse(wh[1]);
+
+        return size;
     }
 }

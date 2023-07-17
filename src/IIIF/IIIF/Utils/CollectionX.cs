@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace IIIF.Utils
+namespace IIIF.Utils;
+
+internal static class CollectionX
 {
-    internal static class CollectionX
+    public static bool IsNullOrEmpty<T>(this List<T> collection)
     {
-        public static bool IsNullOrEmpty<T>(this List<T> collection)
-            => collection == null || collection.Count == 0;
+        return collection == null || collection.Count == 0;
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace IIIF.Search
+﻿namespace IIIF.Search;
+
+public interface IHasIgnorableParameters
 {
-    public interface IHasIgnorableParameters
-    {
-        string[]? Ignored { get; set; }
-    }
+    string[]? Ignored { get; set; }
 }

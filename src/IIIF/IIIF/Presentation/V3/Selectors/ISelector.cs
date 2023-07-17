@@ -1,7 +1,6 @@
-﻿namespace IIIF.Presentation.V3.Selectors
+﻿namespace IIIF.Presentation.V3.Selectors;
+
+public interface ISelector
 {
-    public interface ISelector
-    {
-        string? Type { get; }
-    }
+    string? Type { get; }
 }

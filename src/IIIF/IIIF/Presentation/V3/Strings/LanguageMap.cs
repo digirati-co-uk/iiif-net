@@ -5,43 +5,40 @@ using System.Text;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
 
-namespace IIIF.Presentation.V3.Strings
+namespace IIIF.Presentation.V3.Strings;
+
+[JsonConverter(typeof(LanguageMapSerialiser))]
+public class LanguageMap : Dictionary<string, List<string>>
 {
-    [JsonConverter(typeof(LanguageMapSerialiser))]
-    public class LanguageMap : Dictionary<string, List<string>>
+    public LanguageMap()
     {
-        public LanguageMap() { }
+    }
 
-        public LanguageMap(string language, string singleValue)
-        {
-            this[language] = new List<string> { singleValue };
-        }
-        
-        public LanguageMap(string language, IEnumerable<string> values)
-        {
-            this[language] = values.ToList();
-        }
+    public LanguageMap(string language, string singleValue)
+    {
+        this[language] = new List<string> { singleValue };
+    }
 
-        public override string ToString()
+    public LanguageMap(string language, IEnumerable<string> values)
+    {
+        this[language] = values.ToList();
+    }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new();
+        foreach (List<string> value in Values)
+        foreach (var s in value)
         {
-            StringBuilder sb = new();
-            foreach (List<string> value in Values)
-            {
-                foreach (string s in value)
-                {
-                    if (sb.Length > 0)
-                    {
-                        sb.AppendLine();
-                    }
-                    sb.Append(s);
-                }
-            }
-            return sb.ToString();
+            if (sb.Length > 0) sb.AppendLine();
+            sb.Append(s);
         }
 
-        public string Join(string separator)
-        {
-            return String.Join(separator, Values.SelectMany(s => s.ToList()));
-        }
+        return sb.ToString();
+    }
+
+    public string Join(string separator)
+    {
+        return string.Join(separator, Values.SelectMany(s => s.ToList()));
     }
 }

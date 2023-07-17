@@ -1,7 +1,6 @@
-﻿namespace IIIF.Auth.V0
+﻿namespace IIIF.Auth.V0;
+
+public class Constants
 {
-    public class Constants
-    {
-        public const string IIIFAuthContext = "http://iiif.io/api/auth/0/context.json";
-    }
+    public const string IIIFAuthContext = "http://iiif.io/api/auth/0/context.json";
 }

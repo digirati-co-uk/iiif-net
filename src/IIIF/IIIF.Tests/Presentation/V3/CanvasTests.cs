@@ -7,48 +7,48 @@ using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation;
 using Xunit;
 
-namespace IIIF.Tests.Presentation.V3
-{
-    public class CanvasTests
-    {
-        [Fact]
-        public void SerialiseTargetAsId_True_RendersIdAsTarget()
-        {
-            var targetIsIdOnlyCanvas = new Canvas
-            {
-                Id = "https://test.example.com/canvas/target-id-only",
-                Width = 1000,
-                Height = 1001,
-                SerialiseTargetAsId = true
-            };
+namespace IIIF.Tests.Presentation.V3;
 
-            var referencingCanvas = new Canvas
+public class CanvasTests
+{
+    [Fact]
+    public void SerialiseTargetAsId_True_RendersIdAsTarget()
+    {
+        var targetIsIdOnlyCanvas = new Canvas
+        {
+            Id = "https://test.example.com/canvas/target-id-only",
+            Width = 1000,
+            Height = 1001,
+            SerialiseTargetAsId = true
+        };
+
+        var referencingCanvas = new Canvas
+        {
+            Id = "https://test.example.com/canvas/referencing",
+            Items = new List<AnnotationPage>
             {
-                Id = "https://test.example.com/canvas/referencing",
-                Items = new List<AnnotationPage>
+                new()
                 {
-                    new()
+                    Id = "https://test.example.com/canvas/referencing/page",
+                    Items = new List<IAnnotation>
                     {
-                        Id = "https://test.example.com/canvas/referencing/page",
-                        Items = new List<IAnnotation>
-                        {
-                            new PaintingAnnotation { Target = targetIsIdOnlyCanvas, }
-                        }
+                        new PaintingAnnotation { Target = targetIsIdOnlyCanvas }
                     }
                 }
-            };
-            
-            var manifest = new Manifest
-            {
-                Context = "http://iiif.io/api/presentation/3/context.json",
-                Id = "https://test.example.com/manifest",
-                Label = new LanguageMap("en", "Test string"),
-                Items = new List<Canvas> { targetIsIdOnlyCanvas, referencingCanvas }
-            };
+            }
+        };
 
-            var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
+        var manifest = new Manifest
+        {
+            Context = "http://iiif.io/api/presentation/3/context.json",
+            Id = "https://test.example.com/manifest",
+            Label = new LanguageMap("en", "Test string"),
+            Items = new List<Canvas> { targetIsIdOnlyCanvas, referencingCanvas }
+        };
 
-            const string expected = @"{
+        var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
+
+        const string expected = @"{
   ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
   ""id"": ""https://test.example.com/manifest"",
   ""type"": ""Manifest"",
@@ -79,47 +79,47 @@ namespace IIIF.Tests.Presentation.V3
     }
   ]
 }";
-            
-            serialisedManifest.Should().BeEquivalentTo(expected);
-        }
-        
-        [Fact]
-        public void SerialiseTargetAsId_False_RendersFullCanvasAsTarget()
-        {
-            var targetIsFullCanvas = new Canvas
-            {
-                Id = "https://test.example.com/canvas/full",
-                Width = 1000,
-                Height = 1001,
-            };
 
-            var referencingCanvas = new Canvas
+        serialisedManifest.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void SerialiseTargetAsId_False_RendersFullCanvasAsTarget()
+    {
+        var targetIsFullCanvas = new Canvas
+        {
+            Id = "https://test.example.com/canvas/full",
+            Width = 1000,
+            Height = 1001
+        };
+
+        var referencingCanvas = new Canvas
+        {
+            Id = "https://test.example.com/canvas/referencing",
+            Items = new List<AnnotationPage>
             {
-                Id = "https://test.example.com/canvas/referencing",
-                Items = new List<AnnotationPage>
+                new()
                 {
-                    new()
+                    Id = "https://test.example.com/canvas/referencing/page",
+                    Items = new List<IAnnotation>
                     {
-                        Id = "https://test.example.com/canvas/referencing/page",
-                        Items = new List<IAnnotation>
-                        {
-                            new PaintingAnnotation { Target = targetIsFullCanvas, }
-                        }
+                        new PaintingAnnotation { Target = targetIsFullCanvas }
                     }
                 }
-            };
-            
-            var manifest = new Manifest
-            {
-                Context = "http://iiif.io/api/presentation/3/context.json",
-                Id = "https://test.example.com/manifest",
-                Label = new LanguageMap("en", "Test string"),
-                Items = new List<Canvas> { targetIsFullCanvas, referencingCanvas }
-            };
+            }
+        };
 
-            var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
+        var manifest = new Manifest
+        {
+            Context = "http://iiif.io/api/presentation/3/context.json",
+            Id = "https://test.example.com/manifest",
+            Label = new LanguageMap("en", "Test string"),
+            Items = new List<Canvas> { targetIsFullCanvas, referencingCanvas }
+        };
 
-            const string expected = @"{
+        var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
+
+        const string expected = @"{
   ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
   ""id"": ""https://test.example.com/manifest"",
   ""type"": ""Manifest"",
@@ -155,46 +155,46 @@ namespace IIIF.Tests.Presentation.V3
     }
   ]
 }";
-            
-            serialisedManifest.Should().BeEquivalentTo(expected);
-        }
-        
-        [Fact]
-        public void CanSelfReferenceCanvas()
-        {
-            var canvas = new Canvas
-            {
-                Id = "https://test.example.com/canvas/target-id-only",
-                SerialiseTargetAsId = true
-            };
 
-            canvas.Items = new List<AnnotationPage>
+        serialisedManifest.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void CanSelfReferenceCanvas()
+    {
+        var canvas = new Canvas
+        {
+            Id = "https://test.example.com/canvas/target-id-only",
+            SerialiseTargetAsId = true
+        };
+
+        canvas.Items = new List<AnnotationPage>
+        {
+            new()
             {
-                new()
+                Id = "https://test.example.com/canvas/referencing/page",
+                Items = new List<IAnnotation>
                 {
-                    Id = "https://test.example.com/canvas/referencing/page",
-                    Items = new List<IAnnotation>
+                    new PaintingAnnotation
                     {
-                        new PaintingAnnotation
-                        {
-                            Id = "https://test.example.com/canvas/referencing/page/anno",
-                            Target = canvas,
-                        }
+                        Id = "https://test.example.com/canvas/referencing/page/anno",
+                        Target = canvas
                     }
                 }
-            };
+            }
+        };
 
-            var manifest = new Manifest
-            {
-                Context = "http://iiif.io/api/presentation/3/context.json",
-                Id = "https://test.example.com/manifest",
-                Label = new LanguageMap("en", "Test string"),
-                Items = new List<Canvas> { canvas }
-            };
+        var manifest = new Manifest
+        {
+            Context = "http://iiif.io/api/presentation/3/context.json",
+            Id = "https://test.example.com/manifest",
+            Label = new LanguageMap("en", "Test string"),
+            Items = new List<Canvas> { canvas }
+        };
 
-            var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
+        var serialisedManifest = manifest.AsJson().Replace("\r\n", "\n");
 
-            const string expected = @"{
+        const string expected = @"{
   ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
   ""id"": ""https://test.example.com/manifest"",
   ""type"": ""Manifest"",
@@ -220,8 +220,7 @@ namespace IIIF.Tests.Presentation.V3
     }
   ]
 }";
-            
-            serialisedManifest.Should().BeEquivalentTo(expected);
-        }
+
+        serialisedManifest.Should().BeEquivalentTo(expected);
     }
 }

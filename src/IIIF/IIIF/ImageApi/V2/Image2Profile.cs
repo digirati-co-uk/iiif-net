@@ -1,9 +1,6 @@
-namespace IIIF.ImageApi.V2
+namespace IIIF.ImageApi.V2;
+
+// TODO - Full profile object
+public class Image2Profile
 {
-    // TODO - Full profile object
-    public class Image2Profile
-    {
-        
-    }
-    
 }
