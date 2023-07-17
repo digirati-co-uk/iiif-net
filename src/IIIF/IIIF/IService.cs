@@ -1,8 +1,7 @@
-﻿namespace IIIF
+﻿namespace IIIF;
+
+public interface IService
 {
-    public interface IService
-    {
-        string? Id { get; set; }
-        string? Type { get; }
-    }
+    string? Id { get; set; }
+    string? Type { get; }
 }

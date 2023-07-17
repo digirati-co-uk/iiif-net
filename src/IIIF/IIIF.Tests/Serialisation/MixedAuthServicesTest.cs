@@ -7,45 +7,45 @@ using IIIF.Serialisation;
 using IIIF.Tests.Auth.V2;
 using Xunit;
 
-namespace IIIF.Tests.Serialisation
+namespace IIIF.Tests.Serialisation;
+
+public class MixedAuthServicesTest
 {
-    public class MixedAuthServicesTest
+    [Fact]
+    public void Image2_Can_Have_V1_And_V2_Auth_Services()
     {
-        [Fact]
-        public void Image2_Can_Have_V1_And_V2_Auth_Services()
+        // Arrange
+        var auth1CookieService = AuthCookieService.NewClickthroughInstance();
+        auth1CookieService.Id = "https://example.com/login";
+        auth1CookieService.Label = new MetaDataValue("auth1 - label");
+        auth1CookieService.Header = new MetaDataValue("auth1 - header");
+        auth1CookieService.Description = new MetaDataValue("auth1 - desc");
+        auth1CookieService.ConfirmLabel = new MetaDataValue("auth1 - confirm");
+        auth1CookieService.FailureHeader = new MetaDataValue("auth1 - fail");
+        auth1CookieService.FailureDescription = new MetaDataValue("auth1 - fail-desc");
+        auth1CookieService.Service = new List<IService>
         {
-            // Arrange
-            var auth1CookieService = AuthCookieService.NewClickthroughInstance();
-            auth1CookieService.Id = "https://example.com/login";
-            auth1CookieService.Label = new MetaDataValue("auth1 - label");
-            auth1CookieService.Header = new MetaDataValue("auth1 - header");
-            auth1CookieService.Description = new MetaDataValue("auth1 - desc");
-            auth1CookieService.ConfirmLabel = new MetaDataValue("auth1 - confirm");
-            auth1CookieService.FailureHeader = new MetaDataValue("auth1 - fail");
-            auth1CookieService.FailureDescription = new MetaDataValue("auth1 - fail-desc");
-            auth1CookieService.Service = new List<IService>
+            new AuthTokenService
             {
-                new AuthTokenService
-                {
-                    Id = "https://example.com/token"
-                },           
-                new AuthLogoutService
-                {
-                    Id = "https://example.com/logout",
-                    Label = new MetaDataValue("Log out")
-                }
-            };
-            var imgService2 = new ImageService2
+                Id = "https://example.com/token"
+            },
+            new AuthLogoutService
             {
-                Id = "https://example.org/images/my-image.jpg/v2/service",
-                Service = new List<IService> { auth1CookieService }
-            };
-            
-            imgService2.Service.AddRange(ReusableParts.Auth2Services);
-            
-            // Act
-            var json = imgService2.AsJson().Replace("\r\n", "\n");
-            const string expected = @"{
+                Id = "https://example.com/logout",
+                Label = new MetaDataValue("Log out")
+            }
+        };
+        var imgService2 = new ImageService2
+        {
+            Id = "https://example.org/images/my-image.jpg/v2/service",
+            Service = new List<IService> { auth1CookieService }
+        };
+
+        imgService2.Service.AddRange(ReusableParts.Auth2Services);
+
+        // Act
+        var json = imgService2.AsJson().Replace("\r\n", "\n");
+        const string expected = @"{
   ""@id"": ""https://example.org/images/my-image.jpg/v2/service"",
   ""@type"": ""ImageService2"",
   ""service"": [
@@ -101,10 +101,8 @@ namespace IIIF.Tests.Serialisation
     }
   ]
 }";
-            
-            // Assert
-            json.Should().BeEquivalentTo(expected);
-            
-        }
+
+        // Assert
+        json.Should().BeEquivalentTo(expected);
     }
 }

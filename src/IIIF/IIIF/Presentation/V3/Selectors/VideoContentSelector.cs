@@ -1,8 +1,6 @@
-﻿
-namespace IIIF.Presentation.V3.Selectors
+﻿namespace IIIF.Presentation.V3.Selectors;
+
+public class VideoContentSelector : ISelector
 {
-    public class VideoContentSelector : ISelector
-    {
-        public string? Type => nameof(VideoContentSelector);
-    }
+    public string? Type => nameof(VideoContentSelector);
 }

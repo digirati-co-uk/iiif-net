@@ -1,7 +1,6 @@
-namespace IIIF.Presentation.V2.Annotation
+namespace IIIF.Presentation.V2.Annotation;
+
+public class SearchResultAnnotation : Annotation
 {
-    public class SearchResultAnnotation : Annotation
-    {
-        public override string Motivation => "sc:painting";
-    }
+    public override string Motivation => "sc:painting";
 }

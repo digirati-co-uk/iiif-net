@@ -1,6 +1,5 @@
-﻿namespace IIIF.Presentation.V3.Annotation
+﻿namespace IIIF.Presentation.V3.Annotation;
+
+public interface IAnnotation
 {
-    public interface IAnnotation
-    {
-    }
 }

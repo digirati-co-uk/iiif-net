@@ -1,8 +1,6 @@
-﻿
-namespace IIIF.Presentation.V3.Selectors
+﻿namespace IIIF.Presentation.V3.Selectors;
+
+public class AudioContentSelector : ISelector
 {
-    public class AudioContentSelector : ISelector
-    {
-        public string? Type => nameof(AudioContentSelector);
-    }
+    public string? Type => nameof(AudioContentSelector);
 }

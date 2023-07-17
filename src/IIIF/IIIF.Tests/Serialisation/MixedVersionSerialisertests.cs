@@ -6,36 +6,37 @@ using IIIF.Presentation.V3.Content;
 using IIIF.Serialisation;
 using Xunit;
 
-namespace IIIF.Tests.Serialisation
+namespace IIIF.Tests.Serialisation;
+
+public class MixedVersionSerialiserTests
 {
-    public class MixedVersionSerialiserTests
+    [Fact]
+    public void Image_Can_Have_V2_And_V3_Image_Services()
     {
-        [Fact]
-        public void Image_Can_Have_V2_And_V3_Image_Services()
+        // Arrange
+        var img = new Image
         {
-            // Arrange
-            var img = new Image
+            Id = $"https://example.org/images/my-image.jpg",
+            Width = 1000,
+            Height = 1000,
+            Format = "image/jpeg",
+            Service = new List<IService>
             {
-                Id = $"https://example.org/images/my-image.jpg",
-                Width = 1000,
-                Height = 1000,
-                Format = "image/jpeg",
-                Service = new List<IService>
+                new ImageService2
                 {
-                    new ImageService2
-                    {
-                        Id = "https://example.org/images/my-image.jpg/v2/service"
-                    },
-                    new ImageService3
-                    {
-                        Id = "https://example.org/images/my-image.jpg/v2/service"
-                    }
+                    Id = "https://example.org/images/my-image.jpg/v2/service"
+                },
+                new ImageService3
+                {
+                    Id = "https://example.org/images/my-image.jpg/v2/service"
                 }
-            };
-            
-            // Act
-            var json = img.AsJson().Replace("\r\n", "\n");;
-            const string expected = @"{
+            }
+        };
+
+        // Act
+        var json = img.AsJson().Replace("\r\n", "\n");
+        ;
+        const string expected = @"{
   ""id"": ""https://example.org/images/my-image.jpg"",
   ""type"": ""Image"",
   ""width"": 1000,
@@ -52,11 +53,7 @@ namespace IIIF.Tests.Serialisation
     }
   ]
 }";
-            // Assert
-            json.Should().BeEquivalentTo(expected);
-
-        }
-        
-        
+        // Assert
+        json.Should().BeEquivalentTo(expected);
     }
 }
