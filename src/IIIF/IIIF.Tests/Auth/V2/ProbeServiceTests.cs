@@ -38,6 +38,24 @@ public class ProbeServiceTests
         json.Should().BeEquivalentTo(expected);
     }
 
+    [Fact]
+    public void ProbeService_CanDeserialiseSerialised()
+    {
+        // Arrange
+        var probe = new AuthProbeService2
+        {
+            Id = "https://example.org/resource1/probe",
+            Label = new LanguageMap("en", "A probe Service"),
+            ErrorHeading = new LanguageMap("en", "errorHeading value"),
+            ErrorNote = new LanguageMap("en", "errorNote value")
+        };
+        
+        var serialised = probe.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthProbeService2>();
+        deserialised.Should().BeEquivalentTo(probe);
+    }
 
     [Fact]
     public void ProbeServiceResult_Can_Substitute_ImageService2()
@@ -46,9 +64,12 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new ImageService2
+            Substitute = new List<IService>
             {
-                Id = "https://example.org/imageService2"
+                new ImageService2
+                {
+                    Id = "https://example.org/imageService2"
+                }
             },
             Heading = new LanguageMap("en", "heading value"),
             Note = new LanguageMap("en", "note value")
@@ -60,16 +81,43 @@ public class ProbeServiceTests
   ""@context"": ""http://iiif.io/api/auth/2/context.json"",
   ""type"": ""AuthProbeResult2"",
   ""status"": 401,
-  ""substitute"": {
-    ""@id"": ""https://example.org/imageService2"",
-    ""@type"": ""ImageService2""
-  },
+  ""substitute"": [
+    {
+      ""@id"": ""https://example.org/imageService2"",
+      ""@type"": ""ImageService2""
+    }
+  ],
   ""heading"": {""en"":[""heading value""]},
   ""note"": {""en"":[""note value""]}
 }";
 
         // Assert
         json.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ProbeServiceResult_Can_Deserialise_SubstituteImageService2()
+    {
+        // Arrange
+        var probe = new AuthProbeResult2
+        {
+            Status = 401,
+            Substitute = new List<IService>
+            {
+                new ImageService2
+                {
+                    Id = "https://example.org/imageService2"
+                }
+            },
+            Heading = new LanguageMap("en", "heading value"),
+            Note = new LanguageMap("en", "note value")
+        };
+
+        var serialised = probe.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthProbeResult2>();
+        deserialised.Should().BeEquivalentTo(probe);
     }
 
     [Fact]
@@ -79,9 +127,12 @@ public class ProbeServiceTests
         var probe = new AuthProbeResult2
         {
             Status = 401,
-            Substitute = new ImageService3
+            Substitute = new List<IService>
             {
-                Id = "https://example.org/imageService3"
+                new ImageService3
+                {
+                    Id = "https://example.org/imageService3"
+                }
             },
             Heading = new LanguageMap("en", "heading value"),
             Note = new LanguageMap("en", "note value")
@@ -93,10 +144,12 @@ public class ProbeServiceTests
   ""@context"": ""http://iiif.io/api/auth/2/context.json"",
   ""type"": ""AuthProbeResult2"",
   ""status"": 401,
-  ""substitute"": {
-    ""id"": ""https://example.org/imageService3"",
-    ""type"": ""ImageService3""
-  },
+  ""substitute"": [
+    {
+      ""id"": ""https://example.org/imageService3"",
+      ""type"": ""ImageService3""
+    }
+  ],
   ""heading"": {""en"":[""heading value""]},
   ""note"": {""en"":[""note value""]}
 }";
@@ -104,7 +157,56 @@ public class ProbeServiceTests
         // Assert
         json.Should().BeEquivalentTo(expected);
     }
+    
+    [Fact]
+    public void ProbeServiceResult_Can_Deserialise_SubstituteImageService3()
+    {
+        // Arrange
+        var probe = new AuthProbeResult2
+        {
+            Status = 401,
+            Substitute = new List<IService>
+            {
+                new ImageService3
+                {
+                    Id = "https://example.org/imageService3"
+                }
+            },
+            Heading = new LanguageMap("en", "heading value"),
+            Note = new LanguageMap("en", "note value")
+        };
 
+        var serialised = probe.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthProbeResult2>();
+        deserialised.Should().BeEquivalentTo(probe);
+    }
+    
+    [Fact]
+    public void ProbeServiceResult_Can_Deserialise_SubstituteVideo()
+    {
+        // Arrange
+        var probe = new AuthProbeResult2
+        {
+            Status = 401,
+            Substitute = new List<IService>
+            {
+                new Video
+                {
+                    Id = "https://example.org/video/12345/file.m3u8"
+                }
+            },
+            Heading = new LanguageMap("en", "heading value"),
+            Note = new LanguageMap("en", "note value")
+        };
+
+        var serialised = probe.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthProbeResult2>();
+        deserialised.Should().BeEquivalentTo(probe);
+    }
 
     [Fact]
     public void ProbeService_Can_Provide_Location()
@@ -134,7 +236,26 @@ public class ProbeServiceTests
         // Assert
         json.Should().BeEquivalentTo(expected);
     }
+    
+    [Fact]
+    public void ProbeService_Can_Deserialise_WithLocation()
+    {
+        // Arrange
+        var probeResult2 = new AuthProbeResult2
+        {
+            Status = 200,
+            Location = new Video
+            {
+                Id = "https://example.org/video/12345/file.m3u8"
+            }
+        };
 
+        var serialised = probeResult2.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthProbeResult2>();
+        deserialised.Should().BeEquivalentTo(probeResult2);
+    }
 
     [Fact]
     public void ProbeService_Can_Provide_AccessService()
@@ -149,7 +270,7 @@ public class ProbeServiceTests
                 new AuthAccessService2
                 {
                     Id = "https://example.com/auth/access",
-                    Profile = AuthAccessService2.InteractiveProfile,
+                    Profile = AuthAccessService2.ActiveProfile,
                     Label = new LanguageMap("en", "label value"),
                     Heading = new LanguageMap("en", "heading value"),
                     Note = new LanguageMap("en", "note value"),
@@ -168,7 +289,7 @@ public class ProbeServiceTests
     {
       ""id"": ""https://example.com/auth/access"",
       ""type"": ""AuthAccessService2"",
-      ""profile"": ""interactive"",
+      ""profile"": ""active"",
       ""label"": {""en"":[""label value""]},
       ""confirmlabel"": {""en"":[""confirmLabel value""]},
       ""heading"": {""en"":[""heading value""]},
@@ -179,5 +300,34 @@ public class ProbeServiceTests
 
         // Assert
         json.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ProbeService_Can_Deserialise_AccessService()
+    {
+        // Arrange
+        var probe = new AuthProbeService2
+        {
+            Id = "https://example.org/resource1/probe",
+            Label = new LanguageMap("en", "A probe service"),
+            Service = new List<IService>
+            {
+                new AuthAccessService2
+                {
+                    Id = "https://example.com/auth/access",
+                    Profile = AuthAccessService2.ActiveProfile,
+                    Label = new LanguageMap("en", "label value"),
+                    Heading = new LanguageMap("en", "heading value"),
+                    Note = new LanguageMap("en", "note value"),
+                    ConfirmLabel = new LanguageMap("en", "confirmLabel value")
+                }
+            }
+        };
+
+        var serialised = probe.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<AuthProbeService2>();
+        deserialised.Should().BeEquivalentTo(probe);
     }
 }

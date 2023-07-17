@@ -26,7 +26,23 @@ public class ImageServiceWithAuthTest
         // Assert
         json.Should().BeEquivalentTo(expected);
     }
+    
+    [Fact]
+    public void ImageService2_Deserialise_With_Auth_Services()
+    {
+        // Arrange
+        var imgService2 = new ImageService2
+        {
+            Id = "https://example.com/image/service",
+            Service = ReusableParts.Auth2Services
+        };
 
+        var serialised = imgService2.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<ImageService2>();
+        deserialised.Should().BeEquivalentTo(imgService2);
+    }
 
     [Fact]
     public void ImageService3_Can_Have_Auth_Services()
@@ -46,5 +62,22 @@ public class ImageServiceWithAuthTest
 }";
         // Assert
         json.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ImageService3_Deserialise_With_Auth_Services()
+    {
+        // Arrange
+        var imgService3 = new ImageService3
+        {
+            Id = "https://example.com/image/service",
+            Service = ReusableParts.Auth2Services
+        };
+
+        var serialised = imgService3.AsJson();
+
+        // Act
+        var deserialised = serialised.FromJson<ImageService3>();
+        deserialised.Should().BeEquivalentTo(imgService3);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using IIIF.Presentation.V3.Annotation;
-using Newtonsoft.Json;
 
 namespace IIIF.Presentation.V3.Content;
 

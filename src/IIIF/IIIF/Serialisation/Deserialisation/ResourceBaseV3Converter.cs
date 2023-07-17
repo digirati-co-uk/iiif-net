@@ -1,9 +1,9 @@
 ﻿using System;
+using IIIF.Auth.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation.Deserialisation;
@@ -49,6 +49,8 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
             nameof(Image) => new Image(),
             nameof(Manifest) => new Manifest(),
             nameof(SpecificResource) => new SpecificResource(),
+            nameof(AuthProbeService2) => new AuthProbeService2(),
+            nameof(AuthAccessTokenError2) => new AuthAccessTokenError2(),
             nameof(TextualBody) => new TextualBody(jsonObject["value"].Value<string>()),
             _ => null
         };

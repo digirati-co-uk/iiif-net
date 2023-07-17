@@ -13,7 +13,7 @@ public class ReusableParts
         {
           ""id"": ""https://example.com/login"",
           ""type"": ""AuthAccessService2"",
-          ""profile"": ""interactive"",
+          ""profile"": ""active"",
           ""label"": {""en"":[""label property""]},
           ""service"": [
             {
@@ -54,7 +54,7 @@ public class ReusableParts
                 new AuthAccessService2
                 {
                     Id = "https://example.com/login",
-                    Profile = AuthAccessService2.InteractiveProfile,
+                    Profile = AuthAccessService2.ActiveProfile,
                     Label = new LanguageMap("en", "label property"),
                     ConfirmLabel = new LanguageMap("en", "confirmLabel property"),
                     Heading = new LanguageMap("en", "heading property"),
