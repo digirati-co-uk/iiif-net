@@ -80,7 +80,7 @@ public class MixedAuthServicesTest
         {
           ""id"": ""https://example.com/login"",
           ""type"": ""AuthAccessService2"",
-          ""profile"": ""interactive"",
+          ""profile"": ""active"",
           ""label"": {""en"":[""label property""]},
           ""service"": [
             {

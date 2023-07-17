@@ -168,7 +168,7 @@ public class ProbeServiceTests
     {
       ""id"": ""https://example.com/auth/access"",
       ""type"": ""AuthAccessService2"",
-      ""profile"": ""interactive"",
+      ""profile"": ""active"",
       ""label"": {""en"":[""label value""]},
       ""confirmlabel"": {""en"":[""confirmLabel value""]},
       ""heading"": {""en"":[""heading value""]},
