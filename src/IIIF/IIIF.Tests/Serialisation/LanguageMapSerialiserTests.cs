@@ -76,4 +76,47 @@ public class LanguageMapSerialiserTests
         // Assert
         result.Should().Be(expected);
     }
+    
+    [Fact]
+    public void ReadJson_SingleLanguageSingleValue()
+    {
+        // Arrange
+        var expected = new LanguageMap("en", "auto rock");
+        var json = "{\"en\":[\"auto rock\"]}";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<LanguageMap>(json, sut);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ReadJson_SingleLanguageMultiValues()
+    {
+        // Arrange
+        var expected = new LanguageMap("en", new[] { "we're no here", "hungry face" });
+        var json = "{\"en\":[\"we're no here\", \"hungry face\"]}";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<LanguageMap>(json, sut);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ReadJson_MultiLanguageMultiValues()
+    {
+        // Arrange
+        var expected = new LanguageMap("en", new[] { "we're no here", "hungry face" });
+        expected.Add("fr", new List<string> { "le voyage est dangereux" });
+        var json = "{\"en\":[\"we're no here\", \"hungry face\"], \"fr\":[\"le voyage est dangereux\"]}";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<LanguageMap>(json, sut);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
 }

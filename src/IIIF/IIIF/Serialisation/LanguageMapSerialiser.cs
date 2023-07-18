@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IIIF.Presentation.V2.Serialisation;
 using IIIF.Presentation.V3.Strings;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation;
 
@@ -11,8 +10,18 @@ namespace IIIF.Serialisation;
 /// Serialises <see cref="LanguageMap"/> as json, putting values on single line if single language with single value
 /// of less than 40 chars.
 /// </summary>
-public class LanguageMapSerialiser : WriteOnlyConverter<LanguageMap>
+public class LanguageMapSerialiser : JsonConverter<LanguageMap>
 {
+    public override LanguageMap? ReadJson(JsonReader reader, Type objectType, LanguageMap? existingValue,
+        bool hasExistingValue, JsonSerializer serializer)
+    {
+        var map = existingValue ?? new LanguageMap();
+        
+        var jsonObject = JObject.Load(reader);
+        serializer.Populate(jsonObject.CreateReader(), map);
+        return map;
+    }
+
     public override void WriteJson(JsonWriter writer, LanguageMap? value, JsonSerializer serializer)
     {
         if (value == null)
