@@ -56,7 +56,10 @@ public class TokenServiceTests
         // Arrange
         var tokenResp = new AuthAccessTokenError2(
             AuthAccessTokenError2.InvalidAspect,
-            new LanguageMap("en", "Your credentials are wrong"));
+            new LanguageMap("en", "Your credentials are wrong"))
+        {
+            MessageId = "1010"
+        };
 
         // Act
         var json = tokenResp.AsJson().Replace("\r\n", "\n");
@@ -64,7 +67,8 @@ public class TokenServiceTests
   ""@context"": ""http://iiif.io/api/auth/2/context.json"",
   ""type"": ""AuthAccessTokenError2"",
   ""profile"": ""invalidAspect"",
-  ""note"": {""en"":[""Your credentials are wrong""]}
+  ""note"": {""en"":[""Your credentials are wrong""]},
+  ""messageId"": ""1010""
 }";
         // Assert
         json.Should().BeEquivalentTo(expected);
