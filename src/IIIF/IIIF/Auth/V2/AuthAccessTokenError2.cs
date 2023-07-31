@@ -43,6 +43,12 @@ public class AuthAccessTokenError2 : ResourceBase, IService
 
     [JsonProperty(Order = 102, PropertyName = "note")]
     public LanguageMap? Note { get; set; }
+    
+    /// <summary>
+    /// The message identifier supplied by the client.
+    /// </summary>
+    [JsonProperty(Order = 103, PropertyName = "messageId")]
+    public string MessageId { get; set; }
 
     public AuthAccessTokenError2(string profile, LanguageMap? note = null)
     {
