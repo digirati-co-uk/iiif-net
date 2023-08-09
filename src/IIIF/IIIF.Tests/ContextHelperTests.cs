@@ -36,6 +36,47 @@ public class ContextHelperTests
         // Assert
         (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
     }
+    
+    [Theory]
+    [InlineData(IIIF.Presentation.Context.Presentation2Context)]
+    [InlineData(IIIF.Presentation.Context.Presentation3Context)]
+    [InlineData(IIIF.ImageApi.V2.ImageService2.Image2Context)]
+    [InlineData(IIIF.ImageApi.V3.ImageService3.Image3Context)]
+    [InlineData("http://my-custom-context")]
+    public void EnsureContext_NoOp_IfContextAlreadyExistsAsSingle(string context)
+    {
+        // Arrange
+        var jsonLdBase = new TestJsonLdBase { Context = context };
+
+        // Act
+        jsonLdBase.EnsureContext(context);
+        
+        // Assert
+        jsonLdBase.Context.Should().BeOfType<string>()
+            .And.Subject.Should().Be(context);
+    }
+    
+    [Theory]
+    [InlineData(IIIF.Presentation.Context.Presentation2Context)]
+    [InlineData(IIIF.Presentation.Context.Presentation3Context)]
+    [InlineData(IIIF.ImageApi.V2.ImageService2.Image2Context)]
+    [InlineData(IIIF.ImageApi.V3.ImageService3.Image3Context)]
+    [InlineData("http://my-custom-context")]
+    public void EnsureContext_NoOp_IfContextAlreadyExistsInList(string context)
+    {
+        // Arrange
+        const string customContext = "http://existing-context";
+        var jsonLdBase = new TestJsonLdBase { Context = customContext };
+        jsonLdBase.EnsureContext(context);
+
+        var expected = new List<string> { customContext, context };
+        
+        // Act
+        jsonLdBase.EnsureContext(customContext);
+        
+        // Assert
+        (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
+    }
 
     [Theory]
     [InlineData(IIIF.Presentation.Context.Presentation2Context)]

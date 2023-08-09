@@ -29,6 +29,12 @@ public static class ContextHelper
         }
         
         var workingContexts = GetWorkingContexts(resource);
+        if (workingContexts.Contains(contextToEnsure))
+        {
+            // Context already added - no-op
+            SetContext(resource, workingContexts);
+            return;
+        }
         workingContexts.Add(contextToEnsure);
 
         if (workingContexts.Intersect(knownContexts).Count() > 1)
@@ -40,15 +46,18 @@ public static class ContextHelper
         var iiifContext = workingContexts.FirstOrDefault(wc => knownContexts.Contains(wc));
 
         // If we have an IIIF context it must be last in list
-        if (!string.IsNullOrEmpty(iiifContext))
+        if (!string.IsNullOrEmpty(iiifContext) && workingContexts.Count > 1)
         {
             workingContexts.Remove(iiifContext);
             workingContexts.Add(iiifContext);
         }
 
         // Now JSON-LD rules. The @context is the only Presentation 3 element that has this.
-        resource.Context = workingContexts.Count == 1 ? workingContexts[0] : workingContexts;
+        SetContext(resource, workingContexts);
     }
+
+    private static void SetContext(JsonLdBase resource, IReadOnlyList<string> workingContexts)
+        => resource.Context = workingContexts.Count == 1 ? workingContexts[0] : workingContexts;
 
     private static List<string> GetWorkingContexts(JsonLdBase resource)
     {
