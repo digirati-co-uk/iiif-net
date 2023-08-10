@@ -18,10 +18,14 @@ public class ImageService3 : ResourceBase, IService
     [JsonProperty(Order = 11)] public int Width { get; set; }
 
     [JsonProperty(Order = 12)] public int Height { get; set; }
+    
+    [JsonProperty(Order = 13)] public int? MaxWidth { get; set; }
+    [JsonProperty(Order = 14)] public int? MaxHeight { get; set; }
+    [JsonProperty(Order = 15)] public int? MaxArea { get; set; }
 
-    [JsonProperty(Order = 13)] public List<Size> Sizes { get; set; }
+    [JsonProperty(Order = 16)] public List<Size> Sizes { get; set; }
 
-    [JsonProperty(Order = 14)] public List<Tile> Tiles { get; set; }
+    [JsonProperty(Order = 17)] public List<Tile> Tiles { get; set; }
 
     /// <summary>
     /// An array of strings that are the preferred format parameter values, arranged in order of preference. The
