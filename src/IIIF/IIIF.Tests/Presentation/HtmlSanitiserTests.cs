@@ -1,4 +1,5 @@
-﻿using IIIF.Presentation;
+﻿using System;
+using IIIF.Presentation;
 
 namespace IIIF.Tests.Presentation;
 
@@ -11,23 +12,23 @@ public class HtmlSanitiserTests
         => val.SanitiseHtml().Should().Be(val);
 
     [Fact]
-    public void SanitiseHtml_Trims_Whitespace_From_Beginning_And_End()
+    public void SanitiseHtml_Trims_Whitespace_FromBeginningAndEnd_IfIgnoreNonHtmlFalse()
     {
         const string input = " <p>valid html</p>  ";
         const string expected = "<p>valid html</p>";
 
-        var actual = input.SanitiseHtml();
+        var actual = input.SanitiseHtml(false);
 
         actual.Should().Be(expected);
     }
 
     [Fact]
-    public void SanitiseHtml_AutoCloses_ValidTags()
+    public void SanitiseHtml_AutoCloses_ValidTags_IfIgnoreNonHtmlFalse()
     {
         const string input = " <p>valid html</p><span>  ";
         const string expected = "<p>valid html</p><span></span>";
 
-        var actual = input.SanitiseHtml();
+        var actual = input.SanitiseHtml(false);
 
         actual.Should().Be(expected);
     }
@@ -103,27 +104,54 @@ public class HtmlSanitiserTests
     }
 
     [Theory]
+    [InlineData("<p>html")]
+    [InlineData("<p>html</p")]
+    [InlineData("p>html</p>")]
+    [InlineData("html</p>")]
+    [InlineData(" <p>valid html</p>  ")]
+    public void SanitiseHtml_ReturnsInvalidHtml_IfIgnoreNonHtmlTrue(string input)
+    {
+        var actual = input.SanitiseHtml();
+
+        actual.Should().Be(input);
+    }
+    
+    [Theory]
+    [InlineData("html", "<span>html</span>")]
+    [InlineData(" html ", "<span>html</span>")]
     [InlineData("<p>html", "<p>html</p>")]
     [InlineData("<p>html</p", "<p>html</p>")]
     [InlineData("p>html</p>", "<span>p&gt;html<p></p></span>")]
     [InlineData("html</p>", "<span>html<p></p></span>")]
-    public void SanitiseHtml_HandlesInvalidHtml(string input, string expected)
+    public void SanitiseHtml_HandlesInvalidHtml_IfIgnoreNonHtmlFalse(string input, string expected)
     {
-        var actual = input.SanitiseHtml();
+        var actual = input.SanitiseHtml(false);
 
         actual.Should().Be(expected);
     }
     
     [Theory]
+    [InlineData("html", "<p>html</p>")]
+    [InlineData(" html ", "<p>html</p>")]
     [InlineData("<p>html", "<p>html</p>")]
     [InlineData("<p>html</p", "<p>html</p>")]
-    [InlineData("p>html</p>", "<p>p&gt;html<p></p></p>")]
-    [InlineData("html</p>", "<p>html<p></p></p>")]
+    [InlineData("p>html</p>", "<p>p&gt;html</p><p></p><p></p>")]
+    [InlineData("html</p>", "<p>html</p><p></p><p></p>")]
     public void SanitiseHtml_HandlesInvalidHtml_WithCustomWrapperTag(string input, string expected)
     {
-        var actual = input.SanitiseHtml("p");
+        var actual = input.SanitiseHtml(false, "p");
 
         actual.Should().Be(expected);
+    }
+    
+    [Fact]
+    public void SanitiseHtml_Throws_IfCustomWrapperTagNotAllowed()
+    {
+        Action action = () => "html".SanitiseHtml(false, "div");
+
+        action.Should()
+            .ThrowExactly<ArgumentException>()
+            .WithMessage("Tag provided is not allowed. Must be one of: a,b,br,i,img,p,small,span,sub,sup (Parameter 'nonHtmlWrappingTag')");
     }
 
     [Theory]

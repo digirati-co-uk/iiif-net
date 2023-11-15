@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Ganss.Xss;
 
 namespace IIIF.Presentation;
@@ -54,23 +55,35 @@ public static class HtmlSanitiser
     /// see https://iiif.io/api/presentation/3.0/#45-html-markup-in-property-values
     /// </summary>
     /// <param name="propertyValue">Value to be sanitised</param>
+    /// <param name="ignoreNonHtml">
+    /// If true, any strings that don't start/end with &lt;/&gt; are returned as-is. If false non-html strings will be
+    /// wrapped
+    /// </param>
     /// <param name="nonHtmlWrappingTag">
-    /// Tag to wrap value in if it is not currently an HTML string (starts with &lt; and ends with &gt;)
+    /// Tag to wrap value in if it is not currently an HTML string (starts with &lt; and ends with &gt;). Only used if
+    /// <see cref="ignoreNonHtml"/> is true
     /// </param>
     /// <returns>Sanitised markup value</returns>
-    public static string SanitiseHtml(this string propertyValue, string nonHtmlWrappingTag = "span") 
+    public static string SanitiseHtml(this string propertyValue, bool ignoreNonHtml = true,
+        string nonHtmlWrappingTag = "span") 
     {
         if (string.IsNullOrEmpty(propertyValue)) return propertyValue;
+        if (ignoreNonHtml && !IsHtmlString(propertyValue)) return propertyValue;
 
         var workingString = Sanitizer.Sanitize(propertyValue.Trim());
-        
-        if (IsHtmlString(workingString))
-        {
-            workingString = $"<{nonHtmlWrappingTag}>{workingString}</{nonHtmlWrappingTag}>";
-        }
 
-        return workingString;
+        if (IsHtmlString(workingString)) return workingString;
+        
+        if (!HtmlSanitizerOptions.AllowedTags.Contains(nonHtmlWrappingTag))
+        {
+            throw new ArgumentException(
+                $"Tag provided is not allowed. Must be one of: {string.Join(",", HtmlSanitizerOptions.AllowedTags)}",
+                nameof(nonHtmlWrappingTag));
+        }
+        workingString = $"<{nonHtmlWrappingTag}>{workingString}</{nonHtmlWrappingTag}>";
+
+        return Sanitizer.Sanitize(workingString);
     }
 
-    private static bool IsHtmlString(string workingString) => workingString[0] != '<' || workingString[^1] != '>';
+    private static bool IsHtmlString(string candidate) => candidate[0] == '<' && candidate[^1] == '>';
 }
