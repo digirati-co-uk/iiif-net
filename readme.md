@@ -85,6 +85,8 @@ The `.Serialisation` namespace contains a number of custom `JsonConverter` imple
 
 ### Helpers
 
+#### Serialisation
+
 `IIIFSerialiserX` contains 2 extension methods for `JsonLdBase` that help with serialising / deserialising models. 
 
 For string serialisation these are `AsJson` and `FromJson<TTarget>`:
@@ -109,6 +111,19 @@ Manifest deserialisedManifest = streamContainingManifest.FromJsonStream<Manifest
 ```
 
 > Note: full object deserialisation is incomplete - open an issue or PR if you find an issue. 
+
+#### HTML Markup Handling
+
+`HtmlSanitiser` contains a `SanitiseHtml()` extension method on `string` to help sanitise HTML.
+
+```cs
+string original = "<p>my markup<div>invalid</div><p>";
+string safe = original.SanitiseHtml();
+```
+
+See [IIIF Presentation 3.0 docs](https://iiif.io/api/presentation/3.0/#45-html-markup-in-property-values) for details on html markup.
+
+> Note: The rules around markup differs between Presentation 2.1 and 3.0. This method uses 3.0 which permits a couple of tags not mentioned in 2.1 (`small`, `sub` and `sup`).
 
 ## Local Build
 
