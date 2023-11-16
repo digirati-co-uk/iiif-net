@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Newtonsoft.Json;
 
 namespace IIIF.Presentation.V3.Strings;
 
