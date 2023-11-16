@@ -11,6 +11,19 @@ public class HtmlSanitiserTests
     public void SanitiseHtml_ReturnsGivenString_IfNullOrEmpty(string val)
         => val.SanitiseHtml().Should().Be(val);
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void SanitiseHtml_ReturnsEmptyString_IfGivenInvalidHtml(bool ignoreNonHtml)
+    {
+        const string input = "<div>invalid html</div>";
+        const string expected = "";
+
+        var actual = input.SanitiseHtml(ignoreNonHtml);
+
+        actual.Should().Be(expected);
+    }
+    
     [Fact]
     public void SanitiseHtml_Trims_Whitespace_FromBeginningAndEnd_IfIgnoreNonHtmlFalse()
     {

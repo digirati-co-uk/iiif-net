@@ -72,6 +72,7 @@ public static class HtmlSanitiser
 
         var workingString = Sanitizer.Sanitize(propertyValue.Trim());
 
+        if (string.IsNullOrEmpty(workingString)) return workingString;
         if (IsHtmlString(workingString)) return workingString;
         
         if (!HtmlSanitizerOptions.AllowedTags.Contains(nonHtmlWrappingTag))
@@ -85,5 +86,6 @@ public static class HtmlSanitiser
         return Sanitizer.Sanitize(workingString);
     }
 
-    private static bool IsHtmlString(string candidate) => candidate[0] == '<' && candidate[^1] == '>';
+    private static bool IsHtmlString(string candidate) 
+        => candidate[0] == '<' && candidate[^1] == '>';
 }
