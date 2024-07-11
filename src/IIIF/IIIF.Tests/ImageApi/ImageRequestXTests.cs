@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using IIIF.ImageApi;
-using Xunit;
 
 namespace IIIF.Tests.ImageApi;
 
@@ -220,5 +220,65 @@ public class ImageRequestXTests
 
         // Assert
         result.Should().BeEquivalentTo(expected);
+    }
+    
+    [Theory]
+    [InlineData("my-asset")]
+    [InlineData("my-asset/")]
+    public void Parse_IsBase(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}{path}", prefix);
+        
+        // Assert
+        result.IsBase.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("iiif-img/27/1/")]
+    [InlineData("/iiif-img/27/1/")]
+    [InlineData("/iiif-img/27/1")]
+    [InlineData("iiif-img/27/1")]
+    public void Parse_Validate_Succeeds(string prefix)
+    {
+        // Arrange and Act
+        const string request = $"iiif-img/27/1/my-asset/full/800,/0/default.jpg";
+        var action = () => ImageRequest.Parse(request, prefix, true);
+        
+        // Assert
+        action.Should().NotThrow();
+    }
+    
+    [Theory]
+    [InlineData("my-asset//full/800,/0/default.jpg")]
+    [InlineData("my-asset/full//800,/0/default.jpg")]
+    [InlineData("my-asset/full/800,//0/default.jpg")]
+    [InlineData("my-asset/full/800,/0//default.jpg")]
+    public void Parse_Validate_Fails_WhenGivenExtraSegments(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+        
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>();
+    }
+    
+    [Theory]
+    [InlineData("my-asset//800,/0/default.jpg")]
+    [InlineData("my-asset/full//0/default.jpg")]
+    [InlineData("my-asset/full/800,//default.jpg")]
+    [InlineData("my-asset/full/800,/0/")]
+    [InlineData("my-asset////default.jpg")]
+    [InlineData("my-asset////")]
+    public void Parse_TryParse_Fails_WhenGivenEmptyParameters(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+        
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>();
     }
 }
