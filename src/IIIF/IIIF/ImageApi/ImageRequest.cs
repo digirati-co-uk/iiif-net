@@ -44,6 +44,7 @@ public class ImageRequest
         var parts = path.Split('/');
         
         request.Identifier = parts[0];
+        
         if (parts.Length == 1 || (parts.Length == 2 && parts[1] == string.Empty))
         {
             // likely the server will want to redirect this
