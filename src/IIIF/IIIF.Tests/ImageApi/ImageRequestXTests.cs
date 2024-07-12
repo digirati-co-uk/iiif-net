@@ -234,6 +234,28 @@ public class ImageRequestXTests
         // Assert
         result.IsBase.Should().BeTrue();
     }
+    
+    [Fact]
+    public void Parse_InfoJson()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}my-asset/info.json", prefix);
+        
+        // Assert
+        action.Should().NotThrow<ArgumentException>();
+    }
+    
+    [Fact]
+    public void Parse_Fails_WhenInfoHasInvalidExtension()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}my-asset/info.jsonll", prefix);
+        
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>();
+    }
 
     [Theory]
     [InlineData("iiif-img/27/1/")]
@@ -272,7 +294,7 @@ public class ImageRequestXTests
     [InlineData("my-asset/full/800,/0/")]
     [InlineData("my-asset////default.jpg")]
     [InlineData("my-asset////")]
-    public void Parse_TryParse_Fails_WhenGivenEmptyParameters(string path)
+    public void Parse_Validate_Fails_WhenGivenEmptyParameters(string path)
     {
         // Arrange and Act
         const string prefix = "iiif-img/27/1/";
