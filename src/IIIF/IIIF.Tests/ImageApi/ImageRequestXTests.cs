@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using IIIF.ImageApi;
-using Xunit;
 
 namespace IIIF.Tests.ImageApi;
 
@@ -220,5 +220,89 @@ public class ImageRequestXTests
 
         // Assert
         result.Should().BeEquivalentTo(expected);
+    }
+    
+    [Theory]
+    [InlineData("my-asset")]
+    [InlineData("my-asset/")]
+    public void Parse_IsBase(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}{path}", prefix);
+        
+        // Assert
+        result.IsBase.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void Parse_InfoJson()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/info.json", prefix);
+        
+        // Assert
+        result.IsInformationRequest.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void Parse_Fails_WhenInfoHasInvalidExtension()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}my-asset/info.jsonll", prefix);
+        
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Theory]
+    [InlineData("iiif-img/27/1/")]
+    [InlineData("/iiif-img/27/1/")]
+    [InlineData("/iiif-img/27/1")]
+    [InlineData("iiif-img/27/1")]
+    public void Parse_Validate_HandlesPrefixFormats(string prefix)
+    {
+        // Arrange and Act
+        const string request = $"iiif-img/27/1/my-asset/full/800,/0/default.jpg";
+        var action = () => ImageRequest.Parse(request, prefix, true);
+        
+        // Assert
+        action.Should().NotThrow<ArgumentException>();
+    }
+    
+    [Theory]
+    [InlineData("my-asset//full/800,/0/default.jpg")]
+    [InlineData("my-asset/full//800,/0/default.jpg")]
+    [InlineData("my-asset/full/800,//0/default.jpg")]
+    [InlineData("my-asset/full/800,/0//default.jpg")]
+    public void Parse_Validate_Fails_WhenGivenExtraSegments(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+        
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Path contains empty or an invalid number of segments");
+    }
+    
+    [Theory]
+    [InlineData("my-asset//800,/0/default.jpg")]
+    [InlineData("my-asset/full//0/default.jpg")]
+    [InlineData("my-asset/full/800,//default.jpg")]
+    [InlineData("my-asset/full/800,/0/")]
+    [InlineData("my-asset////default.jpg")]
+    [InlineData("my-asset////")]
+    public void Parse_Validate_Fails_WhenGivenEmptyParameters(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+        
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Path contains empty or an invalid number of segments");
     }
 }
