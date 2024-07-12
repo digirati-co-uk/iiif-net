@@ -240,10 +240,10 @@ public class ImageRequestXTests
     {
         // Arrange and Act
         const string prefix = "iiif-img/27/1/";
-        var action = () => ImageRequest.Parse($"{prefix}my-asset/info.json", prefix);
+        var result = ImageRequest.Parse($"{prefix}my-asset/info.json", prefix);
         
         // Assert
-        action.Should().NotThrow<ArgumentException>();
+        result.IsInformationRequest.Should().BeTrue();
     }
     
     [Fact]
@@ -262,14 +262,14 @@ public class ImageRequestXTests
     [InlineData("/iiif-img/27/1/")]
     [InlineData("/iiif-img/27/1")]
     [InlineData("iiif-img/27/1")]
-    public void Parse_Validate_Succeeds(string prefix)
+    public void Parse_Validate_HandlesPrefixFormats(string prefix)
     {
         // Arrange and Act
         const string request = $"iiif-img/27/1/my-asset/full/800,/0/default.jpg";
         var action = () => ImageRequest.Parse(request, prefix, true);
         
         // Assert
-        action.Should().NotThrow();
+        action.Should().NotThrow<ArgumentException>();
     }
     
     [Theory]
@@ -284,7 +284,8 @@ public class ImageRequestXTests
         var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
         
         // Assert
-        action.Should().ThrowExactly<ArgumentException>();
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Path contains empty or an invalid number of segments");
     }
     
     [Theory]
@@ -301,6 +302,7 @@ public class ImageRequestXTests
         var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
         
         // Assert
-        action.Should().ThrowExactly<ArgumentException>();
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Path contains empty or an invalid number of segments");
     }
 }

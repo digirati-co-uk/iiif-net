@@ -26,6 +26,14 @@ public class ImageRequest
     /// </summary>
     public string ImageRequestPath => OriginalPath.Replace(Identifier, string.Empty);
 
+    /// <summary>
+    /// Parses an image request path as a IIIF ImageRequest object
+    /// </summary>
+    /// <returns>A ImageRequest object</returns>
+    /// <param name="path">The image request path</param>
+    /// <param name="prefix">The image request prefix</param>
+    /// <param name="validateSegments">If true, throws an ArgumentException if the image request contains empty values,
+    /// or an invalid number of segments</param>
     public static ImageRequest Parse(string path, string prefix, bool validateSegments = false)
     {
         if (path[0] == '/') path = path[1..];
@@ -60,7 +68,7 @@ public class ImageRequest
         
         if (validateSegments && (parts.Length != 5 || parts.Any(string.IsNullOrEmpty)))
         {
-            throw new ArgumentException("Path contains empty or an invalid number of parameters");
+            throw new ArgumentException("Path contains empty or an invalid number of segments");
         }
 
         request.OriginalPath = path;
