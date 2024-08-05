@@ -368,7 +368,7 @@ public class SizeTests
         new TestSizeData(500, 400, 300, 300, 300, 240), // current portrait
         new TestSizeData(400, 500, 300, 300, 240, 300), // current landscape
         new TestSizeData(500, 500, 300, 200, 200, 200), // target portrait
-        new TestSizeData(500, 500, 200, 300, 200, 300), // target landscape
+        new TestSizeData(500, 500, 200, 300, 200, 200), // target landscape
         new TestSizeData(4553, 5668, 200, 200, 161, 200) // a specific rounding issue with Appetiser
     };
 
@@ -390,10 +390,8 @@ public class SizeTests
     {
         get
         {
-            var data = sampleTestData.Where(d => d.ConfineWidth == d.ConfineHeight);
-
             var retVal = new List<object[]>();
-            retVal.AddRange(data.Select(sizeData => new object[] { sizeData }));
+            retVal.AddRange(sampleTestData.Select(sizeData => new object[] { sizeData }));
             return retVal;
         }
     }
