@@ -15,7 +15,7 @@ public class CollectionItemConverter : ReadOnlyConverter<ICollectionItem>
         {
             nameof(Collection) => new Collection(),
             nameof(Manifest) => new Manifest(),
-            _ => new Collection()
+            _ => null
         };
 
         serializer.Populate(jsonObject.CreateReader(), collectionItem);
