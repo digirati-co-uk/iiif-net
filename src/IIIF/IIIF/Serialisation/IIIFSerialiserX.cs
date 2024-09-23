@@ -10,7 +10,7 @@ namespace IIIF.Serialisation;
 /// </summary>
 public static class IIIFSerialiserX
 {
-    private static readonly JsonSerializerSettings SerializerSettings = new()
+    public static JsonSerializerSettings SerializerSettings { get; set; } = new()
     {
         NullValueHandling = NullValueHandling.Ignore,
         ContractResolver = new PrettyIIIFContractResolver(),
@@ -23,16 +23,17 @@ public static class IIIFSerialiserX
         }
     };
 
-    private static readonly JsonSerializerSettings DeserializerSettings = new()
+    public static JsonSerializerSettings DeserializerSettings { get; set; } = new()
     {
         NullValueHandling = NullValueHandling.Ignore,
         ContractResolver = new PrettyIIIFContractResolver(),
         Formatting = Formatting.Indented,
         Converters = new List<JsonConverter>
         {
-            new ImageService2Converter(), new AnnotationV3Converter(), new ResourceBaseV3Converter(),
-            new StructuralLocationConverter(), new ExternalResourceConverter(), new PaintableConverter(),
-            new SelectorConverter(), new ServiceConverter(), new ResourceConverter(), new CollectionItemConverter()
+            new ExternalResourceConverter(), new ImageService2Converter(), new AnnotationV3Converter(),
+            new StructuralLocationConverter(), new PaintableConverter(),
+            new SelectorConverter(), new ResourceBaseV3Converter(),  new ServiceConverter(),
+            new CollectionItemConverter(), new ResourceConverter()
         }
     };
 
