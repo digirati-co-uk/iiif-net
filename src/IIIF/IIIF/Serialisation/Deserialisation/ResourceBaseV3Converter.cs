@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
@@ -20,13 +21,13 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
     {
         var jsonObject = JObject.Load(reader);
 
-        var resourceBase = IdentifyConcreteType(jsonObject);
+        var resourceBase = IdentifyConcreteType(jsonObject, serializer);
 
         serializer.Populate(jsonObject.CreateReader(), resourceBase);
         return resourceBase;
     }
 
-    private static ResourceBase? IdentifyConcreteType(JObject jsonObject)
+    private static ResourceBase? IdentifyConcreteType(JObject jsonObject, JsonSerializer serializer)
     {
         ResourceBase? resourceBase = null;
         if (!jsonObject.ContainsKey("type"))
@@ -54,7 +55,7 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
             nameof(TextualBody) => new TextualBody(jsonObject["value"].Value<string>()),
             _ => null
         };
-
+        
         if (resourceBase != null) return resourceBase;
 
         if (jsonObject.ContainsKey("motivation"))
@@ -67,6 +68,14 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
                 Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation(),
                 _ => new UnknownMotivation(motivation)
             };
+        }
+        
+        // Look for consumer-provided mapping
+        if (type != null
+            && serializer.Context.Context is IDictionary<string, Func<JObject, ResourceBase>> customMappings
+            && customMappings.TryGetValue(type, out var customMapping))
+        {
+            resourceBase = customMapping(jsonObject);
         }
 
         if (resourceBase == null) return new ExternalResource(type);
