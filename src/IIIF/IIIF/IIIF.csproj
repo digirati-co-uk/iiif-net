@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <PackageId>iiif-net</PackageId>
+        <LangVersion>10.0</LangVersion>
         <Authors>Donald Gray,Tom Crane</Authors>
         <Company>Digirati</Company>
         <Description>IIIF Library for .NET Core</Description>
