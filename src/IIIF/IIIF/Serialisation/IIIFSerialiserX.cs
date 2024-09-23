@@ -30,9 +30,10 @@ public static class IIIFSerialiserX
         Formatting = Formatting.Indented,
         Converters = new List<JsonConverter>
         {
-            new ImageService2Converter(), new AnnotationV3Converter(), new ResourceBaseV3Converter(),
-            new StructuralLocationConverter(), new ExternalResourceConverter(), new PaintableConverter(),
-            new SelectorConverter(), new ServiceConverter(), new ResourceConverter(), new CollectionItemConverter()
+            new ExternalResourceConverter(), new ImageService2Converter(), new AnnotationV3Converter(),
+            new StructuralLocationConverter(), new PaintableConverter(),
+            new SelectorConverter(), new ServiceConverter(), new ResourceBaseV3Converter(),
+            new CollectionItemConverter(), new ResourceConverter()
         }
     };
 
