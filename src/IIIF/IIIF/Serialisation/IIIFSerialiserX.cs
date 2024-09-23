@@ -32,7 +32,7 @@ public static class IIIFSerialiserX
         {
             new ExternalResourceConverter(), new ImageService2Converter(), new AnnotationV3Converter(),
             new StructuralLocationConverter(), new PaintableConverter(),
-            new SelectorConverter(), new ServiceConverter(), new ResourceBaseV3Converter(),
+            new SelectorConverter(), new ResourceBaseV3Converter(),  new ServiceConverter(),
             new CollectionItemConverter(), new ResourceConverter()
         }
     };
