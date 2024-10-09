@@ -110,7 +110,8 @@ Stream jsonManifest = manifest.AsJsonStream(memoryStream);
 Manifest deserialisedManifest = streamContainingManifest.FromJsonStream<Manifest>();
 ```
 
-> Note: full object deserialisation is incomplete - open an issue or PR if you find an issue. 
+> [!Important]
+> Full object deserialisation is incomplete - open an issue or PR if you find something unsupported.
 
 #### HTML Markup Handling
 
