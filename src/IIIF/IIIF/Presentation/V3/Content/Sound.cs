@@ -2,11 +2,11 @@
 
 namespace IIIF.Presentation.V3.Content;
 
-public class Audio : ExternalResource, ITemporal, IPaintable
+public class Sound : ExternalResource, ITemporal, IPaintable
 {
     public double? Duration { get; set; }
 
-    public Audio() : base("Sound")
+    public Sound() : base(nameof(Sound))
     {
     }
 }

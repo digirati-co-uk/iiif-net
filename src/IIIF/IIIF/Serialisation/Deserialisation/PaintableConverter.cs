@@ -19,11 +19,12 @@ public class PaintableConverter : ReadOnlyConverter<IPaintable>
 
         IPaintable? paintable = jsonObject["type"].Value<string>() switch
         {
-            nameof(Audio) => new Audio(),
+            nameof(Sound) => new Sound(),
             nameof(Video) => new Video(),
             nameof(Image) => new Image(),
             nameof(Canvas) => new Canvas(),
             "Choice" => new PaintingChoice(),
+            nameof(SpecificResource) => new SpecificResource(),
             _ => null
         };
 

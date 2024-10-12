@@ -19,8 +19,10 @@ public class SelectorConverter : ReadOnlyConverter<ISelector>
         {
             nameof(AudioContentSelector) => new AudioContentSelector(),
             nameof(ImageApiSelector) => new ImageApiSelector(),
+            "iiif:ImageApiSelector" => new ImageApiSelector(),
             nameof(PointSelector) => new PointSelector(),
-            nameof(VideoContentSelector) => new VideoContentSelector()
+            nameof(VideoContentSelector) => new VideoContentSelector(),
+            nameof(SvgSelector) => new SvgSelector()
         };
 
         serializer.Populate(jsonObject.CreateReader(), selector);

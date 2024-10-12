@@ -1,13 +1,15 @@
-﻿using IIIF.Presentation.V3.Selectors;
-using Newtonsoft.Json;
+﻿using IIIF.Presentation.V3.Annotation;
+using IIIF.Presentation.V3.Selectors;
+using IIIF.Serialisation;
 
 namespace IIIF.Presentation.V3;
 
-public class SpecificResource : ResourceBase, IStructuralLocation
+public class SpecificResource : ResourceBase, IStructuralLocation, IPaintable
 {
     public override string Type => nameof(SpecificResource);
 
-    [JsonProperty(Order = 101)] public string Source { get; set; }
+    [JsonConverter(typeof(SourceConverter))]
+    [JsonProperty(Order = 101)] public IPaintable Source { get; set; }
 
     [JsonProperty(Order = 102)] public ISelector Selector { get; set; }
 }
