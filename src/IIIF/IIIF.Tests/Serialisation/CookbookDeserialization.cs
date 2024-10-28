@@ -11,7 +11,7 @@ public class CookbookDeserialization
     public void Can_Deserialize_Cookbook_Manifest(string manifestId, Manifest manifest)
     {
         // perfunctory assertion
-        manifest.Should().NotBeNull();
+        manifest.Should().NotBeNull($"{manifestId} is a valid cookbook manifest");
         manifest.Id.Should().Be(manifestId);
     }
 }

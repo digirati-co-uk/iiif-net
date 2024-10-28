@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using IIIF.Presentation.V3;
@@ -43,9 +44,17 @@ public class CookbookManifestData : IEnumerable<object[]>
             var resource = httpClient.GetAsync(url).Result;
             if (mustSucceed) resource.EnsureSuccessStatusCode();
             if (!resource.IsSuccessStatusCode) return null;
-            
-            var iiif = resource.Content.ReadAsStream().FromJsonStream<T>();
-            return iiif;
+
+            try
+            {
+                var iiif = resource.Content.ReadAsStream().FromJsonStream<T>();
+                return iiif;
+            }
+            catch (Exception)
+            {
+                if (mustSucceed) throw;
+                return null;
+            }
         }
     }
 
