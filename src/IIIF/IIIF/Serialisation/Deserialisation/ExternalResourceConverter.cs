@@ -19,7 +19,7 @@ public class ExternalResourceConverter : ReadOnlyConverter<ExternalResource>
         var type = jsonObject["type"].Value<string>();
         var externalResource = type switch
         {
-            nameof(Audio) => new Audio(),
+            nameof(Sound) => new Sound(),
             nameof(Video) => new Video(),
             nameof(Image) => new Image(),
             _ => new ExternalResource(type)

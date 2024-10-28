@@ -44,7 +44,7 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
             nameof(Annotation) => new Annotation(),
             nameof(AnnotationCollection) => new AnnotationCollection(),
             nameof(AnnotationPage) => new AnnotationPage(),
-            nameof(Audio) => new Audio(),
+            nameof(Sound) => new Sound(),
             nameof(Canvas) => new Canvas(),
             nameof(Collection) => new Collection(),
             nameof(Image) => new Image(),

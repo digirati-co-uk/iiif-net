@@ -50,7 +50,7 @@ public class ResourceConverter : ReadOnlyConverter<IResource>
                     nameof(AuthAccessTokenService2) => new AuthAccessTokenService2(),
                     nameof(AuthLogoutService2) => new AuthLogoutService2(),
                     nameof(AuthProbeService2) => new AuthProbeService2(),
-                    nameof(Audio) => new Audio(),
+                    nameof(Sound) => new Sound(),
                     nameof(Video) => new Video(),
                     nameof(Image) => new Image(),
                     _ => null
