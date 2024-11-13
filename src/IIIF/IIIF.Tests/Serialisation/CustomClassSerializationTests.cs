@@ -42,7 +42,8 @@ public class CustomClassSerializationTests
                     {
                         "child"
                     }}
-                }
+                },
+                CustomField = "some-custom-field"
             },
             new CustomItem()
             {
@@ -53,7 +54,8 @@ public class CustomClassSerializationTests
                     {
                         "child"
                     }}
-                }
+                },
+                CustomField = "some-custom-field"
             }
         },
         PartOf = new List<ResourceBase>
@@ -137,12 +139,13 @@ public static class CustomSerializerX
 
 public class CustomCollectionItem : Collection
 {
-    public string CustomField = "custom";
+    public string CustomField { get; set; } = "custom";
 }
 
 public class CustomItem : StructureBase, ICollectionItem
 {
-    public string CustomField = "custom";
+    public string CustomField { get; set; } = "custom";
+    
     public List<IService> Services { get; set; }
     public override string Type { get; } = nameof(CustomItem);
 }
