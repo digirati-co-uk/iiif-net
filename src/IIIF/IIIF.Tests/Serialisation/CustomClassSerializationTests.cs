@@ -45,9 +45,70 @@ public class CustomClassSerializationTests
                 },
                 CustomField = "some-custom-field"
             },
-            new CustomItem()
+            new CustomItem
             {
                 Id = "custom-item-child",
+                Label = new LanguageMap
+                {
+                    {"en", new List<string>
+                    {
+                        "child"
+                    }}
+                },
+                CustomField = "some-custom-field"
+            }
+        },
+        PartOf = new List<ResourceBase>
+        { 
+            new ExternalResource("Collection")
+            {
+                Id = $"PartOf",
+                Label = new LanguageMap
+                {
+                    {"en", new List<string>
+                    {
+                        "some collection"
+                    }}
+                }
+            }
+        },
+        SeeAlso = new List<ExternalResource>
+        {
+            new ("SeeAlso")
+            {
+                Id = "see also",
+                Label = new LanguageMap
+                {
+                    {"en", new List<string>
+                    {
+                        "child"
+                    }}
+                },
+                Profile = "Public"
+            }
+        },
+    };
+    
+    private Collection sampleCollectionOnlyInheritance = new()
+    {
+        Id = $"someId",
+        Context = "http://iiif.io/api/presentation/3/context.json",
+        Label = new LanguageMap
+        {
+            {"en", new List<string>
+            {
+                "root"
+            }}
+        },
+        Behavior = new List<string>
+        {
+            "some-behaviour"
+        },
+        Items = new List<ICollectionItem>
+        {
+            new CustomCollectionItem
+            {
+                Id = "child",
                 Label = new LanguageMap
                 {
                     {"en", new List<string>
@@ -95,8 +156,27 @@ public class CustomClassSerializationTests
         var serialisedCollection = sampleCollection.AsJson();
 
         var deserialised = await serialisedCollection.AsJson<Collection>();
+        var itemAsCustomCollection = deserialised.Items[0] as CustomCollectionItem;
+        var itemAsCustomItem = deserialised.Items[1] as CustomItem;
 
         deserialised.Should().BeEquivalentTo(sampleCollection);
+        itemAsCustomCollection.Should().NotBeNull();
+        itemAsCustomItem.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public void CanDeserialiseCustomSerialisedCollectionWithOnlyStandardLibrary()
+    {
+        var serialisedCollection = sampleCollectionOnlyInheritance.AsJson();
+
+        var deserialised = serialisedCollection.FromJson<Collection>();
+        
+        var itemAsCustomCollection = deserialised.Items[0] as CustomCollectionItem;
+        var itemAsCollection = deserialised.Items[0] as Collection;
+
+        deserialised.Should().BeEquivalentTo(sampleCollectionOnlyInheritance);
+        itemAsCustomCollection.Should().BeNull();
+        itemAsCollection.Should().NotBeNull();
     }
 }
 
