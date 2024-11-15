@@ -16,10 +16,15 @@ public class CollectionItemConverter : ReadOnlyConverter<ICollectionItem>
         ICollectionItem collectionItem = null;
             
         // Look for consumer-provided mapping
-        if (serializer.Context.Context is IDictionary<string, Func<JObject, ICollectionItem>> customMappings
-            && customMappings.TryGetValue(type, out var customMapping))
+        if (serializer.Context.Context is IDictionary<Type, IDictionary<string, Func<JObject, object>>> ctx)
         {
-            collectionItem = customMapping(jsonObject);
+            if (ctx.TryGetValue(typeof(ICollectionItem), out var customMappings))
+            {
+                if (customMappings.TryGetValue(type, out var customMapping))
+                {
+                    collectionItem = (ICollectionItem) customMapping(jsonObject);
+                }
+            }
         }
 
         if (collectionItem == null)

@@ -196,10 +196,16 @@ public static class CustomSerializerX
 
         settings ??= new(IIIFSerialiserX.DeserializerSettings);
         settings.Context = new StreamingContext(StreamingContextStates.Other,
-            new Dictionary<string, Func<JObject, ICollectionItem>>
+            new Dictionary<Type, IDictionary<string, Func<JObject, object>>>
             {
-                { "Collection", p => new CustomCollectionItem() },
-                { "CustomItem", p => new CustomItem() }
+                { 
+                    typeof(ICollectionItem), 
+                    new Dictionary<string, Func<JObject, object>>
+                    {
+                        { "Collection", _ => new CustomCollectionItem() },
+                        { "CustomItem", _ => new CustomItem() }
+                    }
+                }
             });
 
         var serializer = JsonSerializer.Create(settings);
