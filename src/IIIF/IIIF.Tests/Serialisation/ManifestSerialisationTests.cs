@@ -175,6 +175,24 @@ public class ManifestSerialisationTests
 
         deserialised.Should().BeEquivalentTo(sampleManifest);
     }
+    
+    [Fact]
+    public void CanDeserialiseUnknownServices()
+    {
+        var serialisedManifest = "{\"@context\": [\"http://iiif.io/api/presentation/3/context.json\"],\"id\": \"https://iiif.example/12345\",\"type\": \"Manifest\",\"services\": [{\"id\": \"https://iiif.example.org/1234#tracking\",\"type\": \"Text\",\"profile\": \"http://universalviewer.io/tracking-extensions-profile\",\"label\": {\"en\": [\"Format: Monograph, Institution: n/a, foobarbaz\"]}}]}";
+        var expectedServices = new List<ExternalService>
+        {
+            new ExternalService("Text")
+            {
+                Id = "https://iiif.example.org/1234#tracking",
+                Profile = "http://universalviewer.io/tracking-extensions-profile",
+                Label = new LanguageMap("en", "Format: Monograph, Institution: n/a, foobarbaz"),
+            }
+        };
+
+        var deserialised = serialisedManifest.FromJson<Manifest>();
+        deserialised.Services.Should().BeEquivalentTo(expectedServices);
+    }
 
     [Fact]
     public void CanDeserialiseSerialisedManifest_Stream()
