@@ -35,6 +35,7 @@ public class ServiceConverter : ReadOnlyConverter<IService>
                 "AuthTokenService1" => new Auth.V1.AuthTokenService(),
                 "AutoCompleteService1" => new Search.V1.AutoCompleteService(),
                 nameof(ImageService2) => new ImageService2(),
+                "iiif:Image" => new ImageService2(),
                 _ => null,
             };
         if (service != null) return service;
@@ -52,26 +53,30 @@ public class ServiceConverter : ReadOnlyConverter<IService>
         if (service != null) return service;
 
 
-        var profile = jsonObject["profile"].Value<string>();
-        service = profile switch
+        var profileToken = jsonObject["profile"];
+        if (profileToken != null)
         {
-            Auth.V1.AuthLogoutService.AuthLogout1Profile => new Auth.V1.AuthLogoutService(),
-            Auth.V1.AuthTokenService.AuthToken1Profile => new Auth.V1.AuthTokenService(),
-            Auth.V0.AuthLogoutService.AuthLogout0Profile => new Auth.V0.AuthLogoutService(),
-            Auth.V0.AuthTokenService.AuthToken0Profile => new Auth.V0.AuthTokenService(),
-            Search.V2.AutoCompleteService.AutoComplete2Profile => new Search.V2.AutoCompleteService(),
-            Search.V1.AutoCompleteService.AutoCompleteService1Profile => new Search.V1.AutoCompleteService(),
-            Search.V2.SearchService.Search2Profile => new Search.V2.SearchService(),
-            _ => null
-        };
-        if (service != null) return service;
+            var profile = profileToken.Value<string>();
+            service = profile switch
+            {
+                Auth.V1.AuthLogoutService.AuthLogout1Profile => new Auth.V1.AuthLogoutService(),
+                Auth.V1.AuthTokenService.AuthToken1Profile => new Auth.V1.AuthTokenService(),
+                Auth.V0.AuthLogoutService.AuthLogout0Profile => new Auth.V0.AuthLogoutService(),
+                Auth.V0.AuthTokenService.AuthToken0Profile => new Auth.V0.AuthTokenService(),
+                Search.V2.AutoCompleteService.AutoComplete2Profile => new Search.V2.AutoCompleteService(),
+                Search.V1.AutoCompleteService.AutoCompleteService1Profile => new Search.V1.AutoCompleteService(),
+                Search.V2.SearchService.Search2Profile => new Search.V2.SearchService(),
+                _ => null
+            };
+            if (service != null) return service;
 
 
-        const string auth0 = "http://iiif.io/api/auth/0/";
-        const string auth1 = "http://iiif.io/api/auth/1/";
+            const string auth0 = "http://iiif.io/api/auth/0/";
+            const string auth1 = "http://iiif.io/api/auth/1/";
 
-        if (profile.StartsWith(auth0)) return new Auth.V0.AuthCookieService(profile);
-        if (profile.StartsWith(auth1)) return new Auth.V1.AuthCookieService(profile);
+            if (profile.StartsWith(auth0)) return new Auth.V0.AuthCookieService(profile);
+            if (profile.StartsWith(auth1)) return new Auth.V1.AuthCookieService(profile);
+        }
 
         // TODO handle ResourceBase items
 
