@@ -56,29 +56,7 @@ public class ManifestSerialisationTests
                             Id = "https://test.example.com/canvas/1/page",
                             Items = new List<IAnnotation>
                             {
-                                new GeneralAnnotation("describing")
-                                {
-                                    Body = new TextualBody
-                                    {
-                                        Id = "https://test.example.com/canvas/1/page/textualBody",
-                                        Format = "text/plain",
-                                        Value = "Hello World!",
-                                        Purpose = "some purpose",
-                                        Creator = "https://test.example.com/user",
-                                        Created = DateTime.UtcNow,
-                                        Modified = DateTime.UtcNow,
-                                        Generator = "https://test.example.com/user",
-                                        Generated = DateTime.UtcNow,
-                                        Role = "https://test.example.com/user/role",
-                                        Audience = "everyone",
-                                        Accessibility = "public",
-                                        Canonical = "true",
-                                        Via = "somewhere",
-                                        Motivation = "some motivation",
-                                        Rights = "some rights"
-                                    }
-                                },
-                                new GeneralListAnnotation("canvassing")
+                                new GeneralAnnotation("canvassing")
                                 {
                                     Body = new List<ResourceBase>
                                     {
@@ -98,7 +76,6 @@ public class ManifestSerialisationTests
                                             Accessibility = "public",
                                             Canonical = "true",
                                             Via = "somewhere",
-                                            Motivation = "some motivation",
                                             Rights = "some rights"
                                         }
                                     }

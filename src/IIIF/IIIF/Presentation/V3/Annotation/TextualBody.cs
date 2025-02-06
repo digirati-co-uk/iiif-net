@@ -62,7 +62,6 @@ public class TextualBody : ResourceBase
     public string? Via { get; set; }
     
     [JsonProperty(Order = 313)]
-    public string? Motivation { get; set; }
     
     public List<IService>? Service { get; set; }
 }
