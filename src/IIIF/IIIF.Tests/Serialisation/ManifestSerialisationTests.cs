@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using FluentAssertions;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
@@ -8,7 +8,6 @@ using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation;
-using Xunit;
 using ExternalResource = IIIF.Presentation.V3.Content.ExternalResource;
 
 namespace IIIF.Tests.Serialisation;
@@ -57,6 +56,53 @@ public class ManifestSerialisationTests
                             Id = "https://test.example.com/canvas/1/page",
                             Items = new List<IAnnotation>
                             {
+                                new GeneralAnnotation("describing")
+                                {
+                                    Body = new TextualBody
+                                    {
+                                        Id = "https://test.example.com/canvas/1/page/textualBody",
+                                        Format = "text/plain",
+                                        Value = "Hello World!",
+                                        Purpose = "some purpose",
+                                        Creator = "https://test.example.com/user",
+                                        Created = DateTime.UtcNow,
+                                        Modified = DateTime.UtcNow,
+                                        Generator = "https://test.example.com/user",
+                                        Generated = DateTime.UtcNow,
+                                        Role = "https://test.example.com/user/role",
+                                        Audience = "everyone",
+                                        Accessibility = "public",
+                                        Canonical = "true",
+                                        Via = "somewhere",
+                                        Motivation = "some motivation",
+                                        Rights = "some rights"
+                                    }
+                                },
+                                new GeneralListAnnotation("canvassing")
+                                {
+                                    Body = new List<ResourceBase>
+                                    {
+                                        new TextualBody
+                                        {
+                                            Id = "https://test.example.com/canvas/1/page/textualBody",
+                                            Format = "text/plain",
+                                            Value = "Hello World!",
+                                            Purpose = "some purpose",
+                                            Creator = "https://test.example.com/user",
+                                            Created = DateTime.UtcNow,
+                                            Modified = DateTime.UtcNow,
+                                            Generator = "https://test.example.com/user",
+                                            Generated = DateTime.UtcNow,
+                                            Role = "https://test.example.com/user/role",
+                                            Audience = "everyone",
+                                            Accessibility = "public",
+                                            Canonical = "true",
+                                            Via = "somewhere",
+                                            Motivation = "some motivation",
+                                            Rights = "some rights"
+                                        }
+                                    }
+                                },
                                 new PaintingAnnotation
                                 {
                                     Target = new Canvas { Id = "https://test.example.com/canvas/1" },
