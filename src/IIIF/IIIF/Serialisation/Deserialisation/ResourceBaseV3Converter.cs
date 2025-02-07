@@ -66,7 +66,7 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
                 Presentation.V3.Constants.Motivation.Supplementing => new SupplementingDocumentAnnotation(),
                 Presentation.V3.Constants.Motivation.Painting => new PaintingAnnotation(),
                 Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation(),
-                _ => new GeneralAnnotation(motivation)
+                _ => jsonObject["body"] is not { HasValues: true } ? new UnknownMotivation(motivation) : new GeneralAnnotation(motivation)
             };
         }
         
