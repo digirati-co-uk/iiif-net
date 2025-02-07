@@ -63,7 +63,9 @@ public class ResourceBaseV3Converter : ReadOnlyConverter<ResourceBase>
             var motivation = jsonObject["motivation"].Value<string>();
             resourceBase = motivation switch
             {
+                Presentation.V3.Constants.Motivation.Supplementing => new SupplementingDocumentAnnotation(),
                 Presentation.V3.Constants.Motivation.Painting => new PaintingAnnotation(),
+                Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation(),
                 _ => new GeneralAnnotation(motivation)
             };
         }

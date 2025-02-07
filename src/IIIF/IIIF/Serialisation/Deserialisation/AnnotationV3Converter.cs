@@ -20,15 +20,12 @@ public class AnnotationV3Converter : ReadOnlyConverter<IAnnotation>
         IAnnotation annotation = motivation switch
         {
             Presentation.V3.Constants.Motivation.Painting => new PaintingAnnotation(),
-            _ => WorkOutCorrectAnnotation(jsonObject, motivation)
+            Presentation.V3.Constants.Motivation.Supplementing => new SupplementingDocumentAnnotation(),
+            Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation(),
+            _ => jsonObject["body"] is not { HasValues: true } ? new Annotation() : new GeneralAnnotation(motivation)
         };
 
         serializer.Populate(jsonObject.CreateReader(), annotation);
         return annotation;
-    }
-
-    private static IAnnotation WorkOutCorrectAnnotation(JObject jsonObject, string? motivation)
-    {
-        return jsonObject["body"] is not { HasValues: true } ? new Annotation() : new GeneralAnnotation(motivation);
     }
 }
