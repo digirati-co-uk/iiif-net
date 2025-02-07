@@ -60,11 +60,10 @@ public class ManifestSerialisationTests
                                 {
                                     Body = new List<ResourceBase>
                                     {
-                                        new TextualBody
+                                        new TextualBody("Hello World!")
                                         {
                                             Id = "https://test.example.com/canvas/1/page/textualBody",
                                             Format = "text/plain",
-                                            Value = "Hello World!",
                                             Purpose = "some purpose",
                                             Creator = "https://test.example.com/user",
                                             Created = DateTime.UtcNow,

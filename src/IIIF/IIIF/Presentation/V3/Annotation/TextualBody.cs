@@ -5,10 +5,6 @@ namespace IIIF.Presentation.V3.Annotation;
 
 public class TextualBody : ResourceBase
 {
-    public TextualBody()
-    {
-    }
-    
     public TextualBody(string value)
     {
         Value = value;
