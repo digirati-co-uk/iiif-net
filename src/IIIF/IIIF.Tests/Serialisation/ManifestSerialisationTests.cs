@@ -49,7 +49,7 @@ public class ManifestSerialisationTests
                     Id = "https://test.example.com/canvas/1",
                     Width = 1000,
                     Height = 1001,
-                    Items = new List<AnnotationPage>
+                    Annotations = new List<AnnotationPage>()
                     {
                         new()
                         {
@@ -79,7 +79,17 @@ public class ManifestSerialisationTests
                                             Rights = "some rights"
                                         }
                                     }
-                                },
+                                }
+                            }
+                        }
+                    },
+                    Items = new List<AnnotationPage>
+                    {
+                        new()
+                        {
+                            Id = "https://test.example.com/canvas/1/page",
+                            Items = new List<IAnnotation>
+                            {
                                 new PaintingAnnotation
                                 {
                                     Target = new Canvas { Id = "https://test.example.com/canvas/1" },
