@@ -9,15 +9,3 @@ public class TypeClassifyingAnnotation : Annotation
 
     public ResourceBase? Body { get; set; }
 }
-
-/// <summary>
-/// Marker class for deserialising json object with an unknown motivation
-/// </summary>
-[Obsolete("GeneralAnnotation should be used instead")]
-internal sealed class UnknownMotivation : Annotation
-{
-    public UnknownMotivation(string motivation)
-    {
-        Motivation = motivation;
-    }
-}
