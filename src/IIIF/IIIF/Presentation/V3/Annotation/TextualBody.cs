@@ -60,8 +60,4 @@ public class TextualBody : ResourceBase
     
     [JsonProperty(Order = 312)]
     public string? Via { get; set; }
-    
-    [JsonProperty(Order = 313)]
-    
-    public List<IService>? Service { get; set; }
 }
