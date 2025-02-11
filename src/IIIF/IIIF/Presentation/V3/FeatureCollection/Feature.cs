@@ -1,6 +1,6 @@
-namespace IIIF.Presentation.V3.NavPlace;
+namespace IIIF.Presentation.V3.FeatureCollection;
 
-public class Feature
+public class Feature : IResource
 {
     [JsonProperty(Order = 1)]
     public string Id { get; set; } = null!;

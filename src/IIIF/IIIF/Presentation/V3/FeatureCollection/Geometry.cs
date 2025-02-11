@@ -1,4 +1,4 @@
-namespace IIIF.Presentation.V3.NavPlace;
+namespace IIIF.Presentation.V3.FeatureCollection;
 
 /// <summary>
 /// Base class for a Geometry 

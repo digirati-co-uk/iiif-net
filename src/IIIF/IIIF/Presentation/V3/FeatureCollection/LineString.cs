@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace IIIF.Presentation.V3.NavPlace;
+namespace IIIF.Presentation.V3.FeatureCollection;
 
 public class LineString : Geometry
 {

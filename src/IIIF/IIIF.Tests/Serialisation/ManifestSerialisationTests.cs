@@ -7,7 +7,7 @@ using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
-using IIIF.Presentation.V3.NavPlace;
+using IIIF.Presentation.V3.FeatureCollection;
 using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation;
 using Newtonsoft.Json.Linq;

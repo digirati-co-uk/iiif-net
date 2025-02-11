@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using IIIF.Presentation.V3.Annotation;
-using Newtonsoft.Json;
+using IIIF.Presentation.V3.FeatureCollection;
 
 namespace IIIF.Presentation.V3;
 
@@ -50,6 +50,13 @@ public abstract class StructureBase : ResourceBase
     /// </summary>
     [JsonProperty(Order = 52)]
     public Canvas? AccompanyingCanvas { get; set; }
+    
+    /// <summary>
+    /// A resource used to hold data on a geographic location.  This follows the GeoJSON spec.
+    /// See <a href="https://iiif.io/api/extension/navplace/">navplace</a>
+    /// </summary>
+    [JsonProperty(Order = 500)]
+    public NavPlace? NavPlace { get; set; }
 
     [JsonProperty(Order = 900)] public List<AnnotationPage>? Annotations { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using IIIF.Presentation.V3.NavPlace;
+using IIIF.Presentation.V3.FeatureCollection;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation.Deserialisation;
