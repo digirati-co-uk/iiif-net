@@ -117,7 +117,7 @@ public abstract class ResourceBase : JsonLdBase, IResource
     /// A resource used to hold data on a geographic location.  This follows the GeoJSON spec.
     /// See <a href="https://iiif.io/api/extension/navplace/">navplace</a>
     /// </summary>
-    [JsonProperty(Order = 31)]
+    [JsonProperty(Order = 500)]
     public NavPlace.NavPlace? NavPlace { get; set; }
 
     /// <summary>
