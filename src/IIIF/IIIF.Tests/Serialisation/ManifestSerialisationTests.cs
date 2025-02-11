@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
+using IIIF.Presentation.V3.NavPlace;
 using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation;
+using Newtonsoft.Json.Linq;
 using ExternalResource = IIIF.Presentation.V3.Content.ExternalResource;
 
 namespace IIIF.Tests.Serialisation;
@@ -18,6 +21,8 @@ public class ManifestSerialisationTests
 
     public ManifestSerialisationTests()
     {
+        dynamic properties = JToken.Parse("{\"test\":\"test\"}");
+        
         sampleManifest = new Manifest
         {
             Context = "http://iiif.io/api/presentation/3/context.json",
@@ -193,6 +198,44 @@ public class ManifestSerialisationTests
                     Profile = "https://api.test.example.com/context.json",
                     Label = new LanguageMap("en", "API Stuff"),
                     Format = "application/json"
+                }
+            },
+            NavPlace = new NavPlace()
+            {
+                Id = "https://test.example.com/nav-place",
+                Features = new List<Feature>()
+                {
+                    new ()
+                    {
+                        Id = "https://test.example.com/nav-place/feature",
+                        Properties = properties,
+                        Geometry = new GeometryCollection
+                        {
+                            Geometries = new List<Geometry>
+                            {
+                                new MultiPolygon
+                                {
+                                    Coordinates = new List<Polygon>
+                                    {
+                                        new()
+                                        {
+                                            Coordinates = new List<LineString>
+                                            {
+                                                new()
+                                                {
+                                                    Coordinates = new List<double> { 100.0, 20.2, 10.1 }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                new Point
+                                {
+                                    Coordinates = new List<double> { 100.0, 20.2, 10.1 }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         };

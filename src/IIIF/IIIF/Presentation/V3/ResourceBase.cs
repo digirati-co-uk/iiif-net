@@ -112,6 +112,13 @@ public abstract class ResourceBase : JsonLdBase, IResource
     /// </summary>
     [JsonProperty(Order = 31)]
     public List<string>? Behavior { get; set; }
+    
+    /// <summary>
+    /// A resource used to hold data on a geographic location.  This follows the GeoJSON spec.
+    /// See <a href="https://iiif.io/api/extension/navplace/">navplace</a>
+    /// </summary>
+    [JsonProperty(Order = 31)]
+    public NavPlace.NavPlace? NavPlace { get; set; }
 
     /// <summary>
     /// A containing resource that includes this resource.
