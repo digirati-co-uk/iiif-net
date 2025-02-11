@@ -10,5 +10,5 @@ public class MultiPoint : Geometry
     /// This is an array of positions.
     /// </summary>
     [JsonProperty(Order = 2)]
-    public List<Point>? Coordinates { get; set; }
+    public List<List<double>>? Coordinates { get; set; }
 }

@@ -10,5 +10,5 @@ public class MultiLineString : Geometry
     /// This is an array of LineString coordinate arrays.
     /// </summary>
     [JsonProperty(Order = 2)]
-    public List<LineString>? Coordinates { get; set; }
+    public List<List<double>>? Coordinates { get; set; }
 }

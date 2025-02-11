@@ -53,8 +53,8 @@ public class GeometrySerialisationTests
     public void Serialize_ConvertsMultipoint()
     {
         // Arrange
-        var geometry = new MultiPoint { Coordinates = new List<Point> { new() {Coordinates = new List<double> {100.0, 20.2, 10.1}}  } };
-        const string expected = "{\"type\":\"MultiPoint\",\"coordinates\":[{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
+        var geometry = new MultiPoint { Coordinates = new List<List<double>> { new(){100.0, 20.2, 10.1}} };
+        const string expected = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,20.2,10.1]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -67,8 +67,8 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsMultiPoint()
     {
         // Arrange
-        const string multiPoint = "{\"type\":\"MultiPoint\",\"coordinates\":[{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
-        var expected = new MultiPoint { Coordinates = new List<Point> { new() {Coordinates = new List<double> {100.0, 20.2, 10.1}}  } };
+        const string multiPoint = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,20.2,10.1]]}";
+        var expected = new MultiPoint { Coordinates = new List<List<double>> { new(){100.0, 20.2, 10.1}} };
 
         // Act
         var result = JsonConvert.DeserializeObject<MultiPoint>(multiPoint, jsonSerializerSettings);
@@ -109,8 +109,8 @@ public class GeometrySerialisationTests
     public void Serialize_ConvertsMultiLineString()
     {
         // Arrange
-        var geometry = new MultiLineString { Coordinates = new List<LineString> { new() {Coordinates = new List<double> {100.0, 20.2, 10.1}}  } };
-        const string expected = "{\"type\":\"MultiLineString\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}";
+        var geometry = new MultiLineString { Coordinates = new List<List<double>> { new () {100.0, 20.2, 10.1}}  };
+        const string expected = "{\"type\":\"MultiLineString\",\"coordinates\":[[100.0,20.2,10.1]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -123,8 +123,8 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsMultiLineString()
     {
         // Arrange
-        const string multiLineString = "{\"type\":\"MultiLineString\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}";
-        var expected = new MultiLineString { Coordinates = new List<LineString> { new() {Coordinates = new List<double> {100.0, 20.2, 10.1}}  } };
+        const string multiLineString = "{\"type\":\"MultiLineString\",\"coordinates\":[[100.0,20.2,10.1]]}";
+        var expected = new MultiLineString { Coordinates = new List<List<double>> { new () {100.0, 20.2, 10.1}}  };
 
         // Act
         var result = JsonConvert.DeserializeObject<MultiLineString>(multiLineString, jsonSerializerSettings);
@@ -137,8 +137,8 @@ public class GeometrySerialisationTests
     public void Serialize_ConvertsPolygon()
     {
         // Arrange
-        var geometry = new Polygon { Coordinates = new List<LineString> { new() {Coordinates = new List<double> {100.0, 20.2, 10.1}}  } };
-        const string expected = "{\"type\":\"Polygon\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}";
+        var geometry = new Polygon { Coordinates = new List<List<double>> { new ()  {100.0, 20.2, 10.1}} };
+        const string expected = "{\"type\":\"Polygon\",\"coordinates\":[[100.0,20.2,10.1]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -151,8 +151,8 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsPolygon()
     {
         // Arrange
-        const string polygon = "{\"type\":\"Polygon\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}";
-        var expected = new Polygon { Coordinates = new List<LineString> { new() {Coordinates = new List<double> {100.0, 20.2, 10.1}}  } };
+        const string polygon = "{\"type\":\"Polygon\",\"coordinates\":[[100.0,20.2,10.1]]}";
+        var expected = new Polygon { Coordinates = new List<List<double>> { new ()  {100.0, 20.2, 10.1}} };
 
         // Act
         var result = JsonConvert.DeserializeObject<Polygon>(polygon, jsonSerializerSettings);
@@ -167,22 +167,16 @@ public class GeometrySerialisationTests
         // Arrange
         var geometry = new MultiPolygon
         {
-            Coordinates = new List<Polygon>
+            Coordinates = new List<List<List<double>>>
             {
-                new()
+                new ()
                 {
-                    Coordinates = new List<LineString>
-                    { 
-                        new()
-                        {
-                            Coordinates = new List<double> { 100.0, 20.2, 10.1 }
-                        }
-                    }
+                    new List<double> { 100.0, 20.2, 10.1 }
                 }
             }
         };
         
-        const string expected = "{\"type\":\"MultiPolygon\",\"coordinates\":[{\"type\":\"Polygon\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}]}";
+        const string expected = "{\"type\":\"MultiPolygon\",\"coordinates\":[[[100.0,20.2,10.1]]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -195,20 +189,14 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsMultiPolygon()
     {
         // Arrange
-        const string multiPolygon = "{\"type\":\"MultiPolygon\",\"coordinates\":[{\"type\":\"Polygon\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}]}";
+        const string multiPolygon = "{\"type\":\"MultiPolygon\",\"coordinates\":[[[100.0,20.2,10.1]]]}";
         var expected = new MultiPolygon
         {
-            Coordinates = new List<Polygon>
+            Coordinates = new List<List<List<double>>>
             {
-                new()
+                new ()
                 {
-                    Coordinates = new List<LineString>
-                    { 
-                        new()
-                        {
-                            Coordinates = new List<double> { 100.0, 20.2, 10.1 }
-                        }
-                    }
+                    new List<double> { 100.0, 20.2, 10.1 }
                 }
             }
         };
@@ -230,17 +218,11 @@ public class GeometrySerialisationTests
             {
                 new MultiPolygon
                 {
-                    Coordinates = new List<Polygon>
+                    Coordinates = new List<List<List<double>>>
                     {
-                        new()
+                        new ()
                         {
-                            Coordinates = new List<LineString>
-                            {
-                                new()
-                                {
-                                    Coordinates = new List<double> { 100.0, 20.2, 10.1 }
-                                }
-                            }
+                            new List<double> { 100.0, 20.2, 10.1 }
                         }
                     }
                 },
@@ -251,7 +233,7 @@ public class GeometrySerialisationTests
             }
         };
         
-        const string expected = "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[{\"type\":\"Polygon\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}]},{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
+        const string expected = "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[100.0,20.2,10.1]]]},{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -264,24 +246,18 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsGeometryCollection()
     {
         // Arrange
-        const string multiPolygon = "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[{\"type\":\"Polygon\",\"coordinates\":[{\"type\":\"LineString\",\"coordinates\":[100.0,20.2,10.1]}]}]},{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
+        const string multiPolygon = "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[100.0,20.2,10.1]]]},{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
         var expected = new GeometryCollection
         {
             Geometries = new List<Geometry>
             {
                 new MultiPolygon
                 {
-                    Coordinates = new List<Polygon>
+                    Coordinates = new List<List<List<double>>>
                     {
-                        new()
+                        new ()
                         {
-                            Coordinates = new List<LineString>
-                            {
-                                new()
-                                {
-                                    Coordinates = new List<double> { 100.0, 20.2, 10.1 }
-                                }
-                            }
+                            new List<double> { 100.0, 20.2, 10.1 }
                         }
                     }
                 },

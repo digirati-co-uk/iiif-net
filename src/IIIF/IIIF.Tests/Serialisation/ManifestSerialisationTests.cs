@@ -215,17 +215,11 @@ public class ManifestSerialisationTests
                             {
                                 new MultiPolygon
                                 {
-                                    Coordinates = new List<Polygon>
+                                    Coordinates = new List<List<List<double>>>
                                     {
-                                        new()
+                                        new ()
                                         {
-                                            Coordinates = new List<LineString>
-                                            {
-                                                new()
-                                                {
-                                                    Coordinates = new List<double> { 100.0, 20.2, 10.1 }
-                                                }
-                                            }
+                                            new List<double> { 100.0, 20.2, 10.1 }
                                         }
                                     }
                                 },

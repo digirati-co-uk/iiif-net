@@ -10,5 +10,5 @@ public class MultiPolygon : Geometry
     /// This is an array of Polygon coordinate arrays.
     /// </summary>
     [JsonProperty(Order = 2)]
-    public List<Polygon>? Coordinates { get; set; }
+    public List<List<List<double>>>? Coordinates { get; set; }
 }
