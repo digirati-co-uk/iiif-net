@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using IIIF.Presentation.V3.Annotation;
-using IIIF.Presentation.V3.FeatureCollection;
+using IIIF.Presentation.V3.NavPlace;
 
 namespace IIIF.Presentation.V3;
 
@@ -56,7 +56,7 @@ public abstract class StructureBase : ResourceBase
     /// See <a href="https://iiif.io/api/extension/navplace/">navplace</a>
     /// </summary>
     [JsonProperty(Order = 500)]
-    public NavPlace? NavPlace { get; set; }
+    public FeatureCollection? NavPlace { get; set; }
 
     [JsonProperty(Order = 900)] public List<AnnotationPage>? Annotations { get; set; }
 }

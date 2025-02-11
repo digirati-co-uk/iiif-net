@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace IIIF.Presentation.V3.FeatureCollection;
+namespace IIIF.Presentation.V3.NavPlace;
 
-public class NavPlace
+public class FeatureCollection
 {
     [JsonProperty(Order = 1)]
     public string Id { get; set; } = null!;
     
     [JsonProperty(Order = 2)]
-    public string Type => "FeatureCollection";
+    public string Type => nameof(FeatureCollection);
     
     /// <summary>
     /// Represents a spatially bounded area.

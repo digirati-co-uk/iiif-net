@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace IIIF.Presentation.V3.FeatureCollection;
+namespace IIIF.Presentation.V3.NavPlace;
 
 public class Polygon : Geometry
 {
