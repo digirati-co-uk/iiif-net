@@ -5,7 +5,7 @@ namespace IIIF.Presentation.V3.Extensions.NavPlace;
 public class Feature : IResource
 {
     [JsonProperty(Order = 1)]
-    public string Id { get; set; } = null!;
+    public string? Id { get; set; }
 
     [JsonProperty(Order = 2)] 
     public string Type => nameof(Feature);
