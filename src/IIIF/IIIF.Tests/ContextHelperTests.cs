@@ -42,6 +42,7 @@ public class ContextHelperTests
     [InlineData(IIIF.Presentation.Context.Presentation3Context)]
     [InlineData(IIIF.ImageApi.V2.ImageService2.Image2Context)]
     [InlineData(IIIF.ImageApi.V3.ImageService3.Image3Context)]
+    [InlineData(IIIF.Presentation.V3.Extensions.NavPlace.FeatureCollection.NavPlaceContext)]
     [InlineData("http://my-custom-context")]
     public void EnsureContext_NoOp_IfContextAlreadyExistsAsSingle(string context)
     {
@@ -61,6 +62,7 @@ public class ContextHelperTests
     [InlineData(IIIF.Presentation.Context.Presentation3Context)]
     [InlineData(IIIF.ImageApi.V2.ImageService2.Image2Context)]
     [InlineData(IIIF.ImageApi.V3.ImageService3.Image3Context)]
+    [InlineData(IIIF.Presentation.V3.Extensions.NavPlace.FeatureCollection.NavPlaceContext)]
     [InlineData("http://my-custom-context")]
     public void EnsureContext_NoOp_IfContextAlreadyExistsInList(string context)
     {

@@ -25,4 +25,8 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Presentation\V3\Extensions\" />
+    </ItemGroup>
+
 </Project>
