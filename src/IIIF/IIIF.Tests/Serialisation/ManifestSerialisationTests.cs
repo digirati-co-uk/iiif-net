@@ -21,11 +21,6 @@ public class ManifestSerialisationTests
 
     public ManifestSerialisationTests()
     {
-        var properties = new Dictionary<string, object>()
-        {
-            { "label", JToken.Parse("{\"test\":\"test\"}") },
-        };
-        
         sampleManifest = new Manifest
         {
             Context = "http://iiif.io/api/presentation/3/context.json",
@@ -211,7 +206,10 @@ public class ManifestSerialisationTests
                     new ()
                     {
                         Id = "https://test.example.com/nav-place/feature",
-                        Properties = properties,
+                        Properties = new Dictionary<string, object>()
+                        {
+                            { "label", JToken.Parse("{\"test\":\"test\"}") },
+                        },
                         Geometry = new GeometryCollection
                         {
                             Geometries = new List<Geometry>
