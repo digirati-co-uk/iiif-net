@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
-using IIIF.Presentation;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
@@ -24,7 +22,11 @@ public class ManifestSerialisationTests
     {
         sampleManifest = new Manifest
         {
-            Context = "http://iiif.io/api/presentation/3/context.json",
+            Context = new JArray
+            {
+                "http://iiif.io/api/extension/navplace/context.json",
+                "http://iiif.io/api/presentation/3/context.json"
+            },
             Id = "https://test.example.com/manifest",
             Label = new LanguageMap("en", "Test string"),
             Thumbnail = new List<ExternalResource>
