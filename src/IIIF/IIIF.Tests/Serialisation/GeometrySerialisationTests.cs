@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using IIIF.Presentation.V3.NavPlace;
+using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using IIIF.Presentation.V3.Annotation;
-using IIIF.Presentation.V3.NavPlace;
+using IIIF.Presentation.V3.Extensions.NavPlace;
 
 namespace IIIF.Presentation.V3;
 

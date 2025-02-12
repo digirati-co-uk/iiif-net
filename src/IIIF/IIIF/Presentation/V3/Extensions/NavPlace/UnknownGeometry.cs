@@ -1,4 +1,4 @@
-namespace IIIF.Presentation.V3.NavPlace;
+namespace IIIF.Presentation.V3.Extensions.NavPlace;
 
 internal sealed class UnknownGeometry : Geometry
 {

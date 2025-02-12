@@ -4,10 +4,11 @@ using System.Dynamic;
 using System.IO;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
+using IIIF.Presentation;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
-using IIIF.Presentation.V3.NavPlace;
+using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation;
 using Newtonsoft.Json.Linq;
@@ -201,6 +202,7 @@ public class ManifestSerialisationTests
             NavPlace = new FeatureCollection()
             {
                 Id = "https://test.example.com/nav-place",
+                Context = Context.Presentation3Context,
                 Features = new List<Feature>()
                 {
                     new ()

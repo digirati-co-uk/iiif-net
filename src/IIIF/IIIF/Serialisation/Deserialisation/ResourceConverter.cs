@@ -3,7 +3,7 @@ using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3.Content;
-using IIIF.Presentation.V3.NavPlace;
+using IIIF.Presentation.V3.Extensions.NavPlace;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation.Deserialisation;

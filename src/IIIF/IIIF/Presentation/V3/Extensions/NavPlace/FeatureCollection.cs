@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace IIIF.Presentation.V3.NavPlace;
+namespace IIIF.Presentation.V3.Extensions.NavPlace;
 
-public class FeatureCollection
+public class FeatureCollection : JsonLdBase
 {
     [JsonProperty(Order = 1)]
     public string Id { get; set; } = null!;
