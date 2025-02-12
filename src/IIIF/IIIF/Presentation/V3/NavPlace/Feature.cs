@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace IIIF.Presentation.V3.NavPlace;
 
 public class Feature : IResource
@@ -13,7 +15,7 @@ public class Feature : IResource
     /// <notes>Can be any JSON object</notes>
     /// </summary>
     [JsonProperty(Order = 3)]
-    public dynamic? Properties { get; set; }
+    public Dictionary<string, object>? Properties { get; set; }
     
     /// <summary>
     /// This is a GeoJSON object

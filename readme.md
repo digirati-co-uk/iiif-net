@@ -141,3 +141,10 @@ $ bash local_build.sh -v 1.2.3
 ## Deployment
 
 New nuget package is published whenever a new version tag is pushed, using gitversion to derive the version number.
+
+### Extensions
+
+This library supports some extensions to the spec:
+
+- `navPlace`
+  - This is defined by earthbound geographic coordinates in the form of GeoJSON-LD.

@@ -21,7 +21,10 @@ public class ManifestSerialisationTests
 
     public ManifestSerialisationTests()
     {
-        dynamic properties = JToken.Parse("{\"test\":\"test\"}");
+        var properties = new Dictionary<string, object>()
+        {
+            { "label", JToken.Parse("{\"test\":\"test\"}") },
+        };
         
         sampleManifest = new Manifest
         {
