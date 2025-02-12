@@ -199,16 +199,15 @@ public class ManifestSerialisationTests
                     Format = "application/json"
                 }
             },
-            NavPlace = new FeatureCollection()
+            NavPlace = new FeatureCollection
             {
                 Id = "https://test.example.com/nav-place",
-                Context = Context.Presentation3Context,
-                Features = new List<Feature>()
+                Features = new List<Feature>
                 {
                     new ()
                     {
                         Id = "https://test.example.com/nav-place/feature",
-                        Properties = new Dictionary<string, object>()
+                        Properties = new Dictionary<string, object>
                         {
                             { "label", JToken.Parse("{\"test\":\"test\"}") },
                         },

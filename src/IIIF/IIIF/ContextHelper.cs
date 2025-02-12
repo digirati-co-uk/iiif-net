@@ -14,6 +14,7 @@ public static class ContextHelper
         Presentation.Context.Presentation3Context,
         ImageApi.V2.ImageService2.Image2Context,
         ImageApi.V3.ImageService3.Image3Context,
+        Presentation.V3.Extensions.NavPlace.FeatureCollection.NavPlaceContext
     };
     
     /// <summary>
