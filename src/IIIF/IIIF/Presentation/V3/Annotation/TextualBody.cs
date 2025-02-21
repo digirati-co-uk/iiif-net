@@ -17,12 +17,18 @@ public class TextualBody : ResourceBase
     }
 
     public override string Type => nameof(TextualBody);
+    
+    [JsonProperty(Order = 299)]
+    public string? Language { get; set; }
 
     [JsonProperty(Order = 300)]
     public string? Value { get; set; }
     
     [JsonProperty(Order = 301)]
     public string? Format { get; set; }
+    
+    [JsonProperty(Order = 302)]
+    public string? Motivation { get; set; }
     
     [JsonProperty(Order = 302)]
     public string? Purpose { get; set; }

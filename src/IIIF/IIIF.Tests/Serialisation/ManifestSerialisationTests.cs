@@ -70,6 +70,8 @@ public class ManifestSerialisationTests
                                         {
                                             Id = "https://test.example.com/canvas/1/page/textualBody",
                                             Format = "text/plain",
+                                            Language = "en",
+                                            Motivation = "supplementing",
                                             Purpose = "some purpose",
                                             Creator = "https://test.example.com/user",
                                             Created = DateTime.UtcNow,
