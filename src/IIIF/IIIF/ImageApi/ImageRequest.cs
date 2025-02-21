@@ -24,7 +24,7 @@ public class ImageRequest
     /// <summary>
     /// Full image request path, e.g. /0,0,400,400/100,/0/default.jpg
     /// </summary>
-    public string ImageRequestPath => OriginalPath.Replace(Identifier, string.Empty);
+    public string? ImageRequestPath => OriginalPath?.Replace(Identifier, string.Empty);
 
     /// <summary>
     /// Parses an image request path as a IIIF ImageRequest object
@@ -80,5 +80,14 @@ public class ImageRequest
         request.Format = filenameParts[1];
 
         return request;
+    }
+
+    public override string ToString()
+    {
+        var basePath = $"{Prefix}{Identifier}";
+        if (IsBase) return basePath;
+        if (IsInformationRequest) return $"{basePath}/info.json";
+            
+        return $"{basePath}/{Region}/{Size}/{Rotation}/{Quality}.{Format}";
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using IIIF.ImageApi;
 
@@ -7,7 +8,7 @@ namespace IIIF.Tests.ImageApi;
 public class ImageRequestXTests
 {
     [Fact]
-    public void Parse_CorrectMax()
+    public void GetResultingSize_CorrectMax()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -25,7 +26,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectMaxScaled()
+    public void GetResultingSize_CorrectMaxScaled()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -43,7 +44,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectWidthOnly()
+    public void GetResultingSize_CorrectWidthOnly()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -61,7 +62,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectWidthOnlyScaled()
+    public void GetResultingSize_CorrectWidthOnlyScaled()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -79,7 +80,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectHeightOnly()
+    public void GetResultingSize_CorrectHeightOnly()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -97,7 +98,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectHeightOnlyScaled()
+    public void GetResultingSize_CorrectHeightOnlyScaled()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -115,7 +116,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectWidthHeight()
+    public void GetResultingSize_CorrectWidthHeight()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -133,7 +134,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectWidthHeightScaled()
+    public void GetResultingSize_CorrectWidthHeightScaled()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -151,7 +152,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectWidthHeightConfined()
+    public void GetResultingSize_CorrectWidthHeightConfined()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -169,7 +170,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectWidthHeightScaledConfined()
+    public void GetResultingSize_CorrectWidthHeightScaledConfined()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -187,7 +188,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectPercentage()
+    public void GetResultingSize_CorrectPercentage()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -205,7 +206,7 @@ public class ImageRequestXTests
     }
 
     [Fact]
-    public void Parse_CorrectPercentageScaled()
+    public void GetResultingSize_CorrectPercentageScaled()
     {
         // Arrange
         var sizeParameter = new SizeParameter
@@ -233,6 +234,7 @@ public class ImageRequestXTests
         
         // Assert
         result.IsBase.Should().BeTrue();
+        result.ToString().Should().Be("iiif-img/27/1/my-asset");
     }
     
     [Fact]
@@ -244,6 +246,7 @@ public class ImageRequestXTests
         
         // Assert
         result.IsInformationRequest.Should().BeTrue();
+        result.ToString().Should().Be("iiif-img/27/1/my-asset/info.json");
     }
     
     [Fact]
@@ -304,5 +307,94 @@ public class ImageRequestXTests
         // Assert
         action.Should().ThrowExactly<ArgumentException>()
             .WithMessage("Path contains empty or an invalid number of segments");
+    }
+    
+    public static IEnumerable<object[]> ImageRequests =>
+        new List<object[]>
+        {
+            new object[] { "iiif-img/27/1/my-asset", new ImageRequest { IsBase = true } },
+            new object[] { "iiif-img/27/1/my-asset/info.json", new ImageRequest { IsInformationRequest = true } },
+            new object[]
+            {
+                "iiif-img/27/1/my-asset/full/max/0/default.jpg",
+                new ImageRequest
+                {
+                    Region = new RegionParameter { Full = true },
+                    Format = "jpg",
+                    Size = new SizeParameter { Max = true },
+                    Quality = "default",
+                    Rotation = new RotationParameter { Angle = 0f },
+                    OriginalPath = "my-asset/full/max/0/default.jpg",
+                }
+            },
+            new object[]
+            {
+                "iiif-img/27/1/my-asset/0,0,512,1024/!500,250/!180/bitonal.png",
+                new ImageRequest
+                {
+                    Region = new RegionParameter { X = 0, Y = 0, W = 512, H = 1024 },
+                    Format = "png",
+                    Size = new SizeParameter { Confined = true, Width = 500, Height = 250 },
+                    Quality = "bitonal",
+                    Rotation = new RotationParameter { Angle = 180f, Mirror = true },
+                    OriginalPath = "my-asset/0,0,512,1024/!500,250/!180/bitonal.png",
+                }
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(ImageRequests))]
+    public void Parse_ValidRequest_CanRoundTripToString(string input, ImageRequest expected)
+    {
+        const string prefix = "iiif-img/27/1/";
+        expected.Prefix = prefix;
+        expected.Identifier = "my-asset";
+        
+        var result = ImageRequest.Parse(input, prefix);
+        
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+        result.ToString().Should().Be(input);
+    }
+
+    [Fact]
+    public void ToString_ReflectsUpdates()
+    {
+        var expected = "iiif-img/27/1/my-asset/0,0,512,1024/!500,250/!180/bitonal.png";
+        var imageRequest = new ImageRequest
+        {
+            Prefix = "iiif-img/27/1/",
+            Identifier = "my-asset", 
+            Format = "jpg",
+            Quality = "default",
+            Size = new SizeParameter { PercentScale = 75 },
+            Region = new RegionParameter { Square = true },
+            Rotation = new RotationParameter { Angle = 0f },
+        };
+
+        imageRequest.Format = "png";
+        imageRequest.Quality = "bitonal";
+        imageRequest.Size = new SizeParameter { Confined = true, Width = 500, Height = 250 };
+        imageRequest.Region = new RegionParameter { X = 0, Y = 0, W = 512, H = 1024 };
+        imageRequest.Rotation = new RotationParameter { Angle = 180f, Mirror = true };
+        
+        imageRequest.ToString().Should().Be(expected);
+    }
+    
+    [Fact]
+    public void ToString_Correct_NoPrefixReflectsUpdates()
+    {
+        var expected = "my-asset/0,0,512,1024/!500,250/!180/bitonal.png";
+        var imageRequest = new ImageRequest
+        {
+            Format = "png",
+            Identifier = "my-asset",
+            Quality = "bitonal",
+            Size = new SizeParameter { Confined = true, Width = 500, Height = 250 },
+            Region = new RegionParameter { X = 0, Y = 0, W = 512, H = 1024 },
+            Rotation = new RotationParameter { Angle = 180f, Mirror = true },
+        };
+        
+        imageRequest.ToString().Should().Be(expected);
     }
 }
