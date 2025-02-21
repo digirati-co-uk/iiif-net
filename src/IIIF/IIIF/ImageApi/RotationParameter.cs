@@ -21,4 +21,7 @@ public class RotationParameter
         rotation.Angle = float.Parse(pathPart);
         return rotation;
     }
+
+    public override string ToString()
+        => $"{(Mirror ? "!" : string.Empty)}{Angle}";
 }
