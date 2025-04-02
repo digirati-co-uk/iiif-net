@@ -15,17 +15,37 @@ public class ServiceConverter : ReadOnlyConverter<IService>
         bool hasExistingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
+        
+        var atType = jsonObject["@type"];
 
-        var service = IdentifyConcreteType(jsonObject);
+        var result = ImageServiceTwoResult(serializer, atType, jsonObject);
+        if (result != null) return result;
+
+        var service = IdentifyConcreteType(jsonObject, atType);
 
         serializer.Populate(jsonObject.CreateReader(), service);
         return service;
     }
 
-    private static IService? IdentifyConcreteType(JObject jsonObject)
+    private IService? ImageServiceTwoResult(JsonSerializer serializer, JToken? atType, JObject jsonObject)
+    {
+        var typeValue = atType?.Value<string>();
+        if (typeValue is "iiif:Image" or nameof(ImageService2))
+        {
+            // avoids stack overflow exceptions from recursively calling the service converter
+            var thisIndex = serializer.Converters.IndexOf(this);
+            serializer.Converters.RemoveAt(thisIndex);
+            
+            var result = jsonObject.ToObject(typeof(ImageService2), serializer);
+            return result as IService;
+        }
+
+        return null;
+    }
+
+    private static IService? IdentifyConcreteType(JObject jsonObject, JToken? atType)
     {
         IService? service = null;
-        var atType = jsonObject["@type"];
         var type = jsonObject["type"];
         if (atType != null)
             service = atType.Value<string>() switch
@@ -34,8 +54,6 @@ public class ServiceConverter : ReadOnlyConverter<IService>
                 "AuthLogoutService1" => new Auth.V1.AuthLogoutService(),
                 "AuthTokenService1" => new Auth.V1.AuthTokenService(),
                 "AutoCompleteService1" => new Search.V1.AutoCompleteService(),
-                nameof(ImageService2) => new ImageService2(),
-                "iiif:Image" => new ImageService2(),
                 _ => null,
             };
         if (service != null) return service;
@@ -51,7 +69,6 @@ public class ServiceConverter : ReadOnlyConverter<IService>
                 _ => null
             };
         if (service != null) return service;
-
 
         var profileToken = jsonObject["profile"];
         if (profileToken != null)
@@ -69,7 +86,6 @@ public class ServiceConverter : ReadOnlyConverter<IService>
                 _ => null
             };
             if (service != null) return service;
-
 
             const string auth0 = "http://iiif.io/api/auth/0/";
             const string auth1 = "http://iiif.io/api/auth/1/";
