@@ -17,45 +17,45 @@ public class ServiceConverter : ReadOnlyConverter<IService>
         var jsonObject = JObject.Load(reader);
         
         var atType = jsonObject["@type"];
+        var typeValue = atType?.Value<string>();
 
-        var result = ImageServiceTwoResult(serializer, atType, jsonObject);
+        var result = ToObjectReturn(serializer, typeValue, jsonObject);
         if (result != null) return result;
 
-        var service = IdentifyConcreteType(jsonObject, atType);
+        var service = IdentifyConcreteType(jsonObject, typeValue);
 
         serializer.Populate(jsonObject.CreateReader(), service);
         return service;
     }
 
-    private IService? ImageServiceTwoResult(JsonSerializer serializer, JToken? atType, JObject jsonObject)
+    /// <summary>
+    /// Used when a serialized class requires using ToObject to use custom converters
+    /// </summary>
+    /// <returns>either null, or an <see cref="IService"/> result</returns>
+    private IService? ToObjectReturn(JsonSerializer serializer, string? atTypeValue, JObject jsonObject)
     {
-        var typeValue = atType?.Value<string>();
-        if (typeValue is "iiif:Image" or nameof(ImageService2))
+        if (atTypeValue is "iiif:Image" or nameof(ImageService2))
         {
-            // avoids stack overflow exceptions from recursively calling the service converter
-            var thisIndex = serializer.Converters.IndexOf(this);
-            serializer.Converters.RemoveAt(thisIndex);
-            
-            var result = jsonObject.ToObject(typeof(ImageService2), serializer);
+            var copiedSerializer = serializer.CreateCopy(converter => converter is not ServiceConverter);
+            var result = jsonObject.ToObject(typeof(ImageService2), copiedSerializer);
             return result as IService;
         }
 
         return null;
     }
 
-    private static IService? IdentifyConcreteType(JObject jsonObject, JToken? atType)
+    private static IService? IdentifyConcreteType(JObject jsonObject, string? atTypeValue)
     {
         IService? service = null;
         var type = jsonObject["type"];
-        if (atType != null)
-            service = atType.Value<string>() switch
-            {
-                "SearchService1" => new Search.V1.SearchService(),
-                "AuthLogoutService1" => new Auth.V1.AuthLogoutService(),
-                "AuthTokenService1" => new Auth.V1.AuthTokenService(),
-                "AutoCompleteService1" => new Search.V1.AutoCompleteService(),
-                _ => null,
-            };
+        service = atTypeValue switch
+        {
+            "SearchService1" => new Search.V1.SearchService(),
+            "AuthLogoutService1" => new Auth.V1.AuthLogoutService(),
+            "AuthTokenService1" => new Auth.V1.AuthTokenService(),
+            "AutoCompleteService1" => new Search.V1.AutoCompleteService(),
+            _ => null,
+        };
         if (service != null) return service;
 
         if (type != null)
@@ -96,7 +96,7 @@ public class ServiceConverter : ReadOnlyConverter<IService>
 
         // TODO handle ResourceBase items
 
-        if (atType != null)
+        if (atTypeValue != null)
         {
             // if there's @id and @type only, service reference
             if (jsonObject.Count == 2 && jsonObject["@id"] != null)
