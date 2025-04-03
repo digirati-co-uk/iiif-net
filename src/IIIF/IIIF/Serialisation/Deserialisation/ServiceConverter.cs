@@ -15,29 +15,47 @@ public class ServiceConverter : ReadOnlyConverter<IService>
         bool hasExistingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
+        
+        var atType = jsonObject["@type"];
+        var typeValue = atType?.Value<string>();
 
-        var service = IdentifyConcreteType(jsonObject);
+        var result = ToObjectReturn(serializer, typeValue, jsonObject);
+        if (result != null) return result;
+
+        var service = IdentifyConcreteType(jsonObject, typeValue);
 
         serializer.Populate(jsonObject.CreateReader(), service);
         return service;
     }
 
-    private static IService? IdentifyConcreteType(JObject jsonObject)
+    /// <summary>
+    /// Used when a serialized class requires using ToObject to use custom converters
+    /// </summary>
+    /// <returns>either null, or an <see cref="IService"/> result</returns>
+    private IService? ToObjectReturn(JsonSerializer serializer, string? atTypeValue, JObject jsonObject)
+    {
+        if (atTypeValue is "iiif:Image" or nameof(ImageService2))
+        {
+            var copiedSerializer = serializer.CreateCopy(converter => converter is not ServiceConverter);
+            var result = jsonObject.ToObject(typeof(ImageService2), copiedSerializer);
+            return result as IService;
+        }
+
+        return null;
+    }
+
+    private static IService? IdentifyConcreteType(JObject jsonObject, string? atTypeValue)
     {
         IService? service = null;
-        var atType = jsonObject["@type"];
         var type = jsonObject["type"];
-        if (atType != null)
-            service = atType.Value<string>() switch
-            {
-                "SearchService1" => new Search.V1.SearchService(),
-                "AuthLogoutService1" => new Auth.V1.AuthLogoutService(),
-                "AuthTokenService1" => new Auth.V1.AuthTokenService(),
-                "AutoCompleteService1" => new Search.V1.AutoCompleteService(),
-                nameof(ImageService2) => new ImageService2(),
-                "iiif:Image" => new ImageService2(),
-                _ => null,
-            };
+        service = atTypeValue switch
+        {
+            "SearchService1" => new Search.V1.SearchService(),
+            "AuthLogoutService1" => new Auth.V1.AuthLogoutService(),
+            "AuthTokenService1" => new Auth.V1.AuthTokenService(),
+            "AutoCompleteService1" => new Search.V1.AutoCompleteService(),
+            _ => null,
+        };
         if (service != null) return service;
 
         if (type != null)
@@ -51,7 +69,6 @@ public class ServiceConverter : ReadOnlyConverter<IService>
                 _ => null
             };
         if (service != null) return service;
-
 
         var profileToken = jsonObject["profile"];
         if (profileToken != null)
@@ -70,7 +87,6 @@ public class ServiceConverter : ReadOnlyConverter<IService>
             };
             if (service != null) return service;
 
-
             const string auth0 = "http://iiif.io/api/auth/0/";
             const string auth1 = "http://iiif.io/api/auth/1/";
 
@@ -80,7 +96,7 @@ public class ServiceConverter : ReadOnlyConverter<IService>
 
         // TODO handle ResourceBase items
 
-        if (atType != null)
+        if (atTypeValue != null)
         {
             // if there's @id and @type only, service reference
             if (jsonObject.Count == 2 && jsonObject["@id"] != null)

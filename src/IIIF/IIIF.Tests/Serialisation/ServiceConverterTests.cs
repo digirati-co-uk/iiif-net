@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
+using IIIF.Serialisation;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
 
@@ -44,6 +46,31 @@ public class ServiceConverterTests
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
 
         result.Should().BeOfType<ImageService2>(because);
+    }
+    
+    [Fact]
+    public void ReadJson_ImageService2_WorksWIthExpandedProfile()
+    {
+        var jsonId = @"
+        {
+           ""@context"": ""http://iiif.io/api/image/2/context.json"",
+           ""@id"": ""https://iiif-net/image.jpg"",
+           ""@type"": ""iiif:Image"",
+           ""profile"": [
+               ""http://iiif.io/api/image/2/level2.json"",
+               {
+                   ""formats"": [""tif""],
+                   ""qualities"": [""bitonal""],
+                   ""supports"": [""regionByPx""]
+               }
+           ],
+           ""protocol"": ""http://iiif.io/api/image""
+       }
+       ";
+        
+        var result = JsonConvert.DeserializeObject<ImageService2>(jsonId, sut, new ImageService2Converter());
+        result.Profile.Should().Be("http://iiif.io/api/image/2/level2.json");
+        result.ProfileDescription.Formats.Should().Contain("tif");
     }
     
     [Theory]
