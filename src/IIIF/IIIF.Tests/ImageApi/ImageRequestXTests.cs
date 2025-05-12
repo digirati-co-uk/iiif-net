@@ -380,6 +380,7 @@ public class ImageRequestXTests
         // Assert
         success.Should().BeTrue();
         result.Should().BeEquivalentTo(expected);
+        result.ToString().Should().Be(input);
     }
     
     [Fact]

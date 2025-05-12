@@ -187,6 +187,10 @@ public class ImageRequest
         var basePath = $"{Prefix}{Identifier}";
         if (IsBase) return basePath;
         if (IsInformationRequest) return $"{basePath}/info.json";
+        if (!string.IsNullOrEmpty(Scheme) && !string.IsNullOrEmpty(Server))
+        {
+            basePath = $"{Scheme}://{Server}/{basePath}";
+        }
             
         return $"{basePath}/{Region}/{Size}/{Rotation}/{Quality}.{Format}";
     }
