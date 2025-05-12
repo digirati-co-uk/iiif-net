@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace IIIF.ImageApi;
@@ -93,7 +94,7 @@ public class ImageRequest
     /// <param name="path">The image request path</param>
     /// <param name="imageRequest"></param>
     /// <returns>true if able to parse path to <see cref="ImageRequest"/>, else false</returns>
-    public static bool TryParse(string path, out ImageRequest? imageRequest)
+    public static bool TryParse(string path, [NotNullWhen(true)] out ImageRequest? imageRequest)
     {
         try
         {
