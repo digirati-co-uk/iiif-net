@@ -356,6 +356,85 @@ public class ImageRequestXTests
         result.Should().BeEquivalentTo(expected);
         result.ToString().Should().Be(input);
     }
+    
+    [Fact]
+    public void Parse_ValidRequest_IncludingHostname()
+    {
+        const string input = "http://iiif.io/images/my-asset/0,0,512,1024/!500,250/!180/bitonal.png";
+        var expected = new ImageRequest
+        {
+            Region = new RegionParameter { X = 0, Y = 0, W = 512, H = 1024 },
+            Format = "png",
+            Size = new SizeParameter { Confined = true, Width = 500, Height = 250 },
+            Quality = "bitonal",
+            Rotation = new RotationParameter { Angle = 180f, Mirror = true },
+            OriginalPath = "my-asset/0,0,512,1024/!500,250/!180/bitonal.png",
+            Prefix = "images/",
+            Identifier = "my-asset",
+            Scheme = "http",
+            Server = "iiif.io",
+        };
+        
+        var success = ImageRequest.TryParse(input, out var result);
+        
+        // Assert
+        success.Should().BeTrue();
+        result.Should().BeEquivalentTo(expected);
+        result.ToString().Should().Be(input);
+    }
+    
+    [Fact]
+    public void Parse_ValidRequest_IncludingHostname_NoPrefix()
+    {
+        const string input = "http://iiif.io/my-asset/0,0,512,1024/!500,250/!180/bitonal.png";
+        var expected = new ImageRequest
+        {
+            Region = new RegionParameter { X = 0, Y = 0, W = 512, H = 1024 },
+            Format = "png",
+            Size = new SizeParameter { Confined = true, Width = 500, Height = 250 },
+            Quality = "bitonal",
+            Rotation = new RotationParameter { Angle = 180f, Mirror = true },
+            OriginalPath = "my-asset/0,0,512,1024/!500,250/!180/bitonal.png",
+            Identifier = "my-asset",
+            Scheme = "http",
+            Server = "iiif.io",
+        };
+        
+        var success = ImageRequest.TryParse(input, out var result);
+        
+        // Assert
+        success.Should().BeTrue();
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [InlineData("default.jpg")]
+    [InlineData("/no-int/default.jpg")]
+    [InlineData("/circle/0/default.jpg")]
+    [InlineData("/portrait/max/0/default.jpg")]
+    [InlineData("http://hello.io/full/max/0/default.jpg")]
+    public void TryParse_InvalidRequest_ReturnsFalse(string input)
+    {
+        var success = ImageRequest.TryParse(input, out var result);
+
+        success.Should().BeFalse();
+        result.Should().BeNull();
+    }
+    
+    [Theory]
+    [MemberData(nameof(ImageRequests))]
+    public void TryParse_ValidRequest_CanRoundTripToString(string input, ImageRequest expected)
+    {
+        expected.Prefix = "iiif-img/27/1/";
+        expected.Identifier = "my-asset";
+        
+        var success = ImageRequest.TryParse(input, out var result);
+        
+        // Assert
+        success.Should().BeTrue();
+        result.Should().BeEquivalentTo(expected);
+        result.ToString().Should().Be(input);
+    }
 
     [Fact]
     public void ToString_ReflectsUpdates()
