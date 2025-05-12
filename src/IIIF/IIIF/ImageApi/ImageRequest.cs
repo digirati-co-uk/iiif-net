@@ -20,11 +20,15 @@ public class ImageRequest
     public string Quality { get; set; }
     public string Format { get; set; }
     public string OriginalPath { get; set; }
+    public string Scheme { get; set; }
+    public string Server { get; set; }
 
     /// <summary>
     /// Full image request path, e.g. /0,0,400,400/100,/0/default.jpg
     /// </summary>
     public string? ImageRequestPath => OriginalPath?.Replace(Identifier, string.Empty);
+    
+    const string InfoJson = "info.json";
 
     /// <summary>
     /// Parses an image request path as a IIIF ImageRequest object
@@ -60,7 +64,7 @@ public class ImageRequest
             return request;
         }
 
-        if (parts[1] == "info.json")
+        if (parts[1] == InfoJson)
         {
             request.IsInformationRequest = true;
             return request;
@@ -80,6 +84,102 @@ public class ImageRequest
         request.Format = filenameParts[1];
 
         return request;
+    }
+    
+    /// <summary>
+    /// Parses an image request path as a IIIF ImageRequest object
+    /// </summary>
+    /// <returns>A ImageRequest object</returns>
+    /// <param name="path">The image request path</param>
+    /// <param name="imageRequest"></param>
+    /// <returns>true if able to parse path to <see cref="ImageRequest"/>, else false</returns>
+    public static bool TryParse(string path, out ImageRequest? imageRequest)
+    {
+        try
+        {
+            if (path[0] == '/') path = path[1..];
+
+            imageRequest = new ImageRequest();
+
+            var parts = path.Split('/');
+
+            var last = parts[^1];
+
+            // If the last part is "info.json", this is info.json 
+            if (last == InfoJson)
+            {
+                imageRequest.IsInformationRequest = true;
+                SetCommonIdentifiers(parts.Length - 1, path, parts, imageRequest);
+                return true;
+            }
+
+            // Check if the last part is {quality}.{format}
+            var qfCandidate = last.Split('.');
+            if (qfCandidate.Length == 2 && Qualities.All.Contains(qfCandidate[0]))
+            {
+                imageRequest.Quality = qfCandidate[0];
+                imageRequest.Format = qfCandidate[1];
+
+                // work back from here to build it
+                imageRequest.Rotation = RotationParameter.Parse(parts[^2]);
+                imageRequest.Size = SizeParameter.Parse(parts[^3]);
+                imageRequest.Region = RegionParameter.Parse(parts[^4]);
+
+                SetCommonIdentifiers(parts.Length - 4, path, parts, imageRequest, true);
+                return true;
+            }
+
+            // If fall through, treat as base request
+            imageRequest.IsBase = true;
+            SetCommonIdentifiers(parts.Length, path, parts, imageRequest);
+            return true;
+        }
+        catch (Exception)
+        {
+            imageRequest = null;
+            return false;
+        }
+    }
+
+    private static void SetCommonIdentifiers(int lastIndex, string path, string[] parts, ImageRequest request,
+        bool setOriginal = false)
+    {
+        // Working back from last accessed index, is the {identifier}
+        var candidate = parts[..lastIndex];
+        request.Identifier = candidate[^1];
+        var schemeDelimiter = path.IndexOf("://", StringComparison.Ordinal);
+        
+        // If there are elements before {identifier} then set {prefix}
+        if (candidate.Length > 1)
+        {
+            var startIndex = schemeDelimiter > 0 ? 3 : 0;
+            request.Prefix = candidate.Length == startIndex + 1
+                ? null!
+                : $"{string.Join("/", candidate[startIndex..^1])}/";
+        }
+
+        // Set {scheme}://{server}, if provided
+        if (schemeDelimiter > 0)
+        {
+            request.Scheme = parts[0][..^1];
+            request.Server = parts[2];
+        }
+
+        if (setOriginal)
+        {
+            var startIndex = path.IndexOf(request.Identifier, StringComparison.Ordinal);
+            request.OriginalPath = path[startIndex..];
+        }
+    }
+
+    private class Qualities
+    {
+        public const string Color = "color";
+        public const string Gray = "gray";
+        public const string Bitonal = "bitonal";
+        public const string Default = "default";
+
+        public static readonly string[] All = { Color, Gray, Bitonal, Default };
     }
 
     public override string ToString()
