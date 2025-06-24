@@ -120,8 +120,6 @@ internal class ResourceDeserialiser<T>
             if (profile.StartsWith(auth1)) return new Auth.V1.AuthCookieService(profile) as T;
         }
 
-        // TODO handle ResourceBase items
-
         if (!string.IsNullOrEmpty(atTypeValue))
         {
             // if there's @id and @type only, service reference
