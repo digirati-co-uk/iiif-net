@@ -125,6 +125,29 @@ string safe = original.SanitiseHtml();
 See [IIIF Presentation 3.0 docs](https://iiif.io/api/presentation/3.0/#45-html-markup-in-property-values) for details on html markup.
 
 > Note: The rules around markup differs between Presentation 2.1 and 3.0. This method uses 3.0 which permits a couple of tags not mentioned in 2.1 (`small`, `sub` and `sup`).
+>
+
+#### Manifest Traversal
+
+See helpers in `IIIF.Presentation.V3.Traversal` to aid in traversal of `Manifests`, e.g.:
+
+```cs
+// Get all annotations from all annotationPages on all canvases in manifest (manifest.Items[*].Items[*].Items[*])
+var annos = manifest.AllAnnotations();
+
+// As above but for a specific type
+var paintingAnnos = manifest.AllAnnotations<PaintingAnnotation>();
+var generalAnnos = manifest.AllAnnotations<GeneralAnnotation>();
+
+// Get all bodies from all paintingAnnos from all annotationPages on all canvases in manifest (manifest.Items[*].Items[*].Items[*].Body)
+var paintingAnnoBodies = manifest.AllPaintingAnnoBodies();
+
+// As above but for a specific type
+var images = manifest.AllPaintingAnnoBodies<Image>();
+var sounds = manifest.AllPaintingAnnoBodies<Sound>();
+```
+
+Note that all of the above are available per-Canvas too.
 
 ## Local Build
 
