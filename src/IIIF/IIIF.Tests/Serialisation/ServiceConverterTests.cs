@@ -48,29 +48,33 @@ public class ServiceConverterTests
         result.Should().BeOfType<ImageService2>(because);
     }
     
-    [Fact]
-    public void ReadJson_ImageService2_WorksWIthExpandedProfile()
+    [Theory]
+    [InlineData("ImageService2")]
+    [InlineData("iiif:Image")]
+    public void ReadJson_ImageService2_WorksWithExpandedProfile(string type)
     {
-        var jsonId = @"
-        {
+        var jsonId = @$"
+        {{
            ""@context"": ""http://iiif.io/api/image/2/context.json"",
            ""@id"": ""https://iiif-net/image.jpg"",
-           ""@type"": ""iiif:Image"",
+           ""@type"": ""{type}"",
            ""profile"": [
                ""http://iiif.io/api/image/2/level2.json"",
-               {
+               {{
                    ""formats"": [""tif""],
                    ""qualities"": [""bitonal""],
                    ""supports"": [""regionByPx""]
-               }
+               }}
            ],
            ""protocol"": ""http://iiif.io/api/image""
-       }
+       }}
        ";
         
-        var result = JsonConvert.DeserializeObject<ImageService2>(jsonId, sut, new ImageService2Converter());
-        result.Profile.Should().Be("http://iiif.io/api/image/2/level2.json");
-        result.ProfileDescription.Formats.Should().Contain("tif");
+        var result = JsonConvert.DeserializeObject<IService>(jsonId, sut, new ImageService2Converter());
+        
+        var imageService2 = result as ImageService2;
+        imageService2.Profile.Should().Be("http://iiif.io/api/image/2/level2.json");
+        imageService2.ProfileDescription.Formats.Should().Contain("tif");
     }
     
     [Theory]

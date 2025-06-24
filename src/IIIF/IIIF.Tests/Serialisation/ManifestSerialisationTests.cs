@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V3;
@@ -279,5 +280,71 @@ public class ManifestSerialisationTests
         var deserialised = memoryStream.FromJsonStream<Manifest>();
 
         deserialised.Should().BeEquivalentTo(sampleManifest);
+    }
+
+    [Fact]
+    public void CanDeserialise_BodyWithAuth()
+    {
+        // Stripped back manifest from https://github.com/digirati-co-uk/iiif-net/issues/69
+        var wellcomeWithAuth = @"{
+    ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
+    ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821"",
+    ""type"": ""Manifest"",
+    ""items"": [
+        {
+            ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2"",
+            ""type"": ""Canvas"",
+            ""width"": 3965,
+            ""height"": 2643,
+            ""items"": [
+                {
+                    ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2/painting"",
+                    ""type"": ""AnnotationPage"",
+                    ""items"": [
+                        {
+                            ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2/painting/anno"",
+                            ""type"": ""Annotation"",
+                            ""motivation"": ""painting"",
+                            ""body"": {
+                                ""id"": ""https://iiif.wellcomecollection.org/image/b18170821_pp_cri_j_11_2_0001.jp2/full/200,133/0/default.jpg"",
+                                ""type"": ""Image"",
+                                ""width"": 200,
+                                ""height"": 133,
+                                ""format"": ""image/jpeg"",
+                                ""service"": [
+                                    {
+                                        ""@id"": ""https://iiif.wellcomecollection.org/image/b18170821_pp_cri_j_11_2_0001.jp2"",
+                                        ""@type"": ""ImageService2"",
+                                        ""profile"": ""http://iiif.io/api/image/2/level1.json"",
+                                        ""width"": 3965,
+                                        ""height"": 2643,
+                                        ""service"": {
+                                            ""@id"": ""https://iiif.wellcomecollection.org/auth/clickthrough"",
+                                            ""@type"": ""AuthCookieService1""
+                                        }
+                                    }
+                                ]
+                            },
+                            ""target"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2""
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}";
+
+        var expectedService = new V2ServiceReference
+        {
+            Id = "https://iiif.wellcomecollection.org/auth/clickthrough",
+            Type = "AuthCookieService1",
+        };
+
+        var mani = wellcomeWithAuth.FromJson<Manifest>();
+
+        var services = mani.Items[0].Items[0].Items[0].As<PaintingAnnotation>()
+            .Body.Service[0].As<ImageService2>().Service;
+        services.Should().HaveCount(1);
+        services.Single().Should().BeEquivalentTo(expectedService);
     }
 }
