@@ -57,7 +57,7 @@ public class ResourceBaseV3ConverterTests
     public void ReadJson_IdentifiesType_FromCustomType()
     {
         // Arrange
-        var context = new Dictionary<string, Func<JObject, IResource>>()
+        var context = new Dictionary<string, Func<JObject, ResourceBase>>()
         {
             ["testCustom"] = input => new TestCustomClass()
         };

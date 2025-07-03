@@ -107,15 +107,6 @@ internal class ResourceDeserialiser<T>
             if (service != null) return service;
         }
         
-        // Look for consumer-provided mapping
-        if (typeValue != null
-            && serializer.Context.Context is IDictionary<string, Func<JObject, IResource>> customMappings
-            && customMappings.TryGetValue(typeValue, out var customMapping))
-        {
-            service = customMapping(jsonObject) as T;
-            if (service != null) return service;
-        }
-
         var profileToken = jsonObject["profile"];
         if (profileToken != null)
         {
@@ -151,6 +142,15 @@ internal class ResourceDeserialiser<T>
                 _ => new GeneralAnnotation(motivation) as T
             };
             
+            if (service != null) return service;
+        }
+        
+        // Look for consumer-provided mapping
+        if (typeValue != null
+            && serializer.Context.Context is IDictionary<string, Func<JObject, T>> customMappings
+            && customMappings.TryGetValue(typeValue, out var customMapping))
+        {
+            service = customMapping(jsonObject) as T;
             if (service != null) return service;
         }
 
