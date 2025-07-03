@@ -1,6 +1,4 @@
 ﻿using System;
-using IIIF.Presentation.V3.Content;
-using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Serialisation.Deserialisation.Helpers;
 
 namespace IIIF.Serialisation.Deserialisation;
@@ -13,14 +11,7 @@ public class ResourceConverter : ReadOnlyConverter<IResource>
     public override IResource? ReadJson(JsonReader reader, Type objectType, IResource? existingValue,
         bool hasExistingValue, JsonSerializer serializer)
     {
-        var converter = new ResourceDeserialiser<IResource>(this, type => type switch
-        {
-            nameof(Sound) => new Sound(),
-            nameof(Video) => new Video(),
-            nameof(Image) => new Image(),
-            nameof(Feature) => new Feature(),
-            _ => null
-        });
+        var converter = new ResourceDeserialiser<IResource>(this);
         return converter.ReadJson(reader, serializer);
     }
 }

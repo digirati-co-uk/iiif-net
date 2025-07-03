@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
+using IIIF.Presentation.V3;
+using IIIF.Presentation.V3.Annotation;
+using IIIF.Presentation.V3.Content;
+using IIIF.Presentation.V3.Extensions.NavPlace;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation.Deserialisation.Helpers;
@@ -13,7 +18,6 @@ namespace IIIF.Serialisation.Deserialisation.Helpers;
 internal class ResourceDeserialiser<T>
     where T : class, IResource
 {
-    private readonly Func<string, T?>? additionalTypeBasedConverter;
     private readonly Type callingConverterType;
 
     /// <summary>
@@ -23,12 +27,8 @@ internal class ResourceDeserialiser<T>
     /// <see cref="JsonConverter"/> making initial conversion, required as some instances may result in circular
     /// dependency where initial converter is called repeatedly
     /// </param>
-    /// <param name="additionalTypeBasedConverter">
-    /// Additional "type" based converters, required for types that inherit from <see cref="IResource"/>
-    /// </param>
-    public ResourceDeserialiser(JsonConverter callingConverter, Func<string, T?>? additionalTypeBasedConverter = null)
+    public ResourceDeserialiser(JsonConverter callingConverter)
     {
-        this.additionalTypeBasedConverter = additionalTypeBasedConverter;
         callingConverterType =  callingConverter.GetType();
     }
     
@@ -41,7 +41,7 @@ internal class ResourceDeserialiser<T>
         var result = ToObjectReturn(serializer, atTypeValue, jsonObject);
         if (result != null) return result;
 
-        var service = IdentifyConcreteType(jsonObject, atTypeValue);
+        var service = IdentifyConcreteType(jsonObject, serializer, atTypeValue);
 
         serializer.Populate(jsonObject.CreateReader(), service);
         return service;
@@ -64,7 +64,7 @@ internal class ResourceDeserialiser<T>
         return null;
     }
 
-    private T? IdentifyConcreteType(JObject jsonObject, string? atTypeValue)
+    private T? IdentifyConcreteType(JObject jsonObject, JsonSerializer serializer, string? atTypeValue)
     {
         T? service = null;
         var typeValue = jsonObject["type"]?.Value<string>();
@@ -88,14 +88,26 @@ internal class ResourceDeserialiser<T>
                 nameof(AuthAccessTokenService2) => new AuthAccessTokenService2() as T,
                 nameof(AuthLogoutService2) => new AuthLogoutService2() as T,
                 nameof(AuthProbeService2) => new AuthProbeService2() as T,
+                nameof(AnnotationCollection) => new AnnotationCollection() as T,
+                nameof(AnnotationPage) => new AnnotationPage() as T,
+                nameof(Agent) => new Agent() as T,
+                nameof(Annotation) => new Annotation() as T,
+                nameof(Sound) => new Sound() as T,
+                nameof(Video) => new Video() as T,
+                nameof(Image) => new Image() as T,
+                nameof(Feature) => new Feature() as T,
+                nameof(Canvas) => new Canvas() as T,
+                nameof(Collection) => new Collection() as T,
+                nameof(Manifest) => new Manifest() as T,
+                nameof(SpecificResource) => new SpecificResource() as T,
+                nameof(TextualBody) =>  new TextualBody(jsonObject.ContainsKey("value") ? 
+                    jsonObject["value"].Value<string>() : string.Empty) as T,
                 _ => null
             };
-            if (service != null) return service;
-
-            service = additionalTypeBasedConverter?.Invoke(typeValue);
+            
             if (service != null) return service;
         }
-
+        
         var profileToken = jsonObject["profile"];
         if (profileToken != null)
         {
@@ -119,6 +131,29 @@ internal class ResourceDeserialiser<T>
             if (profile.StartsWith(auth0)) return new Auth.V0.AuthCookieService(profile) as T;
             if (profile.StartsWith(auth1)) return new Auth.V1.AuthCookieService(profile) as T;
         }
+        
+        if (jsonObject.ContainsKey("motivation"))
+        {
+            var motivation = jsonObject["motivation"]?.Value<string>();
+            service = motivation switch
+            {
+                Presentation.V3.Constants.Motivation.Supplementing => new SupplementingDocumentAnnotation() as T,
+                Presentation.V3.Constants.Motivation.Painting => new PaintingAnnotation() as T,
+                Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation() as T,
+                _ => new GeneralAnnotation(motivation) as T
+            };
+            
+            if (service != null) return service;
+        }
+        
+        // Look for consumer-provided mapping
+        if (typeValue != null
+            && serializer.Context.Context is IDictionary<string, Func<JObject, T>> customMappings
+            && customMappings.TryGetValue(typeValue, out var customMapping))
+        {
+            service = customMapping(jsonObject) as T;
+            if (service != null) return service;
+        }
 
         if (!string.IsNullOrEmpty(atTypeValue))
         {
@@ -132,6 +167,11 @@ internal class ResourceDeserialiser<T>
         if (!string.IsNullOrEmpty(typeValue))
         {
             return new Presentation.V3.ExternalService(typeValue) as T;
+        }
+        
+        if (jsonObject.ContainsKey("id"))
+        {
+            return new ClassifyingBody(jsonObject["id"].Value<string>()) as T;
         }
 
         return service;

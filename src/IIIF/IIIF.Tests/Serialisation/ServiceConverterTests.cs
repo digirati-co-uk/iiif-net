@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
+using IIIF.Presentation.V3;
 using IIIF.Serialisation;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
@@ -135,6 +135,21 @@ public class ServiceConverterTests
         
         result.Should().BeOfType(expected);
     }
+    
+    [Theory]
+    [InlineData("Sound")]
+    [InlineData("Image")]
+    [InlineData("Video")]
+    [InlineData("Feature")]
+    [InlineData("Text")]
+    public void ReadJson_FallsBackTo_V3ExternalService_IfType_AndUnableToDetermine(string type)
+    {
+        var jsonId = $"{{\"type\": \"{type}\"}}";
+        
+        var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
+        
+        result.Should().BeOfType<ExternalService>();
+    }
 
     [Fact]
     public void ReadJson_V2ServiceReference_IfTypeAndIdOnly()
@@ -154,15 +169,5 @@ public class ServiceConverterTests
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
         result.Should().BeOfType<IIIF.Presentation.V2.ExternalService>();
-    }
-    
-    [Fact]
-    public void ReadJson_FallsBackTo_V3ExternalService_IfType_AndUnableToDetermine()
-    {
-        var jsonId = "{\"type\": \"Text\", \"id\": \"https://service-reference-test\", \"label\": { \"none\": [\"test\"]} }";
-        
-        var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
-        
-        result.Should().BeOfType<IIIF.Presentation.V3.ExternalService>();
     }
 }

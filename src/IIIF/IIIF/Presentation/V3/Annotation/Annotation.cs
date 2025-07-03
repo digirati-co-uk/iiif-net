@@ -17,9 +17,9 @@ public class Annotation : ResourceBase, IAnnotation
     public string? TimeMode { get; set; }
 
     /// <summary>
-    /// Note that this is a IIIF-specific use of target; can be anything in W3C
+    /// What this annotation is targeting
     /// </summary>
     [JsonProperty(Order = 900)]
     [JsonConverter(typeof(TargetConverter))]
-    public IStructuralLocation? Target { get; set; }
+    public ResourceBase? Target { get; set; }
 }
