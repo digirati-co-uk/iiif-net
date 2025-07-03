@@ -347,4 +347,51 @@ public class ManifestSerialisationTests
         services.Should().HaveCount(1);
         services.Single().Should().BeEquivalentTo(expectedService);
     }
+    
+    [Fact]
+    public void CanDeserialise_AnnotationTargetingAnotherAnnotation()
+    {
+        // Stripped back manifest from https://github.com/digirati-co-uk/iiif-net/issues/74
+        var annotationTargetingAnother = @"
+{
+    ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
+    ""id"": ""https://example.org/m3folwy0u7-mckceiru"",
+    ""type"": ""Manifest"",
+    ""items"": [
+        {
+            ""id"": ""https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6"",
+            ""type"": ""Canvas"",
+            ""annotations"": [
+                {
+                    ""id"": ""https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6/annotations/dsat3mfvzni-mckcffwo"",
+                    ""type"": ""AnnotationPage"",
+                    ""items"": [
+                        {
+                            ""id"": ""https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6/annotations/dsat3mfvzni-mckcffwo/annotation/aqibmu1dtrr-mckcfvrh"",
+                            ""type"": ""Annotation"",
+                            ""motivation"": ""describing"",
+                            ""target"": {
+                                ""id"": ""https://example.org/m3folwy0u7-mckceiru/annotation/qel8952t5f-mckcfbo5"",
+                                ""type"": ""Annotation""
+                            },
+                            ""body"": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+";
+
+        var mani = annotationTargetingAnother.FromJson<Manifest>();
+        
+        var expectedTarget = new Annotation
+        {
+            Id = "https://example.org/m3folwy0u7-mckceiru/annotation/qel8952t5f-mckcfbo5"
+        };
+
+        var target = mani.Items[0].Annotations[0].Items[0].As<Annotation>().Target;
+        target.Should().BeEquivalentTo(expectedTarget);
+    }
 }

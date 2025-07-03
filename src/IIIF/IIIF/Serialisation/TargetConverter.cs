@@ -1,9 +1,8 @@
 using System;
 using IIIF.Presentation.V3;
+using IIIF.Serialisation.Deserialisation.Helpers;
 using IIIF.Utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Range = IIIF.Presentation.V3.Range;
 
 namespace IIIF.Serialisation;
 
@@ -11,10 +10,10 @@ namespace IIIF.Serialisation;
 /// <see cref="JsonConverter"/> for <see cref="IStructuralLocation"/> objects.
 /// Serialises Id-only <see cref="Canvas"/> objects to string representation and deserialises back. 
 /// </summary>
-public class TargetConverter : JsonConverter<IStructuralLocation>
+public class TargetConverter : JsonConverter<ResourceBase>
 {
-    public override IStructuralLocation? ReadJson(JsonReader reader, Type objectType,
-        IStructuralLocation? existingValue,
+    public override ResourceBase? ReadJson(JsonReader reader, Type objectType,
+        ResourceBase? existingValue,
         bool hasExistingValue, JsonSerializer serializer)
     {
         if (reader.TokenType == JsonToken.String)
@@ -23,23 +22,14 @@ public class TargetConverter : JsonConverter<IStructuralLocation>
         }
         else if (reader.TokenType == JsonToken.StartObject)
         {
-            var obj = JObject.Load(reader);
-
-            var type = obj["type"].Value<string>();
-            IStructuralLocation structuralLocation = type switch
-            {
-                nameof(Canvas) => new Canvas(),
-                nameof(Range) => new Range(),
-                nameof(SpecificResource) => new SpecificResource()
-            };
-            serializer.Populate(obj.CreateReader(), structuralLocation);
-            return structuralLocation;
+            var converter = new ResourceDeserialiser<ResourceBase>(this);
+            return converter.ReadJson(reader, serializer);
         }
 
         return null;
     }
 
-    public override void WriteJson(JsonWriter writer, IStructuralLocation? value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, ResourceBase? value, JsonSerializer serializer)
     {
         if (value is Canvas canvas && (canvas.SerialiseTargetAsId || IsSimpleCanvas(canvas)))
         {

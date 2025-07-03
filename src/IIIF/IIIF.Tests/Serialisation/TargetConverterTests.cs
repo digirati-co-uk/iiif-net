@@ -67,7 +67,7 @@ public class TargetConverterTests
         var serialised = JsonConvert.SerializeObject(canvas, Formatting.None, sut);
 
         // Act
-        var deserialised = JsonConvert.DeserializeObject<IStructuralLocation>(serialised, sut);
+        var deserialised = JsonConvert.DeserializeObject<ResourceBase>(serialised, sut);
 
         // Assert
         deserialised.Should().BeEquivalentTo(canvas);

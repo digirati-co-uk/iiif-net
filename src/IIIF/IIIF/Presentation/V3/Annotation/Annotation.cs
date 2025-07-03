@@ -21,5 +21,5 @@ public class Annotation : ResourceBase, IAnnotation
     /// </summary>
     [JsonProperty(Order = 900)]
     [JsonConverter(typeof(TargetConverter))]
-    public IStructuralLocation? Target { get; set; }
+    public ResourceBase? Target { get; set; }
 }
