@@ -3,6 +3,8 @@ using IIIF.Auth.V1;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
+using IIIF.Presentation.V3;
+using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Search.V1;
@@ -80,6 +82,13 @@ public class ResourceConverterTests
     [InlineData("Video", typeof(Video))]
     [InlineData("Image", typeof(Image))]
     [InlineData("Feature", typeof(Feature))]
+    [InlineData("AnnotationCollection", typeof(AnnotationCollection))]
+    [InlineData("AnnotationPage", typeof(AnnotationPage))]
+    [InlineData("Agent", typeof(Agent))]
+    [InlineData("Annotation", typeof(Annotation))]
+    [InlineData("Collection", typeof(Collection))]
+    [InlineData("Manifest", typeof(Manifest))]
+    [InlineData("SpecificResource", typeof(SpecificResource))]
     public void ReadJson_IdentifiesType_FromType(string type, Type expectedType)
     {
         var input = $"{{ \"type\": \"{type}\", \"id\": \"{Guid.NewGuid()}\"}}";
@@ -145,5 +154,23 @@ public class ResourceConverterTests
         var deserialised = JsonConvert.DeserializeObject<IResource>(input, sut);
 
         deserialised.Should().BeEquivalentTo(expected);
+    }
+    
+    [Fact]
+    public void ReadJson_IdentifiesExternalService_WhenTextualBodyNoValue()
+    {
+        var input = $"{{ \"type\": \"TextualBody\", \"id\": \"{Guid.NewGuid()}\" }}";
+        
+        JsonConvert.DeserializeObject<IResource>(input, sut)
+            .Should().BeOfType(typeof(ExternalService), "Concrete type identified from profile");
+    }
+    
+    [Fact]
+    public void ReadJson_IdentifiesTextualBody_WhenTextualBodyWithValue()
+    {
+        var input = $"{{ \"type\": \"TextualBody\", \"id\": \"{Guid.NewGuid()}\", \"value\" : \"stuff\" }}";
+
+        JsonConvert.DeserializeObject<IResource>(input, sut)
+            .Should().BeOfType(typeof(TextualBody), "Concrete type identified from profile");
     }
 }

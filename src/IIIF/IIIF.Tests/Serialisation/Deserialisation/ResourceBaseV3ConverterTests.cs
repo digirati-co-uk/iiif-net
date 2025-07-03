@@ -5,7 +5,6 @@ using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Tests.Serialisation.Deserialisation;
@@ -15,13 +14,6 @@ public class ResourceBaseV3ConverterTests
     private readonly ResourceBaseV3Converter sut = new();
     
     [Theory]
-    [InlineData("AnnotationCollection", typeof(AnnotationCollection))]
-    [InlineData("AnnotationPage", typeof(AnnotationPage))]
-    [InlineData("Agent", typeof(Agent))]
-    [InlineData("Annotation", typeof(Annotation))]
-    [InlineData("Collection", typeof(Collection))]
-    [InlineData("Manifest", typeof(Manifest))]
-    [InlineData("SpecificResource", typeof(SpecificResource))]
     [InlineData("TextualBody", typeof(TextualBody))]
     public void ReadJson_IdentifiesType_FromType(string type, Type expectedType)
     {
