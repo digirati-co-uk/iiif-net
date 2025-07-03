@@ -157,12 +157,12 @@ public class ResourceConverterTests
     }
     
     [Fact]
-    public void ReadJson_IdentifiesExternalService_WhenTextualBodyNoValue()
+    public void ReadJson_IdentifiesTextualBody_WhenTextualBodyNoValue()
     {
         var input = $"{{ \"type\": \"TextualBody\", \"id\": \"{Guid.NewGuid()}\" }}";
         
         JsonConvert.DeserializeObject<IResource>(input, sut)
-            .Should().BeOfType(typeof(ExternalService), "Concrete type identified from profile");
+            .Should().BeOfType(typeof(TextualBody));
     }
     
     [Fact]
@@ -171,6 +171,6 @@ public class ResourceConverterTests
         var input = $"{{ \"type\": \"TextualBody\", \"id\": \"{Guid.NewGuid()}\", \"value\" : \"stuff\" }}";
 
         JsonConvert.DeserializeObject<IResource>(input, sut)
-            .Should().BeOfType(typeof(TextualBody), "Concrete type identified from profile");
+            .Should().BeOfType(typeof(TextualBody));
     }
 }

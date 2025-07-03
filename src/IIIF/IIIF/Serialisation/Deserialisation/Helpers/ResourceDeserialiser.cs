@@ -100,8 +100,8 @@ internal class ResourceDeserialiser<T>
                 nameof(Collection) => new Collection() as T,
                 nameof(Manifest) => new Manifest() as T,
                 nameof(SpecificResource) => new SpecificResource() as T,
-                nameof(TextualBody) => jsonObject.ContainsKey("value") ? 
-                    new TextualBody(jsonObject["value"].Value<string>()) as T : null,
+                nameof(TextualBody) =>  new TextualBody(jsonObject.ContainsKey("value") ? 
+                    jsonObject["value"].Value<string>() : string.Empty) as T,
                 _ => null
             };
             
