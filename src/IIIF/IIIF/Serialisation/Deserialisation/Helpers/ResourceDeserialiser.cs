@@ -169,7 +169,7 @@ internal class ResourceDeserialiser<T>
             return new Presentation.V3.ExternalService(typeValue) as T;
         }
         
-        if (jsonObject.ContainsKey("id") && !jsonObject.ContainsKey("type"))
+        if (jsonObject.ContainsKey("id"))
         {
             return new ClassifyingBody(jsonObject["id"].Value<string>()) as T;
         }
