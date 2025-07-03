@@ -141,7 +141,8 @@ public class ServiceConverterTests
     [InlineData("Image")]
     [InlineData("Video")]
     [InlineData("Feature")]
-    public void ReadJson_GetNullBack_WhenDeserializeResourceAsService(string type)
+    [InlineData("Text")]
+    public void ReadJson_FallsBackTo_V3ExternalService_IfType_AndUnableToDetermine(string type)
     {
         var jsonId = $"{{\"type\": \"{type}\"}}";
         
@@ -168,15 +169,5 @@ public class ServiceConverterTests
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
         result.Should().BeOfType<IIIF.Presentation.V2.ExternalService>();
-    }
-    
-    [Fact]
-    public void ReadJson_FallsBackTo_V3ExternalService_IfType_AndUnableToDetermine()
-    {
-        var jsonId = "{\"type\": \"Text\", \"id\": \"https://service-reference-test\", \"label\": { \"none\": [\"test\"]} }";
-        
-        var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
-        
-        result.Should().BeOfType<IIIF.Presentation.V3.ExternalService>();
     }
 }
