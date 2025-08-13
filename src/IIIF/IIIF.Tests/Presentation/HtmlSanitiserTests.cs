@@ -60,6 +60,16 @@ public class HtmlSanitiserTests
     }
 
     [Fact]
+    public void SanitiseHtml_DoesNotAddSpaceForInlineElements()
+    {
+        const string input = "<strong>some</strong>thing<em>here</em><div>another</div><div>thing</div>";
+        const string expected = "<span>somethinghere another thing</span>";
+        var actual = input.SanitiseHtml();
+
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
     public void SanitiseHtml_WillReplaceTagReplacementValue_WithSpace()
     {
         // This test highlights a quirk to be aware of: "~||~" is internal space identifier so will be lost

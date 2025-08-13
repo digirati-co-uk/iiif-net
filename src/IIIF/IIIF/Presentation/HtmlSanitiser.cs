@@ -33,6 +33,14 @@ public static class HtmlSanitiser
             ["img"] = new HashSet<string> { "src", "alt" },
         };
 
+    // These are inline elements and should not have a space added
+    // from https://www.w3.org/TR/2011/WD-html5-20110405/text-level-semantics.html
+    private static readonly HashSet<string> InlineElements = new()
+    {
+        "a", "em", "strong", "small", "s", "cite", "q", "dfn", "abbr", "time", "code", "var", "samp", "kbd", "sub", "i",
+        "b", "mark", "ruby", "rt", "rp", "bdi", "bdo", "span", "br", "wbr"
+    };
+
     static HtmlSanitiser()
     {
         // NOTE - used HTML sanitiser lib doesn't allow tag-specific attributes, so subscribe to RemovingAttribute
@@ -58,11 +66,15 @@ public static class HtmlSanitiser
                  * This custom handling (after further handling from caller) => "One Two Three Four"
                  */
                 var childNodes = args.Tag.ChildNodes;
-                if (childNodes.Length == 1 && childNodes[0].NodeType == NodeType.Text)
+                if (childNodes.Length == 1 &&
+                    childNodes[0].NodeType == NodeType.Text &&
+                    !InlineElements.Contains(args.Tag.TagName.ToLower()))
                 {
+                    // If the child is text and current element is block-level, append placeholder to become space 
                     childNodes[0].TextContent = $"{TagReplacement}{childNodes[0].TextContent}{TagReplacement}";
                 }
-                args.Tag.Replace(args.Tag.ChildNodes.ToArray());
+
+                args.Tag.Replace(childNodes.ToArray());
             }
             else
             {
