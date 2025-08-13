@@ -17,7 +17,7 @@ public class HtmlSanitiserTests
     public void SanitiseHtml_ReturnsEmptyString_IfGivenInvalidHtml(bool ignoreNonHtml)
     {
         const string input = "<div>invalid html</div>";
-        const string expected = "";
+        const string expected = "<span>invalid html</span>";
 
         var actual = input.SanitiseHtml(ignoreNonHtml);
 
@@ -47,16 +47,38 @@ public class HtmlSanitiserTests
     }
 
     [Fact]
-    public void SanitiseHtml_RemovesInvalidTags_IncludingChildElements()
+    public void SanitiseHtml_RemovesInvalidTags_RetainingChildElements()
     {
         const string input =
             "<br><span><small><i>hi</i></small></span><div><p>child paragraph</p></div><h1>Test</h1><ul><ol><li>foo</li></ol></ul><p><script>alert('hi');</script><sub>valid</sub> <sup>paragraph</sup></p>";
-        const string expected = "<br><span><small><i>hi</i></small></span><p><sub>valid</sub> <sup>paragraph</sup></p>";
+        const string expected =
+            "<br><span><small><i>hi</i></small></span><p>child paragraph</p>Test foo<p>alert('hi');<sub>valid</sub> <sup>paragraph</sup></p>";
 
         var actual = input.SanitiseHtml();
 
         actual.Should().Be(expected);
     }
+
+    [Fact]
+    public void SanitiseHtml_DoesNotAddSpaceForInlineElements()
+    {
+        const string input = "<strong>some</strong>thing<em>here</em><div>another</div><div>thing</div>";
+        const string expected = "<span>somethinghere another thing</span>";
+        var actual = input.SanitiseHtml();
+
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void SanitiseHtml_WillReplaceTagReplacementValue_WithSpace()
+    {
+        // This test highlights a quirk to be aware of: "~||~" is internal space identifier so will be lost
+        const string input = "<p>This is the replacement for a tag: ~||~. It will be lost here</p>";
+        const string expected = "<p>This is the replacement for a tag:  . It will be lost here</p>";
+
+        var actual = input.SanitiseHtml();
+        actual.Should().Be(expected);
+    } 
 
     [Theory]
     [InlineData("http://localhost")]
