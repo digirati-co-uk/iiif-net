@@ -47,9 +47,12 @@ public class CookbookDeserialization
                     {
                         Source = new Canvas
                             { Id = "https://iiif.io/api/cookbook/recipe/0135-annotating-point-in-canvas/canvas.json" },
-                        Selector = new PointSelector
+                        Selector = new List<ISelector>
                         {
-                            X = 3385, Y = 1464
+                            new PointSelector
+                            {
+                                X = 3385, Y = 1464
+                            }
                         }
                     }
                 }
