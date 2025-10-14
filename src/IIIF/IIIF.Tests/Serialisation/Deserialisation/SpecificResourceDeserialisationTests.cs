@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using IIIF.Presentation.V3;
+using IIIF.Presentation.V3.Selectors;
 using IIIF.Serialisation;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
@@ -40,6 +42,7 @@ public class SpecificResourceDeserialisationTests
 
         // Assert
         result.Selector.Should().HaveCount(1);
+        result.Selector.First().As<SvgSelector>().Value.Should().Contain("M1002,1393 1002,1502");
     }
     
     [Fact]
@@ -52,12 +55,12 @@ public class SpecificResourceDeserialisationTests
     ""source"": ""https://iiif.library.leeds.ac.uk/canvases/nb5fj4k4_objects_372705_001.tif"",
     ""selector"": [
         {
-            ""type"": ""SvgSelector"",
-            ""value"": ""<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><g><path d='M1002,1393 1002,1502 1564,1502 1564,1393 Z' /></g></svg>""
+            ""type"": ""PointSelector"",
+            ""x"": 100,
+            ""y"": 100
         },
         {
-            ""type"": ""SvgSelector"",
-            ""value"": ""<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><g><path d='M1002,1393 1002,1502 1564,1502 1564,1393 Z' /></g></svg>""
+            ""type"": ""AudioContentSelector"",
         }
     ]
 }
@@ -68,6 +71,8 @@ public class SpecificResourceDeserialisationTests
 
         // Assert
         result.Selector.Should().HaveCount(2);
+        result.Selector.First().As<PointSelector>().X.Should().Be(100);
+        result.Selector.Last().As<AudioContentSelector>().Should().NotBeNull();
     }
     
     [Fact]
@@ -80,8 +85,8 @@ public class SpecificResourceDeserialisationTests
     ""source"": ""https://iiif.library.leeds.ac.uk/canvases/nb5fj4k4_objects_372705_001.tif"",
     ""selector"": [
         {
-            ""type"": ""SvgSelector"",
-            ""value"": ""<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><g><path d='M1002,1393 1002,1502 1564,1502 1564,1393 Z' /></g></svg>""
+            ""type"": ""ImageApiSelector"",
+            ""region"": ""something""
         }
     ]
 }
@@ -92,5 +97,6 @@ public class SpecificResourceDeserialisationTests
 
         // Assert
         result.Selector.Should().HaveCount(1);
+        result.Selector.First().As<ImageApiSelector>().Region.Should().Be("something");
     }
 }
