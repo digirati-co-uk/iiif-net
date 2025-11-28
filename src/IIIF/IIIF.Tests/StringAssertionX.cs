@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-
-namespace IIIF.Tests;
+﻿namespace IIIF.Tests;
 
 public static class StringAssertionX
 {
