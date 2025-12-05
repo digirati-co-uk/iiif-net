@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace IIIF.Presentation.V3.Annotation;
 
-public class TextualBody : ResourceBase
+public class TextualBody : ResourceBase, IPaintable
 {
     public TextualBody(string value)
     {
