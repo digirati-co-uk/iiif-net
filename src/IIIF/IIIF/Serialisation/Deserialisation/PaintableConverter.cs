@@ -22,6 +22,7 @@ public class PaintableConverter : ReadOnlyConverter<IPaintable>
         IPaintable? paintable = type switch
         {
             nameof(Sound) => new Sound(),
+            "Audio" => new Sound(),
             nameof(Video) => new Video(),
             nameof(Image) => new Image(),
             nameof(Canvas) => new Canvas(),

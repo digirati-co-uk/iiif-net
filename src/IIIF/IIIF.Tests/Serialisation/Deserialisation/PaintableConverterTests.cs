@@ -34,6 +34,7 @@ public class PaintableConverterTests
     
     [Theory]
     [InlineData("Sound", typeof(Sound))]
+    [InlineData("Audio", typeof(Sound))]
     [InlineData("Video", typeof(Video))]
     [InlineData("Image", typeof(Image))]
     [InlineData("Canvas", typeof(Canvas))]
