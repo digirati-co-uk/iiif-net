@@ -8,6 +8,10 @@ namespace IIIF.ImageApi;
 /// <remarks>see https://iiif.io/api/image/3.0/#41-region </remarks>
 public class RegionParameter
 {
+    private const string FullRegion = "full";
+    private const string SquareRegion = "square";
+    private const string PercentPrefix = "pct:";
+
     [JsonProperty(Order = 91, PropertyName = "x")]
     public float X { get; set; }
 
@@ -24,11 +28,10 @@ public class RegionParameter
     public bool Square { get; set; }
     public bool Percent { get; set; }
 
-
     public override string ToString()
     {
-        if (Full) return "full";
-        if (Square) return "square";
+        if (Full) return FullRegion;
+        if (Square) return SquareRegion;
         var xywh = $"{X},{Y},{W},{H}";
         if (Percent) return $"pct:{xywh}";
         return xywh;
@@ -38,10 +41,10 @@ public class RegionParameter
     {
         try
         {
-            if (pathPart == "full") return new RegionParameter { Full = true };
-            if (pathPart == "square") return new RegionParameter { Square = true };
+            if (pathPart == FullRegion) return new RegionParameter { Full = true };
+            if (pathPart == SquareRegion) return new RegionParameter { Square = true };
 
-            var percent = pathPart.StartsWith("pct:");
+            var percent = pathPart.StartsWith(PercentPrefix);
             var stringParts = pathPart.Substring(percent ? 4 : 0).Split(',');
             var xywh = Array.ConvertAll(stringParts, float.Parse);
             return new RegionParameter
@@ -50,9 +53,10 @@ public class RegionParameter
                 Percent = percent
             };
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException("Expected 'full', 'square' or 'x,y,w,h'. Found " + pathPart);
+            throw new ArgumentException($"Expected 'full', 'square', 'pct:x,y,w,h' or 'x,y,w,h'. Found: {pathPart}",
+                ex);
         }
     }
 }
