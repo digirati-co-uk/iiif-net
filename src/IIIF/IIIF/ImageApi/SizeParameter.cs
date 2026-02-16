@@ -9,25 +9,53 @@ namespace IIIF.ImageApi;
 /// <remarks>see https://iiif.io/api/image/3.0/#42-size </remarks>
 public class SizeParameter
 {
+    /// <summary>
+    /// Width (w) parameter value.
+    /// </summary>
     public int? Width { get; set; }
 
+    /// <summary>
+    /// Height (h) parameter value.
+    /// </summary>
     public int? Height { get; set; }
 
+    /// <summary>
+    /// True if the size parameter is "max" or "full".
+    /// </summary>
     public bool Max { get; set; }
+    
+    /// <summary>
+    /// True if the size parameter is "full".
+    /// The <see cref="Max"/> is true if size parameter is "full" or "max", use this parameter to differentiate between
+    /// the two 
+    /// </summary>
+    public bool ExplicitFull { get; set; }
 
+    /// <summary>
+    /// True if the size parameter is to be upscaled, indicated by "^".
+    /// </summary>
     public bool Upscaled { get; set; }
 
+    /// <summary>
+    /// True if the size parameter is to be confined, indicated by "!".
+    /// </summary>
     public bool Confined { get; set; }
 
+    /// <summary>
+    /// The value of the pct:n parameter.
+    /// </summary>
     public float? PercentScale { get; set; }
 
+    private const string FullSize = "full";
+    private const string MaxSize = "max";
+    
     public override string ToString()
     {
         var sb = new StringBuilder();
         if (Upscaled) sb.Append('^');
         if (Max)
         {
-            sb.Append("max");
+            sb.Append(ExplicitFull ? FullSize : MaxSize);
             return sb.ToString();
         }
 
@@ -55,9 +83,10 @@ public class SizeParameter
             pathPart = pathPart[1..];
         }
 
-        if (pathPart is "max" or "full")
+        if (pathPart is MaxSize or FullSize)
         {
             size.Max = true;
+            if (pathPart == FullSize) size.ExplicitFull = true;
             return size;
         }
 

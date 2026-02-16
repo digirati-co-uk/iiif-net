@@ -22,6 +22,25 @@ public class SizeParameterTests
         sizeParameter.Should().BeEquivalentTo(expected);
         sizeParameter.ToString().Should().Be(size);
     }
+    
+    [Fact]
+    public void Parse_CorrectFull()
+    {
+        // Arrange
+        const string size = "full";
+        var expected = new SizeParameter
+        {
+            ExplicitFull = true,
+            Max = true,
+        };
+
+        // Act
+        var sizeParameter = SizeParameter.Parse(size);
+
+        // Assert
+        sizeParameter.Should().BeEquivalentTo(expected);
+        sizeParameter.ToString().Should().Be(size);
+    }
 
     [Fact]
     public void Parse_CorrectMaxScaled()
