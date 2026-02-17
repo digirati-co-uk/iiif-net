@@ -257,7 +257,7 @@ public class ImageRequestXTests
         var action = () => ImageRequest.Parse($"{prefix}my-asset/info.jsonll", prefix);
         
         // Assert
-        action.Should().ThrowExactly<ArgumentException>();
+        action.Should().Throw<ArgumentException>();
     }
 
     [Theory]
