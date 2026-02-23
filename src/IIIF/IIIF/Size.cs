@@ -1,4 +1,5 @@
 ﻿using System;
+using IIIF.Utils;
 
 namespace IIIF;
 
@@ -134,19 +135,15 @@ public class Size
             return Square(targetWidth ?? targetHeight ?? -1);
 
         return new Size(
-            targetWidth ?? size.Width * targetHeight!.Value / size.Height,
-            targetHeight ?? size.Height * targetWidth!.Value / size.Width);
+            targetWidth ?? ((size.Width * targetHeight!.Value) / size.Height),
+            targetHeight ?? ((size.Height * targetWidth!.Value) / size.Width));
     }
 
     /// <summary>
     /// Resize specified Size growing/shrinking by specified % value
     /// </summary>
-    public static Size ResizePercent(Size size, float percentage)
-    {
-        var width = Convert.ToInt32(size.Width * (percentage / 100));
-        var height = Convert.ToInt32(size.Height * (percentage / 100));
-        return new Size(width, height);
-    }
+    public static Size ResizePercent(Size size, float percentage) =>
+        new(percentage.PercentOf(size.Width), percentage.PercentOf(size.Height));
 
     /// <summary>
     /// Get % size difference between larger and smaller size, based on longest edge.
