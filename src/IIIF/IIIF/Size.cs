@@ -74,7 +74,7 @@ public class Size
     /// <returns>New Size object</returns>
     public static Size FromString(string size)
     {
-        var parts = size.Split(",");
+        var parts = size.Split(',');
         return new Size(int.Parse(parts[0]), int.Parse(parts[1]));
     }
 

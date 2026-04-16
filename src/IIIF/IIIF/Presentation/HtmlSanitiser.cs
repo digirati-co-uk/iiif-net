@@ -19,7 +19,7 @@ public static class HtmlSanitiser
     private static readonly HtmlSanitizerOptions HtmlSanitizerOptions = new()
     {
         AllowedTags = new HashSet<string> { "a", "b", "br", "i", "img", "p", "small", "span", "sub", "sup" },
-        AllowedAttributes = new HashSet<string>(0),
+        AllowedAttributes = new HashSet<string>(),
         AllowedSchemes = new HashSet<string> { "http", "https", "mailto" },
         UriAttributes = new HashSet<string> { "href" },
     };

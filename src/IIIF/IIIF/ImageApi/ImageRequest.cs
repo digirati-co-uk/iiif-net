@@ -146,17 +146,19 @@ public class ImageRequest
         bool setOriginal = false)
     {
         // Working back from last accessed index, is the {identifier}
-        var candidate = parts[..lastIndex];
-        request.Identifier = candidate[^1];
+        var candidate = parts.Take(lastIndex).ToArray();
+        request.Identifier = candidate[candidate.Length - 1];
         var schemeDelimiter = path.IndexOf("://", StringComparison.Ordinal);
-        
+
         // If there are elements before {identifier} then set {prefix}
         if (candidate.Length > 1)
         {
             var startIndex = schemeDelimiter > 0 ? 3 : 0;
+            if (startIndex > candidate.Length - 1)
+                throw new ArgumentOutOfRangeException(nameof(parts), "Not enough path segments");
             request.Prefix = candidate.Length == startIndex + 1
                 ? null!
-                : $"{string.Join("/", candidate[startIndex..^1])}/";
+                : $"{string.Join("/", candidate.Skip(startIndex).Take(candidate.Length - startIndex - 1))}/";
         }
 
         // Set {scheme}://{server}, if provided

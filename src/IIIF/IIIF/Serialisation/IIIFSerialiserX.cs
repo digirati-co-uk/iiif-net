@@ -55,7 +55,7 @@ public static class IIIFSerialiserX
     /// <returns>Stream representation of iiif resource json.</returns>
     public static void AsJsonStream(this JsonLdBase iiifResource, Stream stream)
     {
-        using var sw = new StreamWriter(stream, leaveOpen: true);
+        using var sw = new StreamWriter(stream, System.Text.Encoding.UTF8, 1024, leaveOpen: true);
         using var writer = new JsonTextWriter(sw);
         var serializer = JsonSerializer.Create(SerializerSettings);
         serializer.Serialize(writer, iiifResource);

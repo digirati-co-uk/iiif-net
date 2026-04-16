@@ -44,7 +44,7 @@ public class ObjectIfSingleConverter : JsonConverter
 
     public override bool CanConvert(Type objectType)
     {
-        return objectType.IsAssignableTo(typeof(IEnumerable));
+        return typeof(IEnumerable).IsAssignableFrom(objectType);
     }
 
     private object? Deserialise(JsonReader reader, Type objectType, JsonSerializer serializer, bool isArray)

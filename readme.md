@@ -8,6 +8,14 @@ The different APIs are split by namespace containing name and version.
 
 E.g. `IIIF.Auth.V1`, `IIIF.Presentation.V2`, `IIIF.Presentation.V3`.
 
+
+## .netstandard 2.0 
+
+This is a special build that is abandoned, but could be useful for integration to
+legacy systems.  Not fixes or updates will be done to this branch, provided as is.
+
+
+
 ## Model Notes
 
 Strongly typed models generally have public properties that map to possible properties as detailed in the relevant IIIF spec, however there are a few differences to this:

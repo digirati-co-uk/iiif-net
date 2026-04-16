@@ -35,7 +35,9 @@ public class LanguageMapSerialiser : JsonConverter<LanguageMap>
         // if has a single language, with a single value, of length less than X, output without formatting
         if (value.Count == 1)
         {
-            var (key, list) = value.Single();
+            var single = value.Single();
+            var key = single.Key;
+            var list = single.Value;
             if (list.Count == 1 && list[0].Length <= StringArrayConverter.MaxChars)
             {
                 var output = new Dictionary<string, List<string>>
@@ -49,10 +51,10 @@ public class LanguageMapSerialiser : JsonConverter<LanguageMap>
 
         // output with 'normal' formatting. Can't just call serialiser with value or we end up in an infinite loop
         writer.WriteStartObject();
-        foreach (var (key, values) in value)
+        foreach (var kvp in value)
         {
-            writer.WritePropertyName(key);
-            serializer.Serialize(writer, values);
+            writer.WritePropertyName(kvp.Key);
+            serializer.Serialize(writer, kvp.Value);
         }
 
         writer.WriteEndObject();
