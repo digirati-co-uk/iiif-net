@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using FluentAssertions;
 using IIIF.ImageApi;
 
 namespace IIIF.Tests.ImageApi;

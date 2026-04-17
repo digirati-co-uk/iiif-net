@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using FluentAssertions;
 using IIIF.Auth.V1;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V2.Strings;
 using IIIF.Serialisation;
-using Xunit;
 
 namespace IIIF.Tests.Serialisation;
 
@@ -15,10 +13,15 @@ public class ImageService3SerialiserTests
     {
         // Arrange
         var imageService = new ImageService3 { Id = "foo" };
-        const string expected = "{\n  \"id\": \"foo\",\n  \"type\": \"ImageService3\"\n}";
+        const string expected = """
+        {
+          "id": "foo",
+          "type": "ImageService3"
+        }
+        """;
 
         // Act
-        var result = imageService.AsJson().Replace("\r\n", "\n");
+        var result = imageService.AsJson();
 
         // Assert
         result.Should().Be(expected);
@@ -29,10 +32,16 @@ public class ImageService3SerialiserTests
     {
         // Arrange
         var imageService = new ImageService3 { Id = "foo", Profile = "bar" };
-        const string expected = "{\n  \"id\": \"foo\",\n  \"type\": \"ImageService3\",\n  \"profile\": \"bar\"\n}";
+        const string expected = """
+        {
+          "id": "foo",
+          "type": "ImageService3",
+          "profile": "bar"
+        }
+        """;
 
         // Act
-        var result = imageService.AsJson().Replace("\r\n", "\n");
+        var result = imageService.AsJson();
 
         // Assert
         result.Should().Be(expected);

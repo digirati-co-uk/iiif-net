@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using FluentAssertions;
 using IIIF.Serialisation;
 using Newtonsoft.Json;
-using Xunit;
 
 namespace IIIF.Tests.Serialisation;
 
@@ -21,10 +19,10 @@ public class PrettyIIIFContractResolverTests
     }
 
     [Theory]
-    [InlineData(0, 123, "{\"height\":123}")]
-    [InlineData(123, 0, "{\"width\":123}")]
-    [InlineData(99, 123, "{\"width\":99,\"height\":123}")]
-    [InlineData(0, 0, "{}")]
+    [InlineData(0, 123, """{"height":123}""")]
+    [InlineData(123, 0, """{"width":123}""")]
+    [InlineData(99, 123, """{"width":99,"height":123}""")]
+    [InlineData(0, 0, """{}""")]
     public void WidthHeightIgnored_IfZero(int width, int height, string expected)
     {
         // Arrange
@@ -38,12 +36,12 @@ public class PrettyIIIFContractResolverTests
     }
 
     [Theory]
-    [InlineData(0, 123, "{\"height\":123}")]
-    [InlineData(null, 123, "{\"height\":123}")]
-    [InlineData(123, 0, "{\"width\":123}")]
-    [InlineData(123, null, "{\"width\":123}")]
-    [InlineData(99, 123, "{\"width\":99,\"height\":123}")]
-    [InlineData(0, 0, "{}")]
+    [InlineData(0, 123, """{"height":123}""")]
+    [InlineData(null, 123, """{"height":123}""")]
+    [InlineData(123, 0, """{"width":123}""")]
+    [InlineData(123, null, """{"width":123}""")]
+    [InlineData(99, 123, """{"width":99,"height":123}""")]
+    [InlineData(0, 0, """{}""")]
     [InlineData(null, null, "{}")]
     public void NullableWidthHeightIgnored_IfZeroOrNull(int? width, int? height, string expected)
     {
@@ -90,7 +88,7 @@ public class PrettyIIIFContractResolverTests
     {
         // Arrange
         var testClass = new TestClass { OptionalList = new List<string> { "foo" } };
-        const string expected = "{\"optionalList\":[\"foo\"]}";
+        const string expected = """{"optionalList":["foo"]}""";
 
         // Act
         var output = JsonConvert.SerializeObject(testClass, jsonSerializerSettings);
@@ -132,7 +130,7 @@ public class PrettyIIIFContractResolverTests
     {
         // Arrange
         var testClass = new TestClass { RequiredList = new List<string> { "foo" } };
-        const string expected = "{\"requiredList\":[\"foo\"]}";
+        const string expected = """{"requiredList":["foo"]}""";
 
         // Act
         var output = JsonConvert.SerializeObject(testClass, jsonSerializerSettings);
@@ -146,7 +144,7 @@ public class PrettyIIIFContractResolverTests
     {
         // Arrange
         var testClass = new TestClass { OneOrMore = new List<string> { "foo" } };
-        const string expected = "{\"oneOrMore\":\"foo\"}";
+        const string expected = """{"oneOrMore":"foo"}""";
 
         // Act
         var output = JsonConvert.SerializeObject(testClass, jsonSerializerSettings);
@@ -160,7 +158,7 @@ public class PrettyIIIFContractResolverTests
     {
         // Arrange
         var testClass = new TestClass { OneOrMore = new List<string> { "foo", "bar" } };
-        const string expected = "{\"oneOrMore\":[\"foo\",\"bar\"]}";
+        const string expected = """{"oneOrMore":["foo","bar"]}""";
 
         // Act
         var output = JsonConvert.SerializeObject(testClass, jsonSerializerSettings);

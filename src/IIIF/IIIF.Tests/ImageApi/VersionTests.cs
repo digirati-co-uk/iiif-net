@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using FluentAssertions;
 using IIIF.ImageApi;
-using Xunit;
 
 namespace IIIF.Tests.ImageApi;
 
