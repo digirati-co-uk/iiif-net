@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
@@ -43,7 +44,17 @@ internal class ResourceDeserialiser<T>
 
         var service = IdentifyConcreteType(jsonObject, serializer, atTypeValue);
 
-        serializer.Populate(jsonObject.CreateReader(), service);
+        // Some real-world manifests use [] for optional single-object properties
+        // e.g. "placeholderCanvas": [] — remove these before Populate to avoid converter errors
+        var emptyArrayProps = jsonObject.Properties()
+            .Where(p => p.Value is JArray { Count: 0 })
+            .ToList();
+        foreach (var prop in emptyArrayProps)
+        {
+            prop.Remove();
+        }
+
+        serializer.Populate(jsonObject.CreateReader(), service!);
         return service;
     }
     
@@ -66,7 +77,7 @@ internal class ResourceDeserialiser<T>
 
     private T? IdentifyConcreteType(JObject jsonObject, JsonSerializer serializer, string? atTypeValue)
     {
-        T? service = null;
+        T? service;
         var typeValue = jsonObject["type"]?.Value<string>();
         service = atTypeValue switch
         {

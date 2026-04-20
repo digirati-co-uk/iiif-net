@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using IIIF.Presentation.V3;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,6 +23,9 @@ public class StructuralLocationConverter : ReadOnlyConverter<IStructuralLocation
             nameof(Range) => new Range(),
             nameof(SpecificResource) => new SpecificResource()
         };
+
+        foreach (var prop in jsonObject.Properties().Where(p => p.Value is JArray { Count: 0 }).ToList())
+            prop.Remove();
 
         serializer.Populate(jsonObject.CreateReader(), structuralLocation);
         return structuralLocation;
