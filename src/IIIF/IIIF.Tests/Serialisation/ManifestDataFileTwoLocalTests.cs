@@ -11,16 +11,16 @@ using IIIF.Tests.Serialisation.Data;
 namespace IIIF.Tests.Serialisation;
 
 /// <summary>
-/// Offline unit tests for the TU Delft exhibitions collection using embedded JSON.
+/// Offline unit tests for the anonymized sample collection using embedded JSON.
 /// These run without any network access and are always safe to run in CI.
 /// </summary>
-public class TuDelftCollectionLocalTests
+public class ManifestDataFileTwoLocalTests
 {
     private readonly Collection collection;
 
-    public TuDelftCollectionLocalTests()
+    public ManifestDataFileTwoLocalTests()
     {
-        collection = TuDelftCollectionData.Json.FromJson<Collection>()!;
+        collection = ManifestDataFileTwo.Json.FromJson<Collection>()!;
     }
 
     [Fact]
@@ -32,21 +32,21 @@ public class TuDelftCollectionLocalTests
     [Fact]
     public void Local_CollectionId_IsCorrect()
     {
-        collection.Id.Should().Be(TuDelftCollectionData.CollectionId);
+        collection.Id.Should().Be(ManifestDataFileTwo.CollectionId);
     }
 
     [Fact]
     public void Local_Label_HasEnglishAndDutch()
     {
         collection.Label.Should().NotBeNull();
-        collection.Label!["en"].Should().ContainSingle().Which.Should().Be("Exhibitions");
-        collection.Label["nl"].Should().ContainSingle().Which.Should().Be("Tentoonstellingen");
+        collection.Label!["en"].Should().ContainSingle().Which.Should().Be("Sample Exhibitions");
+        collection.Label["nl"].Should().ContainSingle().Which.Should().Be("Voorbeeldtentoonstellingen");
     }
 
     [Fact]
     public void Local_Items_HasExpectedCount()
     {
-        collection.Items.Should().HaveCount(TuDelftCollectionData.ExpectedItemCount);
+        collection.Items.Should().HaveCount(ManifestDataFileTwo.ExpectedItemCount);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class TuDelftCollectionLocalTests
     public void Local_ExtensionSlug_IsInAdditionalProperties()
     {
         collection.AdditionalProperties.Should().ContainKey("hss:slug");
-        collection.AdditionalProperties["hss:slug"]!.ToString().Should().Be("collections/exhibitions");
+        collection.AdditionalProperties["hss:slug"]!.ToString().Should().Be("collections/sample-exhibitions");
     }
 
     [Fact]
@@ -110,10 +110,10 @@ public class TuDelftCollectionLocalTests
     {
         var collectionWall = collection.Items
             .OfType<ResourceBase>()
-            .First(r => r.Id!.Contains("collection-wall"));
+            .First(r => r.Id!.Contains("exhibit-02"));
 
-        collectionWall.Label!["en"].Should().ContainSingle().Which.Should().Be("Collection wall");
-        collectionWall.Label["nl"].Should().ContainSingle().Which.Should().Be("Collectiewand");
+        collectionWall.Label!["en"].Should().ContainSingle().Which.Should().Be("Exhibit Two");
+        collectionWall.Label["nl"].Should().ContainSingle().Which.Should().Be("Tentoonstelling Twee");
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class TuDelftCollectionLocalTests
             .OfType<ResourceBase>()
             .ToList();
 
-        itemResources.Should().HaveCount(TuDelftCollectionData.ExpectedItemCount);
+        itemResources.Should().HaveCount(ManifestDataFileTwo.ExpectedItemCount);
         itemResources.Should().OnlyContain(item => item.Id != null && item.Label != null);
 
         itemResources

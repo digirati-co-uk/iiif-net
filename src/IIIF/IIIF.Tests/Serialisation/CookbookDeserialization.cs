@@ -1,6 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
+using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Selectors;
 using IIIF.Serialisation;
 using IIIF.Tests.Serialisation.Data;
@@ -14,9 +18,55 @@ public class CookbookDeserialization
     [ClassData(typeof(CookbookManifestData))]
     public void Can_Deserialize_Cookbook_Manifest(string manifestId, Manifest manifest)
     {
-        // perfunctory assertion
         manifest.Should().NotBeNull($"{manifestId} is a valid cookbook manifest");
         manifest.Id.Should().Be(manifestId);
+        manifest.Type.Should().Be("Manifest");
+        manifest.Items.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Can_Deserialize_ManifestDataFileOne_AtDepth()
+    {
+        var manifest = ManifestDataFileOne.Json.FromJson<Manifest>();
+
+        manifest.Id.Should().Be(ManifestDataFileOne.ManifestId);
+        manifest.Items.Should().NotBeNullOrEmpty();
+
+        var firstCanvas = manifest.Items![0];
+        firstCanvas.Type.Should().Be("Canvas");
+
+        var painting = firstCanvas.Items![0].Items![0].As<PaintingAnnotation>();
+        painting.Motivation.Should().Be("painting");
+
+        var body = painting.Body.As<SpecificResource>();
+        body.Type.Should().Be("SpecificResource");
+        body.Source.As<Image>().Type.Should().Be("Image");
+
+        var depth = DescendantsAndSelfWithDepth(manifest).Max(x => x.Depth);
+        depth.Should().BeGreaterThanOrEqualTo(5);
+    }
+
+    [Fact]
+    public void Can_Deserialize_ManifestDataFileTwo_AtDepth()
+    {
+        var collection = ManifestDataFileTwo.Json.FromJson<Collection>();
+
+        collection.Id.Should().Be(ManifestDataFileTwo.CollectionId);
+        collection.Items.Should().HaveCount(ManifestDataFileTwo.ExpectedItemCount);
+        collection.AdditionalProperties.Should().ContainKey("hss:slug");
+
+        var bilingualItem = collection.Items!
+            .OfType<ResourceBase>()
+            .First(r => r.Id!.Contains("exhibit-02"));
+        bilingualItem.Label!["en"].Should().ContainSingle();
+        bilingualItem.Label["nl"].Should().ContainSingle();
+
+        var nodes = DescendantsAndSelfWithDepth(collection).ToList();
+        nodes.Any(x => x.Node is ResourceBase resource && resource.Type == "Manifest" && x.Depth == 1)
+            .Should().BeTrue();
+        nodes.Any(x => x.Node is ResourceBase resource && resource.Type == "Image" && x.Depth >= 1)
+            .Should().BeTrue();
+        nodes.Max(x => x.Depth).Should().BeGreaterThanOrEqualTo(2);
     }
 
     [Fact]
@@ -59,5 +109,47 @@ public class CookbookDeserialization
         };
 
         iiif.Items[0].Annotations[0].Should().BeEquivalentTo(expectedAnnotation);
+    }
+
+    private static IEnumerable<(JsonLdBase Node, int Depth)> DescendantsAndSelfWithDepth(JsonLdBase root, int depth = 0)
+    {
+        yield return (root, depth);
+
+        foreach (var child in GetChildren(root))
+        {
+            foreach (var descendant in DescendantsAndSelfWithDepth(child, depth + 1))
+            {
+                yield return descendant;
+            }
+        }
+    }
+
+    private static IEnumerable<JsonLdBase> GetChildren(object instance)
+    {
+        foreach (var property in instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            if (property.GetIndexParameters().Length > 0) continue;
+            if (property.Name == nameof(JsonLdBase.AdditionalProperties)) continue;
+
+            var value = property.GetValue(instance);
+            if (value is null or string) continue;
+
+            if (value is JsonLdBase child)
+            {
+                yield return child;
+                continue;
+            }
+
+            if (value is IEnumerable sequence)
+            {
+                foreach (var item in sequence)
+                {
+                    if (item is JsonLdBase jsonLd)
+                    {
+                        yield return jsonLd;
+                    }
+                }
+            }
+        }
     }
 }

@@ -11,16 +11,15 @@ using System.Linq;
 namespace IIIF.Tests.Serialisation;
 
 /// <summary>
-/// Tests deserialisation of a real-world manifest reported at
-/// https://leedsunilibrary.exhibitionviewer.org/iiif/marie-hartley.json
+/// Tests deserialisation of a real-world type manifest 
 /// </summary>
-public class MarieHartleyManifestTests
+public class ManifestDataFileOneTests
 {
     private readonly Manifest manifest;
 
-    public MarieHartleyManifestTests()
+    public ManifestDataFileOneTests()
     {
-        manifest = MarieHartleyManifestData.Json.FromJson<Manifest>();
+        manifest = ManifestDataFileOne.Json.FromJson<Manifest>();
     }
 
     [Fact]
@@ -32,9 +31,9 @@ public class MarieHartleyManifestTests
     [Fact]
     public void Deserialises_ManifestId_AndLabel()
     {
-        manifest.Id.Should().Be(MarieHartleyManifestData.ManifestId);
+        manifest.Id.Should().Be(ManifestDataFileOne.ManifestId);
         manifest.Label?["en"].Should().ContainSingle()
-            .Which.Should().Be("Welcome to Yorkshire: The art of Marie Hartley");
+            .Which.Should().Be("Welcome to Example Region: The art of Sample Artist");
     }
 
     [Fact]
@@ -115,8 +114,8 @@ public class MarieHartleyManifestTests
     public void Deserialises_Provider_WithAgentAndLogo()
     {
         var provider = manifest?.Provider?.Single();
-        provider?.Id.Should().Be("https://library.leeds.ac.uk/info/1600/about");
-        provider?.Label?["en"].Should().ContainSingle().Which.Should().Be("University of Leeds");
+        provider?.Id.Should().Be("https://library.example.org/info/1600/about");
+        provider?.Label?["en"].Should().ContainSingle().Which.Should().Be("Sample University");
         provider?.Logo.Should().HaveCount(1);
         provider?.Logo?[0].Id.Should().Contain("black.png");
     }
@@ -179,7 +178,7 @@ public class MarieHartleyManifestTests
         var body = annotation?.Body?[0].Should().BeOfType<TextualBody>().Subject;
         body?.Format.Should().Be("text/html");
         body?.Language.Should().Be("en");
-        body?.Value.Should().Be("<p>Pickering</p>");
+        body?.Value.Should().Be("<p>Example Place</p>");
     }
 
     [Fact]
@@ -229,9 +228,9 @@ public class MarieHartleyManifestTests
     public void Deserialises_Provider_Homepage()
     {
         var homepage = manifest.Provider?.Single().Homepage?.Single();
-        homepage?.Id.Should().Be("https://https://library.leeds.ac.uk//");
+        homepage?.Id.Should().Be("https://library.example.org/");
         homepage?.Format.Should().Be("text/html");
-        homepage?.Label?["en"].Should().ContainSingle().Which.Should().Be("Leeds University Library Homepage");
+        homepage?.Label?["en"].Should().ContainSingle().Which.Should().Be("Sample Library Homepage");
     }
 }
 
