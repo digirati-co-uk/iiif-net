@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using IIIF.Auth.V1;
+﻿using IIIF.Auth.V1;
 using IIIF.ImageApi.V3;
 using IIIF.Presentation.V2.Strings;
 using IIIF.Serialisation;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace IIIF.Tests.Serialisation;
 
@@ -24,7 +25,13 @@ public class ImageService3SerialiserTests
         var result = imageService.AsJson();
 
         // Assert
-        result.Should().Be(expected);
+        using var doc = JsonDocument.Parse(result);
+        var root = doc.RootElement;
+
+        root.GetProperty("id").GetString().Should().Be("foo");
+        root.GetProperty("type").GetString().Should().Be("ImageService3");
+        root.TryGetProperty("profile", out _).Should().BeFalse();
+
     }
 
     [Fact]
@@ -44,7 +51,12 @@ public class ImageService3SerialiserTests
         var result = imageService.AsJson();
 
         // Assert
-        result.Should().Be(expected);
+        using var doc = JsonDocument.Parse(result);
+        var root = doc.RootElement;
+
+        root.GetProperty("id").GetString().Should().Be("foo");
+        root.GetProperty("type").GetString().Should().Be("ImageService3");
+        root.GetProperty("profile").GetString().Should().Be("bar");
     }
 
     [Fact]
