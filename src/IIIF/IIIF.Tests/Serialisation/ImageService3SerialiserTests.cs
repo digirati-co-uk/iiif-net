@@ -14,13 +14,7 @@ public class ImageService3SerialiserTests
     {
         // Arrange
         var imageService = new ImageService3 { Id = "foo" };
-        const string expected = """
-        {
-          "id": "foo",
-          "type": "ImageService3"
-        }
-        """;
-
+       
         // Act
         var result = imageService.AsJson();
 
@@ -39,14 +33,7 @@ public class ImageService3SerialiserTests
     {
         // Arrange
         var imageService = new ImageService3 { Id = "foo", Profile = "bar" };
-        const string expected = """
-        {
-          "id": "foo",
-          "type": "ImageService3",
-          "profile": "bar"
-        }
-        """;
-
+        
         // Act
         var result = imageService.AsJson();
 
