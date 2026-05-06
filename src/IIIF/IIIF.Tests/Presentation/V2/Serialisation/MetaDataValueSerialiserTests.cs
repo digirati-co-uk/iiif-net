@@ -34,13 +34,13 @@ public class MetaDataValueSerialiserTests
     {
         // Arrange
         var metadata = new MetaDataValue("Foo bar");
-        const string expected = """ "Foo bar" """;
+        const string expected = "\"Foo bar\"";
 
         // Act
         var result = JsonConvert.SerializeObject(metadata, sut);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class MetaDataValueSerialiserTests
         // Act
         var result = JsonConvert.SerializeObject(metadata, sut);
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class MetaDataValueSerialiserTests
         var result = JsonConvert.SerializeObject(metadata, sut);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class MetaDataValueSerialiserTests
         var result = JsonConvert.SerializeObject(metadata, sut);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class MetaDataValueSerialiserTests
         var result = JsonConvert.SerializeObject(metadata, sut);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class MetaDataValueSerialiserTests
         var expected = new MetaDataValue("Foo bar");
 
         // Act
-        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata.Trim());
+        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -124,7 +124,7 @@ public class MetaDataValueSerialiserTests
         expected.LanguageValues.Add(new LanguageValue { Value = "bar" });
 
         // Act
-        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata.Trim());
+        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -138,7 +138,7 @@ public class MetaDataValueSerialiserTests
         var expected = new MetaDataValue("Foo bar", "en");
 
         // Act
-        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata.Trim());
+        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -153,7 +153,7 @@ public class MetaDataValueSerialiserTests
         expected.LanguageValues.Add(new LanguageValue { Value = "bar", Language = "en" });
 
         // Act
-        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata.Trim());
+        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -168,7 +168,7 @@ public class MetaDataValueSerialiserTests
         expected.LanguageValues.Add(new LanguageValue { Value = "bar", Language = "fr" });
 
         // Act
-        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata.Trim());
+        var result = JsonConvert.DeserializeObject<MetaDataValue>(metadata);
 
         // Assert
         result.Should().BeEquivalentTo(expected);

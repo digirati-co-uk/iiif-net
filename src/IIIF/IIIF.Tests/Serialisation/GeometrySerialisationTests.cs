@@ -34,7 +34,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected.Trim());
+        result.Should().Be(expected);
     }
 
     [Fact]
