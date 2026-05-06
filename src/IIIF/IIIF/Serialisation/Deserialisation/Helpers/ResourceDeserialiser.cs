@@ -44,14 +44,9 @@ internal class ResourceDeserialiser<T>
 
         var service = IdentifyConcreteType(jsonObject, serializer, atTypeValue);
 
-        // Some real-world manifests use [] for optional single-object properties
-        // e.g. "placeholderCanvas": [] — remove these before Populate to avoid converter errors
-        var emptyArrayProps = jsonObject.Properties()
-            .Where(p => p.Value is JArray { Count: 0 })
-            .ToList();
-        foreach (var prop in emptyArrayProps)
+        if (service != null)
         {
-            prop.Remove();
+            jsonObject.RemoveEmptyArraysForObjectProperties(serializer, service.GetType());
         }
 
         serializer.Populate(jsonObject.CreateReader(), service!);
