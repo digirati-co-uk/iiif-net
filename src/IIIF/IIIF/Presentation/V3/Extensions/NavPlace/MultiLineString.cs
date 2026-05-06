@@ -7,8 +7,8 @@ public class MultiLineString : Geometry
     public override string Type => nameof(MultiLineString);
 
     /// <summary>
-    /// This is an array of LineString coordinate arrays.
+    /// This is an array of LineString coordinate arrays. Each LineString is an array of positions [lon, lat, alt?].
     /// </summary>
     [JsonProperty(Order = 2)]
-    public List<List<double>>? Coordinates { get; set; }
+    public List<List<List<double>>>? Coordinates { get; set; }
 }
