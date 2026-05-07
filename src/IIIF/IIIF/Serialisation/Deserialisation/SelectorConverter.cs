@@ -14,15 +14,17 @@ public class SelectorConverter : ReadOnlyConverter<ISelector>
         bool hasExistingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
-
-        ISelector selector = jsonObject["type"].Value<string>() switch
+        
+        ISelector selector = jsonObject["type"]?.Value<string>() switch
         {
             nameof(AudioContentSelector) => new AudioContentSelector(),
             nameof(ImageApiSelector) => new ImageApiSelector(),
             "iiif:ImageApiSelector" => new ImageApiSelector(),
             nameof(PointSelector) => new PointSelector(),
             nameof(VideoContentSelector) => new VideoContentSelector(),
-            nameof(SvgSelector) => new SvgSelector()
+            nameof(SvgSelector) => new SvgSelector(),
+            nameof(FragmentSelector) => new FragmentSelector(),
+            _ => new GeneralSelector()
         };
 
         serializer.Populate(jsonObject.CreateReader(), selector);
