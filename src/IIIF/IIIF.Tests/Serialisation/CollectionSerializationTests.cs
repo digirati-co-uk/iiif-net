@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Strings;
@@ -9,32 +8,23 @@ namespace IIIF.Tests.Serialisation;
 
 public class CollectionSerializationTests
 {
-    private Collection sampleCollection = new()
+    private readonly Collection sampleCollection = new()
     {
-        Id = $"someId",
+        Id = "someId",
         Context = "http://iiif.io/api/presentation/3/context.json",
         Label = new LanguageMap
         {
-            {"en", new List<string>
-            {
-                "root"
-            }}
+            {"en", ["root"] }
         },
-        Behavior = new List<string>
-        {
-            "some-behaviour"
-        },
-        Items = new List<ICollectionItem>
-        {
+        Behavior = ["some-behaviour"],
+        Items =
+        [
             new Collection
             {
                 Id = "child",
                 Label = new LanguageMap
                 {
-                    {"en", new List<string>
-                    {
-                        "child"
-                    }}
+                    {"en", ["child"] }
                 }
             },
             new Manifest
@@ -42,42 +32,33 @@ public class CollectionSerializationTests
                 Id = "child",
                 Label = new LanguageMap
                 {
-                    {"en", new List<string>
-                    {
-                        "child manifest"
-                    }}
+                    {"en", ["child manifest"] }
                 }
             }
-        },
-        PartOf = new List<ResourceBase>
-        { 
+        ],
+        PartOf =
+        [
             new ExternalResource("Collection")
             {
-                Id = $"PartOf",
+                Id = "PartOf",
                 Label = new LanguageMap
                 {
-                    {"en", new List<string>
-                    {
-                        "some collection"
-                    }}
+                    {"en", ["some collection"] }
                 }
             }
-        },
-        SeeAlso = new List<ExternalResource>
-        {
-            new ("SeeAlso")
+        ],
+        SeeAlso =
+        [
+            new("SeeAlso")
             {
                 Id = "see also",
                 Label = new LanguageMap
                 {
-                    {"en", new List<string>
-                    {
-                        "child"
-                    }}
+                    { "en", ["child"] }
                 },
                 Profile = "Public"
             }
-        },
+        ],
     };
     
     [Fact]

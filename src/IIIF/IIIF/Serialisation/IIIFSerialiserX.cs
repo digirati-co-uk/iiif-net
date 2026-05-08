@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using IIIF.Presentation.V3.Strings;
 using IIIF.Serialisation.Deserialisation;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation;
 
@@ -68,7 +73,7 @@ public static class IIIFSerialiserX
     /// <param name="iiifResource">IIIF resource to deserialize.</param>
     /// <typeparam name="TTarget">Type of object to deserialize to.</typeparam>
     /// <returns></returns>
-    public static TTarget FromJson<TTarget>(this string iiifResource)
+    public static TTarget? FromJson<TTarget>(this string iiifResource)
         where TTarget : JsonLdBase
     {
         return JsonConvert.DeserializeObject<TTarget>(iiifResource, DeserializerSettings);
@@ -80,7 +85,7 @@ public static class IIIFSerialiserX
     /// <param name="iiifResource">IIIF resource to deserialize.</param>
     /// <typeparam name="TTarget">Type of object to deserialize to.</typeparam>
     /// <returns></returns>
-    public static TTarget FromJsonStream<TTarget>(this Stream iiifResource)
+    public static TTarget? FromJsonStream<TTarget>(this Stream iiifResource)
         where TTarget : JsonLdBase
     {
         using var sr = new StreamReader(iiifResource);
@@ -88,4 +93,72 @@ public static class IIIFSerialiserX
         var serializer = JsonSerializer.Create(DeserializerSettings);
         return serializer.Deserialize<TTarget>(reader);
     }
+
+    /// <summary>
+    /// Removes ALL entries from <see cref="JsonLdBase.AdditionalProperties"/> on this resource and every
+    /// descendant <see cref="JsonLdBase"/> in the object graph, producing output containing only
+    /// known, spec-modelled properties when serialised.
+    /// </summary>
+    /// <remarks>Mutates the object in place and returns it for chaining.</remarks>
+    public static T WithoutAdditionalProperties<T>(this T resource)
+        where T : JsonLdBase
+    {
+        StripAdditionalProperties(resource, null, new HashSet<object>(ReferenceEqualityComparer.Instance));
+        return resource;
+    }
+
+    /// <summary>
+    /// Removes the specified <paramref name="keys"/> from <see cref="JsonLdBase.AdditionalProperties"/> on this
+    /// resource and every descendant <see cref="JsonLdBase"/> in the object graph.
+    /// </summary>
+    /// <remarks>Mutates the object in place and returns it for chaining.</remarks>
+    public static T WithoutAdditionalProperties<T>(this T resource, params string[] keys)
+        where T : JsonLdBase
+    {
+        if (keys.Length == 0) return resource;
+        StripAdditionalProperties(resource, new HashSet<string>(keys, StringComparer.Ordinal),
+            new HashSet<object>(ReferenceEqualityComparer.Instance));
+        return resource;
+    }
+
+    private static void StripAdditionalProperties(
+        JsonLdBase node,
+        HashSet<string>? keys,
+        HashSet<object> visited)
+    {
+        if (!visited.Add(node)) return;
+
+        if (keys is null)
+            node.AdditionalProperties.Clear();
+        else
+            foreach (var key in keys)
+                node.AdditionalProperties.Remove(key);
+
+        foreach (var prop in node.GetType()
+                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                     .Where(p => p.CanRead && p.GetIndexParameters().Length == 0))
+        {
+            var val = prop.GetValue(node);
+
+            switch (val)
+            {
+                case JsonLdBase child:
+                    StripAdditionalProperties(child, keys, visited);
+                    break;
+
+                case IEnumerable enumerable when val is not IDictionary<string, JToken>:
+                    foreach (var element in enumerable)
+                    {
+                        // Collections are often typed as interfaces (e.g. List<ICollectionItem>,
+                        // List<IService>, List<IPaintable>) where the concrete elements are
+                        // JsonLdBase subclasses. The cast here handles those — non-JsonLdBase
+                        // elements (strings, ints, etc.) are silently skipped.
+                        if (element is JsonLdBase childNode)
+                            StripAdditionalProperties(childNode, keys, visited);
+                    }
+                    break;
+            }
+        }
+    }
+
 }
