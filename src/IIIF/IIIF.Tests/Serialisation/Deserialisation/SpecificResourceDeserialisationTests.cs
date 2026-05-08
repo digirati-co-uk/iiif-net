@@ -99,4 +99,168 @@ public class SpecificResourceDeserialisationTests
         result.Selector.Should().HaveCount(1);
         result.Selector.First().As<ImageApiSelector>().Region.Should().Be("something");
     }
+
+    [Fact]
+    public void Deserialize_DeserializesFragmentSelector()
+    {
+        // Arrange
+        var specificResource = @"
+{
+    ""type"": ""SpecificResource"",
+    ""source"": ""https://example.org/canvas/1"",
+    ""selector"": {
+        ""type"": ""FragmentSelector"",
+        ""conformsTo"": ""http://www.w3.org/TR/media-frags/"",
+        ""value"": ""xywh=0,0,100,200""
+    }
+}
+";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<SpecificResource>(specificResource, DeserializerSettings);
+
+        // Assert
+        result.Selector.Should().HaveCount(1);
+        var fragmentSelector = result.Selector.First().As<FragmentSelector>();
+        fragmentSelector.Value.Should().Be("xywh=0,0,100,200");
+        fragmentSelector.ConformsTo.Should().Be("http://www.w3.org/TR/media-frags/");
+    }
+
+    [Fact]
+    public void Deserialize_DeserializesFragmentSelector_WithoutConformsTo()
+    {
+        // Arrange
+        var specificResource = @"
+{
+    ""type"": ""SpecificResource"",
+    ""source"": ""https://example.org/canvas/1"",
+    ""selector"": {
+        ""type"": ""FragmentSelector"",
+        ""value"": ""t=30,60""
+    }
+}
+";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<SpecificResource>(specificResource, DeserializerSettings);
+
+        // Assert
+        result.Selector.Should().HaveCount(1);
+        var fragmentSelector = result.Selector.First().As<FragmentSelector>();
+        fragmentSelector.Value.Should().Be("t=30,60");
+        fragmentSelector.ConformsTo.Should().BeNull();
+    }
+
+    [Fact]
+    public void Deserialize_DeserializesFragmentSelector_InMultipleSelectorArray()
+    {
+        // Arrange
+        var specificResource = @"
+{
+    ""type"": ""SpecificResource"",
+    ""source"": ""https://example.org/canvas/1"",
+    ""selector"": [
+        {
+            ""type"": ""FragmentSelector"",
+            ""conformsTo"": ""http://www.w3.org/TR/media-frags/"",
+            ""value"": ""xywh=0,0,100,200""
+        },
+        {
+            ""type"": ""SvgSelector"",
+            ""value"": ""<svg xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='100' height='200'/></svg>""
+        }
+    ]
+}
+";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<SpecificResource>(specificResource, DeserializerSettings);
+
+        // Assert
+        result.Selector.Should().HaveCount(2);
+        result.Selector.First().As<FragmentSelector>().Value.Should().Be("xywh=0,0,100,200");
+        result.Selector.Last().As<SvgSelector>().Value.Should().Contain("<rect");
+    }
+
+    [Fact]
+    public void Deserialize_DeserializesGeneralSelector_WithType()
+    {
+        // Arrange
+        var specificResource = @"
+{
+    ""type"": ""SpecificResource"",
+    ""source"": ""https://example.org/canvas/1"",
+    ""selector"": {
+        ""type"": ""UnknownSelector"",
+        ""foo"": ""bar"",
+        ""baz"": 42
+    }
+}
+";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<SpecificResource>(specificResource, DeserializerSettings);
+
+        // Assert
+        result.Selector.Should().HaveCount(1);
+        var generalSelector = result.Selector.First().As<GeneralSelector>();
+        generalSelector.Type.Should().Be("UnknownSelector");
+        generalSelector.AdditionalProperties.Should().ContainKey("foo")
+            .WhoseValue.ToString().Should().Be("bar");
+        generalSelector.AdditionalProperties.Should().ContainKey("baz")
+            .WhoseValue.ToObject<int>().Should().Be(42);
+    }
+
+    [Fact]
+    public void Deserialize_DeserializesGeneralSelector_WithoutType()
+    {
+        // Arrange
+        var specificResource = @"
+{
+    ""type"": ""SpecificResource"",
+    ""source"": ""https://example.org/canvas/1"",
+    ""selector"": {
+        ""foo"": ""bar"",
+        ""baz"": 42
+    }
+}
+";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<SpecificResource>(specificResource, DeserializerSettings);
+
+        // Assert
+        result.Selector.Should().HaveCount(1);
+        var generalSelector = result.Selector.First().As<GeneralSelector>();
+        generalSelector.Type.Should().BeNull();
+        generalSelector.AdditionalProperties.Should().ContainKey("foo")
+            .WhoseValue.ToString().Should().Be("bar");
+        generalSelector.AdditionalProperties.Should().ContainKey("baz")
+            .WhoseValue.ToObject<int>().Should().Be(42);
+    }
+
+    [Fact]
+    public void Deserialize_DeserializesGeneralSelector_WithNestedObject()
+    {
+        // Arrange
+        var specificResource = @"
+{
+    ""type"": ""SpecificResource"",
+    ""source"": ""https://example.org/canvas/1"",
+    ""selector"": {
+        ""type"": ""UnknownSelector"",
+        ""foo"": { ""bar"": ""baz"" }
+    }
+}
+";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<SpecificResource>(specificResource, DeserializerSettings);
+
+        // Assert
+        result.Selector.Should().HaveCount(1);
+        var generalSelector = result.Selector.First().As<GeneralSelector>();
+        generalSelector.AdditionalProperties.Should().ContainKey("foo")
+            .WhoseValue.Value<string>("bar").Should().Be("baz");
+    }
 }

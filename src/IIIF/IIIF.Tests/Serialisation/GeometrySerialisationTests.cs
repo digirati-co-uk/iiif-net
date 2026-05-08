@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
@@ -9,7 +9,7 @@ namespace IIIF.Tests.Serialisation;
 public class GeometrySerialisationTests
 {
     private readonly JsonSerializerSettings jsonSerializerSettings;
-    
+
     public GeometrySerialisationTests()
     {
         // NOTE: Using JsonSerializerSettings to facilitate testing as it makes it a LOT easier
@@ -20,7 +20,7 @@ public class GeometrySerialisationTests
             Converters = new List<JsonConverter> { new GeometryConverter() }
         };
     }
-    
+
     [Fact]
     public void Serialize_ConvertsPoint()
     {
@@ -57,10 +57,9 @@ public class GeometrySerialisationTests
     public void Serialize_ConvertsMultipoint()
     {
         // Arrange
-        var geometry = new MultiPoint { Coordinates = new List<List<double>> { new(){100.0, 20.2, 10.1}} };
-        const string expected = """
-        {"type":"MultiPoint","coordinates":[[100.0,20.2,10.1]]}
-        """;
+        var geometry = new MultiPoint
+            { Coordinates = new List<List<double>> { new() { 100.0, 0.0 }, new() { 101.0, 1.0 } } };
+        const string expected = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -73,10 +72,9 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsMultiPoint()
     {
         // Arrange
-        const string multiPoint = """
-        {"type":"MultiPoint","coordinates":[[100.0,20.2,10.1]]}
-        """;
-        var expected = new MultiPoint { Coordinates = new List<List<double>> { new(){100.0, 20.2, 10.1}} };
+        const string multiPoint = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
+        var expected = new MultiPoint
+            { Coordinates = new List<List<double>> { new() { 100.0, 0.0 }, new() { 101.0, 1.0 } } };
 
         // Act
         var result = JsonConvert.DeserializeObject<MultiPoint>(multiPoint.Trim(), jsonSerializerSettings);
@@ -88,11 +86,9 @@ public class GeometrySerialisationTests
     [Fact]
     public void Serialize_ConvertsLineString()
     {
-        // Arrange
-        var geometry = new LineString { Coordinates = new List<double> {100.0, 20.2, 10.1} };
-        const string expected = """
-        {"type":"LineString","coordinates":[100.0,20.2,10.1]}
-        """;
+        // Arrange - see https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.2
+        var geometry = new LineString { Coordinates = new List<List<double>> { new(){100.0, 0.0}, new(){101.0, 1.0}} };
+        const string expected = "{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -104,11 +100,9 @@ public class GeometrySerialisationTests
     [Fact]
     public void Deserialize_ConvertsLineString()
     {
-        // Arrange
-        const string lineString = """
-        {"type":"LineString","coordinates":[100.0,20.2,10.1]}
-        """;
-        var expected = new LineString { Coordinates = new List<double> {100.0, 20.2, 10.1} };
+        // Arrange - see https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.2
+        const string lineString = "{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
+        var expected = new LineString { Coordinates = new List<List<double>> { new(){100.0, 0.0}, new(){101.0, 1.0}} };
 
         // Act
         var result = JsonConvert.DeserializeObject<LineString>(lineString.Trim(), jsonSerializerSettings);
@@ -118,13 +112,40 @@ public class GeometrySerialisationTests
     }
 
     [Fact]
+    public void Deserialize_ConvertsLineString_WithMultiplePositions()
+    {
+        // Arrange — the issue #91 failing case: coordinates[0] is a position array, not a double
+        const string lineString = "{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0],[102.0,2.0]]}";
+        var expected = new LineString
+        {
+            Coordinates = new List<List<double>>
+            {
+                new() {100.0, 0.0},
+                new() {101.0, 1.0},
+                new() {102.0, 2.0}
+            }
+        };
+
+        // Act
+        var result = JsonConvert.DeserializeObject<LineString>(lineString, jsonSerializerSettings);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
     public void Serialize_ConvertsMultiLineString()
     {
-        // Arrange
-        var geometry = new MultiLineString { Coordinates = new List<List<double>> { new () {100.0, 20.2, 10.1}}  };
-        const string expected = """
-        {"type":"MultiLineString","coordinates":[[100.0,20.2,10.1]]}
-        """;
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.5
+        var geometry = new MultiLineString
+        {
+            Coordinates = new List<List<List<double>>>
+            {
+                new() { new(){100.0, 0.0}, new(){101.0, 1.0} },
+                new() { new(){102.0, 2.0}, new(){103.0, 3.0} }
+            }
+        };
+        const string expected = "{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[102.0,2.0],[103.0,3.0]]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -136,11 +157,16 @@ public class GeometrySerialisationTests
     [Fact]
     public void Deserialize_ConvertsMultiLineString()
     {
-        // Arrange
-        const string multiLineString = """
-        {"type":"MultiLineString","coordinates":[[100.0,20.2,10.1]]}
-        """;
-        var expected = new MultiLineString { Coordinates = new List<List<double>> { new () {100.0, 20.2, 10.1}}  };
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.5
+        const string multiLineString = "{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[102.0,2.0],[103.0,3.0]]]}";
+        var expected = new MultiLineString
+        {
+            Coordinates = new List<List<List<double>>>
+            {
+                new() { new(){100.0, 0.0}, new(){101.0, 1.0} },
+                new() { new(){102.0, 2.0}, new(){103.0, 3.0} }
+            }
+        };
 
         // Act
         var result = JsonConvert.DeserializeObject<MultiLineString>(multiLineString.Trim(), jsonSerializerSettings);
@@ -152,11 +178,20 @@ public class GeometrySerialisationTests
     [Fact]
     public void Serialize_ConvertsPolygon()
     {
-        // Arrange
-        var geometry = new Polygon { Coordinates = new List<List<double>> { new ()  {100.0, 20.2, 10.1}} };
-        const string expected = """
-        {"type":"Polygon","coordinates":[[100.0,20.2,10.1]]}
-        """;
+        // Arrange — exterior ring only (closed: first == last position)
+        // see https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.3
+        var geometry = new Polygon
+        {
+            Coordinates = new List<List<List<double>>>
+            {
+                new()
+                {
+                    new() { 100.0, 0.0 }, new() { 101.0, 0.0 }, new() { 101.0, 1.0 }, new() { 100.0, 1.0 },
+                    new() { 100.0, 0.0 }
+                }
+            }
+        };
+        const string expected = "{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -168,11 +203,19 @@ public class GeometrySerialisationTests
     [Fact]
     public void Deserialize_ConvertsPolygon()
     {
-        // Arrange
-        const string polygon = """
-        {"type":"Polygon","coordinates":[[100.0,20.2,10.1]]}
-        """;
-        var expected = new Polygon { Coordinates = new List<List<double>> { new ()  {100.0, 20.2, 10.1}} };
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.3
+        const string polygon = "{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]]}";
+        var expected = new Polygon
+        {
+            Coordinates = new List<List<List<double>>>
+            {
+                new()
+                {
+                    new() { 100.0, 0.0 }, new() { 101.0, 0.0 }, new() { 101.0, 1.0 }, new() { 100.0, 1.0 },
+                    new() { 100.0, 0.0 }
+                }
+            }
+        };
 
         // Act
         var result = JsonConvert.DeserializeObject<Polygon>(polygon.Trim(), jsonSerializerSettings);
@@ -182,23 +225,63 @@ public class GeometrySerialisationTests
     }
 
     [Fact]
-    public void Serialize_ConvertsMultiPolygon()
+    public void Deserialize_ConvertsPolygon_WithHole()
     {
-        // Arrange
-        var geometry = new MultiPolygon
+        // Arrange — the issue #91 failing case: exterior ring + interior ring (hole)
+        // see https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.3
+        const string polygon = "{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]],[[100.2,0.2],[100.2,0.8],[100.8,0.8],[100.8,0.2],[100.2,0.2]]]}";
+        var expected = new Polygon
         {
             Coordinates = new List<List<List<double>>>
             {
-                new ()
+                new()
                 {
-                    new List<double> { 100.0, 20.2, 10.1 }
+                    new() { 100.0, 0.0 }, new() { 101.0, 0.0 }, new() { 101.0, 1.0 }, new() { 100.0, 1.0 },
+                    new() { 100.0, 0.0 }
+                },
+                new()
+                {
+                    new() { 100.2, 0.2 }, new() { 100.2, 0.8 }, new() { 100.8, 0.8 }, new() { 100.8, 0.2 },
+                    new() { 100.2, 0.2 }
                 }
             }
         };
 
-        const string expected = """
-        {"type":"MultiPolygon","coordinates":[[[100.0,20.2,10.1]]]}
-        """;
+        // Act
+        var result = JsonConvert.DeserializeObject<Polygon>(polygon, jsonSerializerSettings);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void Serialize_ConvertsMultiPolygon()
+    {
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.3
+        var geometry = new MultiPolygon
+        {
+            Coordinates = new List<List<List<List<double>>>>
+            {
+                new()
+                {
+                    new()
+                    {
+                        new() { 102.0, 2.0 }, new() { 103.0, 2.0 }, new() { 103.0, 3.0 }, new() { 102.0, 3.0 },
+                        new() { 102.0, 2.0 }
+                    }
+                },
+                new()
+                {
+                    new()
+                    {
+                        new() { 100.0, 0.0 }, new() { 101.0, 0.0 }, new() { 101.0, 1.0 }, new() { 100.0, 1.0 },
+                        new() { 100.0, 0.0 }
+                    }
+                }
+            }
+        };
+
+        const string expected = "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[102.0,2.0],[103.0,2.0],[103.0,3.0],[102.0,3.0],[102.0,2.0]]],[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]]]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -210,17 +293,27 @@ public class GeometrySerialisationTests
     [Fact]
     public void Deserialize_ConvertsMultiPolygon()
     {
-        // Arrange
-        const string multiPolygon = """
-        {"type":"MultiPolygon","coordinates":[[[100.0,20.2,10.1]]]}
-        """;
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.6
+        const string multiPolygon = "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[102.0,2.0],[103.0,2.0],[103.0,3.0],[102.0,3.0],[102.0,2.0]]],[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]]]}";
         var expected = new MultiPolygon
         {
-            Coordinates = new List<List<List<double>>>
+            Coordinates = new List<List<List<List<double>>>>
             {
-                new ()
+                new()
                 {
-                    new List<double> { 100.0, 20.2, 10.1 }
+                    new()
+                    {
+                        new() { 102.0, 2.0 }, new() { 103.0, 2.0 }, new() { 103.0, 3.0 }, new() { 102.0, 3.0 },
+                        new() { 102.0, 2.0 }
+                    }
+                },
+                new()
+                {
+                    new()
+                    {
+                        new() { 100.0, 0.0 }, new() { 101.0, 0.0 }, new() { 101.0, 1.0 }, new() { 100.0, 1.0 },
+                        new() { 100.0, 0.0 }
+                    }
                 }
             }
         };
@@ -235,18 +328,21 @@ public class GeometrySerialisationTests
     [Fact]
     public void Serialize_ConvertsGeometryCollection()
     {
-        // Arrange
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.6
         var geometry = new GeometryCollection
         {
             Geometries = new List<Geometry>
             {
                 new MultiPolygon
                 {
-                    Coordinates = new List<List<List<double>>>
+                    Coordinates = new List<List<List<List<double>>>>
                     {
-                        new ()
+                        new()
                         {
-                            new List<double> { 100.0, 20.2, 10.1 }
+                            new()
+                            {
+                                new() { 102.0, 2.0 }, new() { 103.0, 2.0 }, new() { 103.0, 3.0 }, new() { 102.0, 2.0 }
+                            }
                         }
                     }
                 },
@@ -257,9 +353,7 @@ public class GeometrySerialisationTests
             }
         };
 
-        const string expected = """
-        {"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[100.0,20.2,10.1]]]},{"type":"Point","coordinates":[100.0,20.2,10.1]}]}
-        """;
+        const string expected = "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[[102.0,2.0],[103.0,2.0],[103.0,3.0],[102.0,2.0]]]]},{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -271,21 +365,19 @@ public class GeometrySerialisationTests
     [Fact]
     public void Deserialize_ConvertsGeometryCollection()
     {
-        // Arrange
-        const string multiPolygon = """
-        {"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[100.0,20.2,10.1]]]},{"type":"Point","coordinates":[100.0,20.2,10.1]}]}
-        """;
+        // Arrange - https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.7
+        const string geometryCollection = "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[[102.0,2.0],[103.0,2.0],[103.0,3.0],[102.0,2.0]]]]},{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}]}";
         var expected = new GeometryCollection
         {
             Geometries = new List<Geometry>
             {
                 new MultiPolygon
                 {
-                    Coordinates = new List<List<List<double>>>
+                    Coordinates = new List<List<List<List<double>>>>
                     {
-                        new ()
+                        new()
                         {
-                            new List<double> { 100.0, 20.2, 10.1 }
+                            new() { new(){102.0, 2.0}, new(){103.0, 2.0}, new(){103.0, 3.0}, new(){102.0, 2.0} }
                         }
                     }
                 },
@@ -297,7 +389,7 @@ public class GeometrySerialisationTests
         };
 
         // Act
-        var result = JsonConvert.DeserializeObject<GeometryCollection>(multiPolygon.Trim(), jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<GeometryCollection>(geometryCollection, jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);

@@ -7,8 +7,9 @@ public class MultiPolygon : Geometry
     public override string Type => nameof(MultiPolygon);
 
     /// <summary>
-    /// This is an array of Polygon coordinate arrays.
+    /// This is an array of Polygon coordinate arrays. Each Polygon is an array of linear rings;
+    /// each ring is an array of positions [lon, lat, alt?].
     /// </summary>
     [JsonProperty(Order = 2)]
-    public List<List<List<double>>>? Coordinates { get; set; }
+    public List<List<List<List<double>>>>? Coordinates { get; set; }
 }
