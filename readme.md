@@ -22,10 +22,10 @@ To serialise a Presentation3 `Canvas` object as "id" only when used as `Annotati
 E.g. The following would both serialise to `"target": "http://iiif-net.example/canvas1"`
 
 ```cs
-# "Simple" canvas
+// "Simple" canvas
 myAnno.Target = new Canvas{ Id = "http://iiif-net.example/canvas1" };
 
-# Full canvas with SerialiseTargetAsId set
+// Full canvas with SerialiseTargetAsId set
 myAnno.Target = new Canvas
     { 
         Id = "http://iiif-net.example/canvas1",
@@ -73,6 +73,13 @@ will output
 }
 ```
 
+### Extensions
+
+This library supports some extensions to the spec:
+
+* [`navPlace`](https://iiif.io/api/extension/navplace/)
+  * This is defined by earthbound geographic coordinates in the form of GeoJSON-LD.
+
 ## Serialisation
 
 [newtonsoft](https://www.newtonsoft.com/json) is used to aid serialisation of objects. 
@@ -112,6 +119,22 @@ Manifest deserialisedManifest = streamContainingManifest.FromJsonStream<Manifest
 
 > [!Important]
 > Full object deserialisation is incomplete - open an issue or PR if you find something unsupported.
+
+##### Additional Properties
+
+When the deserialiser encounters an unknown property it will add it to an `AdditionalProperties` dictionary, located on the `JsonLdBase` base class.
+
+This ensures that properties are not 'lost' and deserialisation -> serialisation round trips don't drop properties.
+
+The `AdditionalProperties` object will be populated by default but it can be removed via the `WithoutAdditionalProperties` helpers.
+
+```cs
+// Clear all AdditionalProperties recursively for all nodes in hierarchy
+manifest.WithoutAdditionalProperties();
+
+// Only removes "slug" and "deepProp" keys from AdditionalProperties recursively for all nodes in hierarchy
+manifest.WithoutAdditionalProperties("slug", "deepProp");
+```
 
 #### HTML Markup Handling
 
@@ -165,10 +188,3 @@ $ bash local_build.sh -v 1.2.3
 ## Deployment
 
 New nuget package is published whenever a new version tag is pushed, using gitversion to derive the version number.
-
-### Extensions
-
-This library supports some extensions to the spec:
-
-- `navPlace`
-  - This is defined by earthbound geographic coordinates in the form of GeoJSON-LD.
