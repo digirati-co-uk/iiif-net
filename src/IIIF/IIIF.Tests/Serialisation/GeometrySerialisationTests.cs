@@ -26,7 +26,9 @@ public class GeometrySerialisationTests
     {
         // Arrange
         var geometry = new Point { Coordinates = new List<double> {100.0, 20.2, 10.1} };
-        const string expected = "{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}";
+        const string expected = """
+        {"type":"Point","coordinates":[100.0,20.2,10.1]}
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
@@ -39,11 +41,13 @@ public class GeometrySerialisationTests
     public void Deserialize_ConvertsPoint()
     {
         // Arrange
-        const string point = "{\"type\":\"Point\",\"coordinates\":[100.0,20.2,10.1]}";
+        const string point = """
+        {"type":"Point","coordinates":[100.0,20.2,10.1]}
+        """;
         var expected = new Point { Coordinates = new List<double> {100.0, 20.2, 10.1} };
 
         // Act
-        var result = JsonConvert.DeserializeObject<Point>(point, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<Point>(point.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -73,7 +77,7 @@ public class GeometrySerialisationTests
             { Coordinates = new List<List<double>> { new() { 100.0, 0.0 }, new() { 101.0, 1.0 } } };
 
         // Act
-        var result = JsonConvert.DeserializeObject<MultiPoint>(multiPoint, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<MultiPoint>(multiPoint.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -101,7 +105,7 @@ public class GeometrySerialisationTests
         var expected = new LineString { Coordinates = new List<List<double>> { new(){100.0, 0.0}, new(){101.0, 1.0}} };
 
         // Act
-        var result = JsonConvert.DeserializeObject<LineString>(lineString, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<LineString>(lineString.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -147,7 +151,7 @@ public class GeometrySerialisationTests
         var result = JsonConvert.SerializeObject(geometry, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected);
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
@@ -165,7 +169,7 @@ public class GeometrySerialisationTests
         };
 
         // Act
-        var result = JsonConvert.DeserializeObject<MultiLineString>(multiLineString, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<MultiLineString>(multiLineString.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -214,7 +218,7 @@ public class GeometrySerialisationTests
         };
 
         // Act
-        var result = JsonConvert.DeserializeObject<Polygon>(polygon, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<Polygon>(polygon.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -315,7 +319,7 @@ public class GeometrySerialisationTests
         };
 
         // Act
-        var result = JsonConvert.DeserializeObject<MultiPolygon>(multiPolygon, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<MultiPolygon>(multiPolygon.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);

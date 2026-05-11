@@ -17,7 +17,7 @@ public class ServiceConverterTests
     [InlineData("AutoCompleteService1", typeof(IIIF.Search.V1.AutoCompleteService))]
     public void ReadJson_KnownSearch1Services_FromType(string type, Type expected)
     {
-        var jsonId = $"{{\"@type\": \"{type}\"}}";
+        var jsonId = $$"""{"@type": "{{type}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -29,7 +29,7 @@ public class ServiceConverterTests
     [InlineData("AuthTokenService1", typeof(IIIF.Auth.V1.AuthTokenService))]
     public void ReadJson_KnownAuth1Services_FromType(string type, Type expected)
     {
-        var jsonId = $"{{\"@type\": \"{type}\"}}";
+        var jsonId = $$"""{"@type": "{{type}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -41,7 +41,7 @@ public class ServiceConverterTests
     [InlineData("ImageService2", "'ImageService2' is type when rendered on presentation 3")]
     public void ReadJson_ImageService2_FromType(string type, string because)
     {
-        var jsonId = $"{{\"@type\": \"{type}\"}}";
+        var jsonId = $$"""{"@type": "{{type}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
 
@@ -53,23 +53,23 @@ public class ServiceConverterTests
     [InlineData("iiif:Image")]
     public void ReadJson_ImageService2_WorksWithExpandedProfile(string type)
     {
-        var jsonId = @$"
-        {{
-           ""@context"": ""http://iiif.io/api/image/2/context.json"",
-           ""@id"": ""https://iiif-net/image.jpg"",
-           ""@type"": ""{type}"",
-           ""profile"": [
-               ""http://iiif.io/api/image/2/level2.json"",
-               {{
-                   ""formats"": [""tif""],
-                   ""qualities"": [""bitonal""],
-                   ""supports"": [""regionByPx""]
-               }}
-           ],
-           ""protocol"": ""http://iiif.io/api/image""
-       }}
-       ";
-        
+        var jsonId = $$"""
+                       {
+                          "@context": "http://iiif.io/api/image/2/context.json",
+                          "@id": "https://iiif-net/image.jpg",
+                          "@type": "{{type}}",
+                          "profile": [
+                              "http://iiif.io/api/image/2/level2.json",
+                              {
+                                  "formats": ["tif"],
+                                  "qualities": ["bitonal"],
+                                  "supports": ["regionByPx"]
+                              }
+                          ],
+                          "protocol": "http://iiif.io/api/image"
+                       }
+                       """;
+
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut, new ImageService2Converter());
         
         var imageService2 = result as ImageService2;
@@ -84,7 +84,7 @@ public class ServiceConverterTests
     [InlineData("AuthProbeService2", typeof(IIIF.Auth.V2.AuthProbeService2))]
     public void ReadJson_KnownAuth2Services_FromType(string type, Type expected)
     {
-        var jsonId = $"{{\"type\": \"{type}\"}}";
+        var jsonId = $$"""{"type": "{{type}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -94,7 +94,7 @@ public class ServiceConverterTests
     [Fact]
     public void ReadJson_ImageService3_FromType()
     {
-        var jsonId = "{\"type\": \"ImageService3\"}";
+        var jsonId = $$"""{"type": "ImageService3"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
 
@@ -116,7 +116,7 @@ public class ServiceConverterTests
     [InlineData("http://iiif.io/api/auth/1/external", typeof(IIIF.Auth.V1.AuthCookieService))]
     public void ReadJson_KnownAuthServices_FromProfile(string profile, Type expected)
     {
-        var jsonId = $"{{\"profile\": \"{profile}\"}}";
+        var jsonId = $$"""{"profile": "{{profile}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -129,7 +129,7 @@ public class ServiceConverterTests
     [InlineData(IIIF.Search.V2.SearchService.Search2Profile, typeof(IIIF.Search.V2.SearchService))]
     public void ReadJson_KnownSearchServices_FromProfile(string profile, Type expected)
     {
-        var jsonId = $"{{\"profile\": \"{profile}\"}}";
+        var jsonId = $$"""{"profile": "{{profile}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -144,7 +144,7 @@ public class ServiceConverterTests
     [InlineData("Text")]
     public void ReadJson_FallsBackTo_V3ExternalService_IfType_AndUnableToDetermine(string type)
     {
-        var jsonId = $"{{\"type\": \"{type}\"}}";
+        var jsonId = $$"""{"type": "{{type}}"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -154,7 +154,7 @@ public class ServiceConverterTests
     [Fact]
     public void ReadJson_V2ServiceReference_IfTypeAndIdOnly()
     {
-        var jsonId = "{\"@type\": \"AuthCookieService1\", \"@id\": \"https://service-reference-test\" }";
+        var jsonId = $$"""{"@type": "AuthCookieService1", "@id": "https://service-reference-test" }""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -164,7 +164,7 @@ public class ServiceConverterTests
     [Fact]
     public void ReadJson_FallsBackTo_V2ExternalService_IfAtType_AndUnableToDetermine()
     {
-        var jsonId = "{\"@type\": \"Text\", \"@id\": \"https://service-reference-test\", \"label\": \"test\" }";
+        var jsonId = $$"""{"@type": "Text", "@id": "https://service-reference-test", "label": "test" }""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         

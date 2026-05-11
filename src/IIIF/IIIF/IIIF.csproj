@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <PackageId>iiif-net</PackageId>
         <LangVersion>10.0</LangVersion>
-        <Authors>Donald Gray,Tom Crane</Authors>
+        <Authors>Donald Gray,Tom Crane,Frank Kerrigan</Authors>
         <Company>Digirati</Company>
         <Description>IIIF Library for .NET Core</Description>
         <IncludeSymbols>true</IncludeSymbols>
@@ -20,9 +20,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HtmlSanitizer" Version="8.0.746" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+        <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.202" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>

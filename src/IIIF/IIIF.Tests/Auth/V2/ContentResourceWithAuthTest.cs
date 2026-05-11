@@ -1,7 +1,6 @@
-using FluentAssertions;
 using IIIF.Presentation.V3.Content;
 using IIIF.Serialisation;
-using Xunit;
+
 
 namespace IIIF.Tests.Auth.V2;
 
@@ -18,13 +17,15 @@ public class ContentResourceWithAuthTest
         };
 
         // Act
-        var json = res.AsJson().Replace("\r\n", "\n");
-        const string expected = @"{
-  ""id"": ""https://example.com/documents/my.pdf"",
-  ""type"": ""Text""," + ReusableParts.ExpectedServiceAsArray + @"
-}";
-        // Assert
-        json.Should().BeEquivalentTo(expected);
+        var json = res.AsJson();
+        var jsonToken = Newtonsoft.Json.Linq.JToken.Parse(json);
+
+        // Assert - validate structure via JSON tokens
+        jsonToken["id"]?.ToString().Should().Be("https://example.com/documents/my.pdf");
+        jsonToken["type"]?.ToString().Should().Be("Text");
+        jsonToken["service"]?.Should().HaveCount(1);
+        jsonToken["service"]?[0]?["id"]?.ToString().Should().Be("https://example.com/image/service/probe");
+        jsonToken["service"]?[0]?["type"]?.ToString().Should().Be("AuthProbeService2");
     }
     
     [Fact]

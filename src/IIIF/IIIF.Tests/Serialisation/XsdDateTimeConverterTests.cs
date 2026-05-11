@@ -16,12 +16,15 @@ public class XsdDateTimeConverterTests
         // Arrange
         var date = new DateTime(2023, 3, 3, 11, 08, 37);
         var utcDate = DateTime.SpecifyKind(date, DateTimeKind.Utc);
+        const string expected = """
+        "2023-03-03T11:08:37Z"
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(utcDate, Formatting.None, sut);
 
         // Assert
-        result.Should().Be("\"2023-03-03T11:08:37Z\"");
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
@@ -30,12 +33,15 @@ public class XsdDateTimeConverterTests
         // Arrange
         var date = new DateTime(2023, 3, 3, 11, 08, 37);
         var localDate = DateTime.SpecifyKind(date, DateTimeKind.Local);
+        const string expected = """
+        "2023-03-03T11:08:37+00:00"
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(localDate, Formatting.None, sut);
 
         // Assert
-        result.Should().Be("\"2023-03-03T11:08:37+00:00\"");
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
@@ -44,11 +50,14 @@ public class XsdDateTimeConverterTests
         // Arrange
         var date = new DateTime(2023, 3, 3, 11, 08, 37);
         var unspecifiedDate = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
+        const string expected = """
+        "2023-03-03T11:08:37"
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(unspecifiedDate, Formatting.None, sut);
 
         // Assert
-        result.Should().Be("\"2023-03-03T11:08:37\"");
+        result.Should().Be(expected.Trim());
     }
 }

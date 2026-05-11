@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using IIIF.ImageApi.V2;
-using Xunit;
+﻿using IIIF.ImageApi.V2;
 
 namespace IIIF.Tests.ImageApi.V2;
 

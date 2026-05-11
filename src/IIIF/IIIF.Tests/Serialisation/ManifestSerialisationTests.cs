@@ -209,7 +209,7 @@ public class ManifestSerialisationTests
                 Id = "https://test.example.com/nav-place",
                 Features = new List<Feature>
                 {
-                    new ()
+                    new()
                     {
                         Id = "https://test.example.com/nav-place/feature",
                         Properties = new Dictionary<string, object>
@@ -224,7 +224,7 @@ public class ManifestSerialisationTests
                                 {
                                     Coordinates = new List<List<List<List<double>>>>
                                     {
-                                        new ()
+                                        new()
                                         {
                                             new List<List<double>> { new() { 100.0, 20.2, 10.1 } }
                                         }
@@ -251,11 +251,12 @@ public class ManifestSerialisationTests
 
         deserialised.Should().BeEquivalentTo(sampleManifest);
     }
-    
+
     [Fact]
     public void CanDeserialiseUnknownServices()
     {
-        var serialisedManifest = "{\"@context\": [\"http://iiif.io/api/presentation/3/context.json\"],\"id\": \"https://iiif.example/12345\",\"type\": \"Manifest\",\"services\": [{\"id\": \"https://iiif.example.org/1234#tracking\",\"type\": \"Text\",\"profile\": \"http://universalviewer.io/tracking-extensions-profile\",\"label\": {\"en\": [\"Format: Monograph, Institution: n/a, foobarbaz\"]}}]}";
+        var serialisedManifest =
+            "{\"@context\": [\"http://iiif.io/api/presentation/3/context.json\"],\"id\": \"https://iiif.example/12345\",\"type\": \"Manifest\",\"services\": [{\"id\": \"https://iiif.example.org/1234#tracking\",\"type\": \"Text\",\"profile\": \"http://universalviewer.io/tracking-extensions-profile\",\"label\": {\"en\": [\"Format: Monograph, Institution: n/a, foobarbaz\"]}}]}";
         var expectedServices = new List<ExternalService>
         {
             new ExternalService("Text")
@@ -286,53 +287,55 @@ public class ManifestSerialisationTests
     public void CanDeserialise_BodyWithAuth()
     {
         // Stripped back manifest from https://github.com/digirati-co-uk/iiif-net/issues/69
-        var wellcomeWithAuth = @"{
-    ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
-    ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821"",
-    ""type"": ""Manifest"",
-    ""items"": [
-        {
-            ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2"",
-            ""type"": ""Canvas"",
-            ""width"": 3965,
-            ""height"": 2643,
-            ""items"": [
-                {
-                    ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2/painting"",
-                    ""type"": ""AnnotationPage"",
-                    ""items"": [
-                        {
-                            ""id"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2/painting/anno"",
-                            ""type"": ""Annotation"",
-                            ""motivation"": ""painting"",
-                            ""body"": {
-                                ""id"": ""https://iiif.wellcomecollection.org/image/b18170821_pp_cri_j_11_2_0001.jp2/full/200,133/0/default.jpg"",
-                                ""type"": ""Image"",
-                                ""width"": 200,
-                                ""height"": 133,
-                                ""format"": ""image/jpeg"",
-                                ""service"": [
-                                    {
-                                        ""@id"": ""https://iiif.wellcomecollection.org/image/b18170821_pp_cri_j_11_2_0001.jp2"",
-                                        ""@type"": ""ImageService2"",
-                                        ""profile"": ""http://iiif.io/api/image/2/level1.json"",
-                                        ""width"": 3965,
-                                        ""height"": 2643,
-                                        ""service"": {
-                                            ""@id"": ""https://iiif.wellcomecollection.org/auth/clickthrough"",
-                                            ""@type"": ""AuthCookieService1""
-                                        }
-                                    }
-                                ]
-                            },
-                            ""target"": ""https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2""
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}";
+        var wellcomeWithAuth = """
+                               {
+                                   "@context": "http://iiif.io/api/presentation/3/context.json",
+                                   "id": "https://iiif.wellcomecollection.org/presentation/b18170821",
+                                   "type": "Manifest",
+                                   "items": [
+                                       {
+                                           "id": "https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2",
+                                           "type": "Canvas",
+                                           "width": 3965,
+                                           "height": 2643,
+                                           "items": [
+                                               {
+                                                   "id": "https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2/painting",
+                                                   "type": "AnnotationPage",
+                                                   "items": [
+                                                       {
+                                                           "id": "https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2/painting/anno",
+                                                           "type": "Annotation",
+                                                           "motivation": "painting",
+                                                           "body": {
+                                                               "id": "https://iiif.wellcomecollection.org/image/b18170821_pp_cri_j_11_2_0001.jp2/full/200,133/0/default.jpg",
+                                                               "type": "Image",
+                                                               "width": 200,
+                                                               "height": 133,
+                                                               "format": "image/jpeg",
+                                                               "service": [
+                                                                   {
+                                                                       "@id": "https://iiif.wellcomecollection.org/image/b18170821_pp_cri_j_11_2_0001.jp2",
+                                                                       "@type": "ImageService2",
+                                                                       "profile": "http://iiif.io/api/image/2/level1.json",
+                                                                       "width": 3965,
+                                                                       "height": 2643,
+                                                                       "service": {
+                                                                           "@id": "https://iiif.wellcomecollection.org/auth/clickthrough",
+                                                                           "@type": "AuthCookieService1"
+                                                                       }
+                                                                   }
+                                                               ]
+                                                           },
+                                                           "target": "https://iiif.wellcomecollection.org/presentation/b18170821/canvases/b18170821_pp_cri_j_11_2_0001.jp2"
+                                                       }
+                                                   ]
+                                               }
+                                           ]
+                                       }
+                                   ]
+                               }
+                               """;
 
         var expectedService = new V2ServiceReference
         {
@@ -342,56 +345,244 @@ public class ManifestSerialisationTests
 
         var mani = wellcomeWithAuth.FromJson<Manifest>();
 
-        var services = mani.Items[0].Items[0].Items[0].As<PaintingAnnotation>()
-            .Body.Service[0].As<ImageService2>().Service;
+        var services = mani.Items?[0].Items?[0].Items?[0].As<PaintingAnnotation>()
+            .Body?.Service?[0].As<ImageService2>()?.Service;
         services.Should().HaveCount(1);
-        services.Single().Should().BeEquivalentTo(expectedService);
+        services?.Single().Should().BeEquivalentTo(expectedService);
     }
-    
+
     [Fact]
     public void CanDeserialise_AnnotationTargetingAnotherAnnotation()
     {
         // Stripped back manifest from https://github.com/digirati-co-uk/iiif-net/issues/74
-        var annotationTargetingAnother = @"
-{
-    ""@context"": ""http://iiif.io/api/presentation/3/context.json"",
-    ""id"": ""https://example.org/m3folwy0u7-mckceiru"",
-    ""type"": ""Manifest"",
-    ""items"": [
-        {
-            ""id"": ""https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6"",
-            ""type"": ""Canvas"",
-            ""annotations"": [
+        var annotationTargetingAnother =
+            """
+            {
+            "@context": "http://iiif.io/api/presentation/3/context.json",
+            "id": "https://example.org/m3folwy0u7-mckceiru",
+            "type": "Manifest",
+            "items": [
                 {
-                    ""id"": ""https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6/annotations/dsat3mfvzni-mckcffwo"",
-                    ""type"": ""AnnotationPage"",
-                    ""items"": [
+                    "id": "https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6",
+                    "type": "Canvas",
+                    "annotations": [
                         {
-                            ""id"": ""https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6/annotations/dsat3mfvzni-mckcffwo/annotation/aqibmu1dtrr-mckcfvrh"",
-                            ""type"": ""Annotation"",
-                            ""motivation"": ""describing"",
-                            ""target"": {
-                                ""id"": ""https://example.org/m3folwy0u7-mckceiru/annotation/qel8952t5f-mckcfbo5"",
-                                ""type"": ""Annotation""
-                            },
-                            ""body"": []
+                            "id": "https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6/annotations/dsat3mfvzni-mckcffwo",
+                            "type": "AnnotationPage",
+                            "items": [
+                                {
+                                    "id": "https://example.org/m3folwy0u7-mckceiru/canvas/0sx2a5hbr6ga-mckcfbo6/annotations/dsat3mfvzni-mckcffwo/annotation/aqibmu1dtrr-mckcfvrh",
+                                    "type": "Annotation",
+                                    "motivation": "describing",
+                                    "target": {
+                                        "id": "https://example.org/m3folwy0u7-mckceiru/annotation/qel8952t5f-mckcfbo5",
+                                        "type": "Annotation"
+                                    },
+                                    "body": []
+                                }
+                            ]
                         }
                     ]
                 }
             ]
-        }
-    ]
-}
-";
+            }
+            """;
+
 
         var mani = annotationTargetingAnother.FromJson<Manifest>();
-        
+
         var expectedTarget = new Annotation
         {
             Id = "https://example.org/m3folwy0u7-mckceiru/annotation/qel8952t5f-mckcfbo5"
         };
 
-        var target = mani.Items[0].Annotations[0].Items[0].As<Annotation>().Target;
+        var target = mani.Items?[0].Annotations?[0].Items?[0].As<Annotation>()?.Target;
         target.Should().BeEquivalentTo(expectedTarget);
     }
-}
+
+    [Fact]
+    public void CanRoundTrip_Manifest_With_ArbitraryCustomProperties()
+    {
+        const string json = """
+                            {
+                              "@context": [
+                                "http://iiif.io/api/presentation/3/context.json",
+                                "https://example.org/custom-context.json"
+                              ],
+                              "id": "https://test.example.com/manifest",
+                              "type": "Manifest",
+                              "label": {
+                                "en": ["Example label"]
+                              },
+                              "custom1": "this is an example",
+                              "custom2": {
+                                "en": ["Test string"]
+                              },
+                              "custom3": {
+                                "nested": {
+                                  "flag": true,
+                                  "count": 10
+                                },
+                                "items": [
+                                  "a",
+                                  1,
+                                  {
+                                    "deep": "value"
+                                  }
+                                ]
+                              },
+                              "items": [
+                                {
+                                  "id": "https://test.example.com/canvas/1",
+                                  "type": "Canvas",
+                                  "width": 1000,
+                                  "height": 1000,
+                                  "customCanvas": {
+                                    "name": "canvas custom value"
+                                  }
+                                }
+                              ]
+                            }
+                            """;
+
+        var deserialised = json.FromJson<Manifest>();
+        var roundTripped = deserialised.AsJson();
+
+        JToken.DeepEquals(
+            SortProperties(JToken.Parse(roundTripped)),
+            SortProperties(JToken.Parse(json))
+        ).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Deserialise_DoesNotLeakTypeIntoAdditionalProperties()
+    {
+        // Regression: 'type' is a read-only computed property; it must not be captured
+        // in AdditionalProperties ([JsonExtensionData]) and emitted twice on serialisation.
+        const string json = """
+                            {
+                              "@context": "http://iiif.io/api/presentation/3/context.json",
+                              "id": "https://test.example.com/manifest",
+                              "type": "Manifest",
+                              "items": [
+                                {
+                                  "id": "https://test.example.com/canvas/1",
+                                  "type": "Canvas",
+                                  "width": 100,
+                                  "height": 100
+                                }
+                              ]
+                            }
+                            """;
+        var deserialised = json.FromJson<Manifest>();
+
+        deserialised.AdditionalProperties.Should().NotContainKey("type");
+        deserialised.Items?[0].AdditionalProperties.Should().NotContainKey("type");
+    }
+
+    [Fact]
+    public void CanRoundTrip_Manifest_WithCustomProperties_OnExternalResource()
+    {
+        // ExternalResource types (Image, Sound, etc.) go through ExternalResourceConverter,
+        // not ResourceDeserialiser — verify custom properties are preserved there too.
+        const string json = """
+                            {
+                              "@context": "http://iiif.io/api/presentation/3/context.json",
+                              "id": "https://test.example.com/manifest",
+                              "type": "Manifest",
+                              "label": { "en": ["Test"] },
+                              "thumbnail": [
+                                {
+                                  "id": "https://test.example.com/thumb.jpg",
+                                  "type": "Image",
+                                  "format": "image/jpeg",
+                                  "customThumbProp": "thumb value"
+                                }
+                              ]
+                            }
+                            """;
+        var deserialised = json.FromJson<Manifest>();
+        var roundTripped = deserialised.AsJson();
+
+        JToken.DeepEquals(
+            SortProperties(JToken.Parse(roundTripped)),
+            SortProperties(JToken.Parse(json))
+        ).Should().BeTrue();
+    }
+
+    [Fact]
+    public void RoundTrip_IsStable_AfterMultipleSerialiseDeserialise()
+    {
+        // Serialising and deserialising repeatedly should produce identical output —
+        // custom properties must not accumulate or disappear across cycles.
+        const string json = """
+                            {
+                              "@context": "http://iiif.io/api/presentation/3/context.json",
+                              "id": "https://test.example.com/manifest",
+                              "type": "Manifest",
+                              "customProp": "stays the same",
+                              "items": [
+                                {
+                                  "id": "https://test.example.com/canvas/1",
+                                  "type": "Canvas",
+                                  "width": 100,
+                                  "height": 100,
+                                  "canvasProp": 42
+                                }
+                              ]
+                            }
+                            """;
+        var firstPass  = json.FromJson<Manifest>().AsJson();
+        var secondPass = firstPass.FromJson<Manifest>().AsJson();
+
+        JToken.DeepEquals(
+            SortProperties(JToken.Parse(firstPass)),
+            SortProperties(JToken.Parse(secondPass))
+        ).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Deserialise_AdditionalProperties_EmptyWhenNoCustomProperties()
+    {
+        // A standard manifest with no extension properties should leave
+        // AdditionalProperties empty on every resource.
+        const string json = """
+                            {
+                              "@context": "http://iiif.io/api/presentation/3/context.json",
+                              "id": "https://test.example.com/manifest",
+                              "type": "Manifest",
+                              "items": [
+                                {
+                                  "id": "https://test.example.com/canvas/1",
+                                  "type": "Canvas",
+                                  "width": 100,
+                                  "height": 100
+                                }
+                              ]
+                            }
+                            """;
+        var deserialised = json.FromJson<Manifest>();
+
+        deserialised.AdditionalProperties.Should().BeEmpty();
+        deserialised.Items?[0].AdditionalProperties.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Recursively sorts JObject properties alphabetically so that JToken.DeepEquals
+    /// is not sensitive to property ordering (JSON object order is semantically irrelevant).
+    /// </summary>
+    private static JToken SortProperties(JToken token)
+    {
+        if (token is JObject obj)
+        {
+            var sorted = new JObject();
+            foreach (var prop in obj.Properties().OrderBy(p => p.Name))
+                sorted[prop.Name] = SortProperties(prop.Value);
+            return sorted;
+        }
+
+        if (token is JArray arr)
+            return new JArray(arr.Select(SortProperties));
+
+        return token;
+    }    }

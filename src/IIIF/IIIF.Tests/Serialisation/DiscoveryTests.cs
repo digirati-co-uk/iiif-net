@@ -16,36 +16,38 @@ public class DiscoveryTests
     {
         // Arrange
         // Example from https://iiif.io/api/discovery/1.0/#complete-ordered-collection-example
-        var expected = @"{
-  ""@context"": ""http://iiif.io/api/discovery/1/context.json"",
-  ""id"": ""https://example.org/activity/all-changes"",
-  ""type"": ""OrderedCollection"",
-  ""totalItems"": 21456,
-  ""rights"": ""http://creativecommons.org/licenses/by/4.0/"",
-  ""seeAlso"": [
-    {
-      ""id"": ""https://example.org/dataset/all-dcat.jsonld"",
-      ""type"": ""Dataset"",
-      ""profile"": ""http://www.w3.org/ns/dcat#"",
-      ""label"": {""en"":[""DCAT description of Collection""]},
-      ""format"": ""application/ld+json""
-    }
-  ],
-  ""partOf"": [
-    {
-      ""id"": ""https://example.org/aggregated-changes"",
-      ""type"": ""OrderedCollection""
-    }
-  ],
-  ""first"": {
-    ""id"": ""https://example.org/activity/page-0"",
-    ""type"": ""OrderedCollectionPage""
-  },
-  ""last"": {
-    ""id"": ""https://example.org/activity/page-214"",
-    ""type"": ""OrderedCollectionPage""
-  }
-}";
+        const string expected = """
+        {
+          "@context": "http://iiif.io/api/discovery/1/context.json",
+          "id": "https://example.org/activity/all-changes",
+          "type": "OrderedCollection",
+          "totalItems": 21456,
+          "rights": "http://creativecommons.org/licenses/by/4.0/",
+          "seeAlso": [
+            {
+              "id": "https://example.org/dataset/all-dcat.jsonld",
+              "type": "Dataset",
+              "profile": "http://www.w3.org/ns/dcat#",
+              "label": {"en":["DCAT description of Collection"]},
+              "format": "application/ld+json"
+            }
+          ],
+          "partOf": [
+            {
+              "id": "https://example.org/aggregated-changes",
+              "type": "OrderedCollection"
+            }
+          ],
+          "first": {
+            "id": "https://example.org/activity/page-0",
+            "type": "OrderedCollectionPage"
+          },
+          "last": {
+            "id": "https://example.org/activity/page-214",
+            "type": "OrderedCollectionPage"
+          }
+        }
+        """;
         var orderedCollection = new OrderedCollection
         {
             Id = "https://example.org/activity/all-changes",
@@ -82,34 +84,36 @@ public class DiscoveryTests
     {
         // Arrange
         // Example from https://iiif.io/api/discovery/1.0/#complete-ordered-collection-page-example
-        var expected = @"{
-  ""@context"": ""http://iiif.io/api/discovery/1/context.json"",
-  ""id"": ""https://example.org/activity/page-1"",
-  ""type"": ""OrderedCollectionPage"",
-  ""startIndex"": 20,
-  ""partOf"": {
-    ""id"": ""https://example.org/activity/all-changes"",
-    ""type"": ""OrderedCollection""
-  },
-  ""prev"": {
-    ""id"": ""https://example.org/activity/page-0"",
-    ""type"": ""OrderedCollectionPage""
-  },
-  ""next"": {
-    ""id"": ""https://example.org/activity/page-2"",
-    ""type"": ""OrderedCollectionPage""
-  },
-  ""orderedItems"": [
-    {
-      ""type"": ""Update"",
-      ""object"": {
-        ""id"": ""https://example.org/iiif/1/manifest"",
-        ""type"": ""Manifest""
-      },
-      ""endTime"": ""2018-03-10T10:00:00""
-    }
-  ]
-}";
+        const string expected = """
+        {
+          "@context": "http://iiif.io/api/discovery/1/context.json",
+          "id": "https://example.org/activity/page-1",
+          "type": "OrderedCollectionPage",
+          "startIndex": 20,
+          "partOf": {
+            "id": "https://example.org/activity/all-changes",
+            "type": "OrderedCollection"
+          },
+          "prev": {
+            "id": "https://example.org/activity/page-0",
+            "type": "OrderedCollectionPage"
+          },
+          "next": {
+            "id": "https://example.org/activity/page-2",
+            "type": "OrderedCollectionPage"
+          },
+          "orderedItems": [
+            {
+              "type": "Update",
+              "object": {
+                "id": "https://example.org/iiif/1/manifest",
+                "type": "Manifest"
+              },
+              "endTime": "2018-03-10T10:00:00"
+            }
+          ]
+        }
+        """;
         var orderedCollectionPage = new OrderedCollectionPage
         {
             Id = "https://example.org/activity/page-1",
@@ -145,30 +149,32 @@ public class DiscoveryTests
     {
         // Arrange
         // Example from https://iiif.io/api/discovery/1.0/#complete-activity-example
-        var expected = @"{
-  ""@context"": ""http://iiif.io/api/discovery/1/context.json"",
-  ""id"": ""https://example.org/activity/1"",
-  ""type"": ""Update"",
-  ""summary"": ""admin updated the manifest, fixing reported bug #15."",
-  ""object"": {
-    ""id"": ""https://example.org/iiif/1/manifest"",
-    ""type"": ""Manifest"",
-    ""canonical"": ""https://example.org/iiif/1"",
-    ""seeAlso"": [
-      {
-        ""id"": ""https://example.org/dataset/single-item.jsonld"",
-        ""type"": ""Dataset"",
-        ""format"": ""application/ld+json""
-      }
-    ]
-  },
-  ""endTime"": ""2017-09-21T00:00:00"",
-  ""startTime"": ""2017-09-20T23:58:00"",
-  ""actor"": {
-    ""id"": ""https://example.org/person/admin1"",
-    ""type"": ""Person""
-  }
-}";
+        const string expected = """
+        {
+          "@context": "http://iiif.io/api/discovery/1/context.json",
+          "id": "https://example.org/activity/1",
+          "type": "Update",
+          "summary": "admin updated the manifest, fixing reported bug #15.",
+          "object": {
+            "id": "https://example.org/iiif/1/manifest",
+            "type": "Manifest",
+            "canonical": "https://example.org/iiif/1",
+            "seeAlso": [
+              {
+                "id": "https://example.org/dataset/single-item.jsonld",
+                "type": "Dataset",
+                "format": "application/ld+json"
+              }
+            ]
+          },
+          "endTime": "2017-09-21T00:00:00",
+          "startTime": "2017-09-20T23:58:00",
+          "actor": {
+            "id": "https://example.org/person/admin1",
+            "type": "Person"
+          }
+        }
+        """;
         var activity = new Activity
         {
             Id = "https://example.org/activity/1",

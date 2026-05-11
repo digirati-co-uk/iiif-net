@@ -121,7 +121,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.AllAnnotations().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -145,7 +145,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.AllAnnotations<PaintingAnnotation>().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -159,7 +159,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.AllPaintingAnnoBodies().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -172,7 +172,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.AllPaintingAnnoBodies<Image>().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -215,7 +215,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.Items[1].AllAnnotations().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -231,7 +231,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.Items[2].AllAnnotations<PaintingAnnotation>().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -243,7 +243,7 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.Items[2].AllPaintingAnnoBodies().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
     
     [Fact]
@@ -262,6 +262,6 @@ public class TraverseXTests
         };
 
         var actual = sampleManifest.Items[1].AllPaintingAnnoBodies<Image>().ToList();
-        actual.Should().BeEquivalentTo(expected, options => options.RespectingRuntimeTypes());
+        actual.Should().BeEquivalentTo(expected, options => options.PreferringRuntimeMemberTypes());
     }
 }

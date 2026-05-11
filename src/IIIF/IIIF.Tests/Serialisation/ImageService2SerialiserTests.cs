@@ -31,13 +31,15 @@ public class ImageService2SerialiserTests
     {
         // Arrange
         var imageService = new ImageService2 { Id = "foo" };
-        const string expected = "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"width\":0,\"height\":0}";
+        const string expected = """
+        {"@id":"foo","@type":"ImageService2","width":0,"height":0}
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(imageService, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected);
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
@@ -45,14 +47,15 @@ public class ImageService2SerialiserTests
     {
         // Arrange
         var imageService = new ImageService2 { Id = "foo", Profile = "bar" };
-        const string expected =
-            "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"profile\":\"bar\",\"width\":0,\"height\":0}";
+        const string expected = """
+        {"@id":"foo","@type":"ImageService2","profile":"bar","width":0,"height":0}
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(imageService, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected);
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
@@ -64,14 +67,15 @@ public class ImageService2SerialiserTests
             Id = "foo",
             ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 }
         };
-        const string expected =
-            "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"width\":0,\"height\":0,\"profile\":{\"maxHeight\":10,\"maxWidth\":20}}";
+        const string expected = """
+        {"@id":"foo","@type":"ImageService2","width":0,"height":0,"profile":{"maxHeight":10,"maxWidth":20}}
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(imageService, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected);
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
@@ -84,25 +88,28 @@ public class ImageService2SerialiserTests
             Profile = "bar",
             ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 }
         };
-        const string expected =
-            "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"profile\":[\"bar\",{\"maxHeight\":10,\"maxWidth\":20}],\"width\":0,\"height\":0}";
+        const string expected = """
+        {"@id":"foo","@type":"ImageService2","profile":["bar",{"maxHeight":10,"maxWidth":20}],"width":0,"height":0}
+        """;
 
         // Act
         var result = JsonConvert.SerializeObject(imageService, jsonSerializerSettings);
 
         // Assert
-        result.Should().Be(expected);
+        result.Should().Be(expected.Trim());
     }
 
     [Fact]
     public void ReadJson_OutputsExpected_IfNoProfileOrProfileDescription()
     {
         // Arrange
-        const string json = "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"width\":0,\"height\":0}";
+        const string json = """
+        {"@id":"foo","@type":"ImageService2","width":0,"height":0}
+        """;
         var expected = new ImageService2 { Id = "foo" };
 
         // Act
-        var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<ImageService2>(json.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -113,11 +120,12 @@ public class ImageService2SerialiserTests
     {
         // Arrange
         var expected = new ImageService2 { Id = "foo", Profile = "bar" };
-        const string json =
-            "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"profile\":\"bar\",\"width\":0,\"height\":0}";
+        const string json = """
+        {"@id":"foo","@type":"ImageService2","profile":"bar","width":0,"height":0}
+        """;
 
         // Act
-        var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<ImageService2>(json.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -132,11 +140,12 @@ public class ImageService2SerialiserTests
             Id = "foo",
             ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 }
         };
-        const string json =
-            "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"width\":0,\"height\":0,\"profile\":{\"maxHeight\":10,\"maxWidth\":20}}";
+        const string json = """
+        {"@id":"foo","@type":"ImageService2","width":0,"height":0,"profile":{"maxHeight":10,"maxWidth":20}}
+        """;
 
         // Act
-        var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<ImageService2>(json.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -152,11 +161,12 @@ public class ImageService2SerialiserTests
             Profile = "bar",
             ProfileDescription = new ProfileDescription { MaxHeight = 10, MaxWidth = 20 }
         };
-        const string json =
-            "{\"@id\":\"foo\",\"@type\":\"ImageService2\",\"profile\":[\"bar\",{\"maxHeight\":10,\"maxWidth\":20}],\"width\":0,\"height\":0}";
+        const string json = """
+        {"@id":"foo","@type":"ImageService2","profile":["bar",{"maxHeight":10,"maxWidth":20}],"width":0,"height":0}
+        """;
 
         // Act
-        var result = JsonConvert.DeserializeObject<ImageService2>(json, jsonSerializerSettings);
+        var result = JsonConvert.DeserializeObject<ImageService2>(json.Trim(), jsonSerializerSettings);
 
         // Assert
         result.Should().BeEquivalentTo(expected);

@@ -36,23 +36,27 @@ public class MixedVersionSerialiserTests
         // Act
         var json = img.AsJson().Replace("\r\n", "\n");
         ;
-        const string expected = @"{
-  ""id"": ""https://example.org/images/my-image.jpg"",
-  ""type"": ""Image"",
-  ""width"": 1000,
-  ""height"": 1000,
-  ""format"": ""image/jpeg"",
-  ""service"": [
-    {
-      ""@id"": ""https://example.org/images/my-image.jpg/v2/service"",
-      ""@type"": ""ImageService2""
-    },
-    {
-      ""id"": ""https://example.org/images/my-image.jpg/v2/service"",
-      ""type"": ""ImageService3""
-    }
-  ]
-}";
+        const string expected =
+            """
+            {
+              "id": "https://example.org/images/my-image.jpg",
+              "type": "Image",
+              "width": 1000,
+              "height": 1000,
+              "format": "image/jpeg",
+              "service": [
+                {
+                  "@id": "https://example.org/images/my-image.jpg/v2/service",
+                  "@type": "ImageService2"
+                },
+                {
+                  "id": "https://example.org/images/my-image.jpg/v2/service",
+                  "type": "ImageService3"
+                }
+              ]
+            }
+            """;
+
         // Assert
         json.Should().BeEquivalentTo(expected);
     }

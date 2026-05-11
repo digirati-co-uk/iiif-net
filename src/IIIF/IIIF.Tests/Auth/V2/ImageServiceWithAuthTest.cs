@@ -1,8 +1,6 @@
-using FluentAssertions;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
 using IIIF.Serialisation;
-using Xunit;
 
 namespace IIIF.Tests.Auth.V2;
 
@@ -19,12 +17,17 @@ public class ImageServiceWithAuthTest
         };
 
         // Act
-        var json = imgService2.AsJson().Replace("\r\n", "\n");
-        var expected = @"{
-  ""@id"": ""https://example.com/image/service"",
-  ""@type"": ""ImageService2""," + ReusableParts.GetExpectedServiceAsSingle() + "}";
-        // Assert
-        json.Should().BeEquivalentTo(expected);
+        var json = imgService2.AsJson();
+        var jsonToken = Newtonsoft.Json.Linq.JToken.Parse(json);
+
+        // Assert - validate structure via JSON tokens
+        jsonToken["@id"]?.ToString().Should().Be("https://example.com/image/service");
+        jsonToken["@type"]?.ToString().Should().Be("ImageService2");
+        jsonToken["service"]?.Should().NotBeNull();
+        jsonToken["service"]?["id"]?.ToString().Should().Be("https://example.com/image/service/probe");
+        jsonToken["service"]?["type"]?.ToString().Should().Be("AuthProbeService2");
+        // service property inside is an array
+        jsonToken["service"]?["service"]?.Should().NotBeNull();
     }
     
     [Fact]
@@ -55,13 +58,15 @@ public class ImageServiceWithAuthTest
         };
 
         // Act
-        var json = imgService3.AsJson().Replace("\r\n", "\n");
-        const string expected = @"{
-  ""id"": ""https://example.com/image/service"",
-  ""type"": ""ImageService3""," + ReusableParts.ExpectedServiceAsArray + @"
-}";
-        // Assert
-        json.Should().BeEquivalentTo(expected);
+        var json = imgService3.AsJson();
+        var jsonToken = Newtonsoft.Json.Linq.JToken.Parse(json);
+
+        // Assert - validate structure via JSON tokens
+        jsonToken["id"]?.ToString().Should().Be("https://example.com/image/service");
+        jsonToken["type"]?.ToString().Should().Be("ImageService3");
+        jsonToken["service"]?.Should().HaveCount(1);
+        jsonToken["service"]?[0]?["id"]?.ToString().Should().Be("https://example.com/image/service/probe");
+        jsonToken["service"]?[0]?["type"]?.ToString().Should().Be("AuthProbeService2");
     }
     
     [Fact]

@@ -19,11 +19,11 @@ public class ObjectIfSingleConverterTests
     public void ReadJson_Single_String()
     {
         // Arrange
-        const string value = "\"Foo bar\"";
+        const string value = """ "Foo bar" """;
         var expected = new List<string> { "Foo bar" };
 
         // Act
-        var result = JsonConvert.DeserializeObject<List<string>>(value, sut);
+        var result = JsonConvert.DeserializeObject<List<string>>(value.Trim(), sut);
 
         // Assert
         result.Should().BeEquivalentTo(expected);
@@ -33,11 +33,11 @@ public class ObjectIfSingleConverterTests
     public void ReadJson_Array_String()
     {
         // Arrange
-        const string value = "[\"Foo\",\"bar\"]";
+        const string value = """ ["Foo","bar"] """;
         var expected = new List<string> { "Foo", "bar" };
 
         // Act
-        var result = JsonConvert.DeserializeObject<List<string>>(value, sut);
+        var result = JsonConvert.DeserializeObject<List<string>>(value.Trim(), sut);
 
         // Assert
         result.Should().BeEquivalentTo(expected);

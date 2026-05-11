@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Selectors;
@@ -15,9 +14,10 @@ public class CookbookDeserialization
     [ClassData(typeof(CookbookManifestData))]
     public void Can_Deserialize_Cookbook_Manifest(string manifestId, Manifest manifest)
     {
-        // perfunctory assertion
         manifest.Should().NotBeNull($"{manifestId} is a valid cookbook manifest");
         manifest.Id.Should().Be(manifestId);
+        manifest.Type.Should().Be("Manifest");
+        manifest.Items.Should().NotBeNullOrEmpty();
     }
 
     [Fact]

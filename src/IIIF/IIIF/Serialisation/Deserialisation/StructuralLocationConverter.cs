@@ -23,6 +23,8 @@ public class StructuralLocationConverter : ReadOnlyConverter<IStructuralLocation
             nameof(SpecificResource) => new SpecificResource()
         };
 
+        jsonObject.RemoveEmptyArraysForObjectProperties(serializer, structuralLocation.GetType());
+
         serializer.Populate(jsonObject.CreateReader(), structuralLocation);
         return structuralLocation;
     }
