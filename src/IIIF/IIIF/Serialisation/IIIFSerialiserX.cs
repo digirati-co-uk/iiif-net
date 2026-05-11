@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace IIIF.Serialisation;
 /// </summary>
 public static class IIIFSerialiserX
 {
+    /// <summary>
+    /// Cache of all properties on a type, avoids reflecting the same type multiple times
+    /// </summary>
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> TypePropertyCache = new();
+    
     public static JsonSerializerSettings SerializerSettings { get; set; } = new()
     {
         NullValueHandling = NullValueHandling.Ignore,
@@ -134,9 +140,7 @@ public static class IIIFSerialiserX
             foreach (var key in keys)
                 node.AdditionalProperties.Remove(key);
 
-        foreach (var prop in node.GetType()
-                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                     .Where(p => p.CanRead && p.GetIndexParameters().Length == 0))
+        foreach (var prop in GetCachedProperties(node.GetType()))
         {
             var val = prop.GetValue(node);
 
@@ -160,5 +164,10 @@ public static class IIIFSerialiserX
             }
         }
     }
-
+    
+    private static PropertyInfo[] GetCachedProperties(Type type) =>
+        TypePropertyCache.GetOrAdd(type, static t =>
+            t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead && p.GetIndexParameters().Length == 0)
+                .ToArray());
 }
