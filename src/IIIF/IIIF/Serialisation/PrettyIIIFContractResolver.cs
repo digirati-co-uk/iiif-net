@@ -1,7 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace IIIF.Serialisation;
@@ -62,5 +63,33 @@ public class PrettyIIIFContractResolver : CamelCasePropertyNamesContractResolver
         }
 
         return property;
+    }
+
+    // Wraps the [JsonExtensionData] setter so that JSON keys which already correspond to a known property on the type
+    // are not also stored in AdditionalProperties.
+    // Without this, getter-only overrides (e.g. PaintingAnnotation.Motivation) can't be set so end up in
+    // AdditionalProperties during deserialisation, causing the value to be emitted twice on re-serialisation.
+    // Newtonsoft caches the contract per type, so this runs once per type, not per instance.
+    protected override JsonObjectContract CreateObjectContract(Type objectType)
+    {
+        var contract = base.CreateObjectContract(objectType);
+
+        // Nothing to do if the type has no [JsonExtensionData] member.
+        if (contract.ExtensionDataSetter == null) return contract;
+
+        // Get every JSON property name the contract already knows about (already camelCased by the base resolver)
+        var knownPropertyNames = new HashSet<string>(
+            contract.Properties.Select(p => p.PropertyName!),
+            StringComparer.OrdinalIgnoreCase);
+
+        // Update [JsonExtensionData] to drop keys that correspond to a real prop. Meaning only real 'additional' props
+        // are stored in AdditionalProperties.
+        var originalSetter = contract.ExtensionDataSetter;
+        contract.ExtensionDataSetter = (obj, key, value) =>
+        {
+            if (!knownPropertyNames.Contains(key)) originalSetter(obj, key, value);
+        };
+
+        return contract;
     }
 }

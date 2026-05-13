@@ -193,9 +193,8 @@ public class ManifestDataFileOneTests
         firstPage?.AdditionalProperties.Should().BeEmpty();
 
         var firstAnnotation = firstPage?.Items?[0].As<PaintingAnnotation>();
-        firstAnnotation?.AdditionalProperties.Should().ContainSingle();
-        firstAnnotation?.AdditionalProperties.Should().ContainKey("motivation");
-        firstAnnotation?.AdditionalProperties["motivation"]!.ToString().Should().Be("painting");
+        firstAnnotation?.AdditionalProperties.Should().BeEmpty();
+        firstAnnotation?.Motivation.Should().Be("painting");
 
         var specificResource = firstAnnotation?.Body.As<SpecificResource>();
         specificResource?.AdditionalProperties.Should().BeEmpty();

@@ -318,7 +318,7 @@ public class AdditionalPropertiesTests
             .ToList();
         itemsWithThumbnail.Should().NotBeEmpty();
     }
-
+    
     [Fact]
     public void ManifestDataFileTwo_BilingualLabels_PreservedAfterStrip()
     {
@@ -332,5 +332,50 @@ public class AdditionalPropertiesTests
             .Single(m => m.Id!.Contains("exhibit-10"));
         exhibit10.Label!["en"].Should().Contain("Through the Lens of a Professor");
         exhibit10.Label["nl"].Should().Contain("Door de lens van een professor");
+    }
+    
+    // -------------------------------------------------------------------------
+    // Known-property filtering — read-only overrides must not bleed into AdditionalProperties
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void FromJson_DoesNotStoreKnownProperties_InAdditionalProperties()
+    {
+        // PaintingAnnotation.Motivation is a getter-only computed property. Without the
+        // contract-resolver guard the incoming "motivation" JSON key has nowhere to land
+        // and falls back to AdditionalProperties, causing it to be emitted twice on
+        // re-serialisation.
+        const string json = """
+                            {
+                              "id": "https://example.org/anno/1",
+                              "type": "Annotation",
+                              "motivation": "painting",
+                              "target": "https://example.org/canvas/1"
+                            }
+                            """;
+
+        var anno = json.FromJson<PaintingAnnotation>();
+
+        anno!.AdditionalProperties.Should().NotContainKey("motivation");
+    }
+
+    [Fact]
+    public void AsJson_PaintingAnnotation_MotivationNotDuplicated()
+    {
+        const string json = """
+                            {
+                              "id": "https://example.org/anno/1",
+                              "type": "Annotation",
+                              "motivation": "painting",
+                              "target": "https://example.org/canvas/1"
+                            }
+                            """;
+
+        var roundTripped = json.FromJson<PaintingAnnotation>()!.AsJson();
+
+        var motivationCount = System.Text.RegularExpressions.Regex
+            .Matches(roundTripped, "\"motivation\"")
+            .Count;
+        motivationCount.Should().Be(1, because: "Motivation must not be emitted twice");
     }
 }
