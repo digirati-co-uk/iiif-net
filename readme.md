@@ -90,6 +90,9 @@ The `.Serialisation` namespace contains a number of custom `JsonConverter` imple
 * `[RequiredOutput]` - used on `IEnumerable<T>` properties. Will output `[]` if collection is empty (default is to omit empty lists).
 * `[CamelCaseEnumAttribute]` - use on an enum property to output value as camelCase (e.g. "MissingCredentials" -> "missingCredentials")
 
+> [!IMPORTANT]
+> The `FromJson<TTarget>` and `AsJson` helpers, detailed below, are the supported serialisation/deserialisation path for this library as there are a number of custom converters wired up this way.
+
 ### Helpers
 
 #### Serialisation
