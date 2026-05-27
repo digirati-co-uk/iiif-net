@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Extensions.NavPlace;
+using IIIF.Serialisation;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -19,6 +21,20 @@ public class GeometrySerialisationTests
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter> { new GeometryConverter() }
         };
+    }
+
+    [Fact]
+    public void Serialize_MaintainsEmptyFeatures()
+    {
+        const string input = """
+                                {"type":"Manifest","navPlace":{"type":"FeatureCollection","features":[]}}
+                                """;
+
+        var manifest = input.FromJson<Manifest>();
+        manifest.NavPlace.Features.Should().BeEmpty();
+
+        var result = manifest.AsJson();
+        result.Should().Contain("\"features\": []", "Empty array is maintained");
     }
 
     [Fact]
