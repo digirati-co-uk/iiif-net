@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using IIIF.Serialisation;
 
 namespace IIIF.Presentation.V3.Extensions.NavPlace;
 
@@ -11,10 +12,11 @@ public class FeatureCollection : JsonLdBase
     
     [JsonProperty(Order = 2)]
     public string Type => nameof(FeatureCollection);
-    
+
     /// <summary>
     /// Represents a spatially bounded area.
     /// </summary>
     [JsonProperty(Order = 3)]
-    public List<Feature>? Features { get; set; }
+    [RequiredOutput]
+    public List<Feature> Features { get; set; } = null!;
 }
