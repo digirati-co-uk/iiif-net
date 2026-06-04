@@ -34,13 +34,40 @@ public class ResourceBaseV3ConverterTests
     [InlineData("supplementing", typeof(SupplementingDocumentAnnotation))]
     [InlineData("painting", typeof(PaintingAnnotation))]
     [InlineData("classifying", typeof(TypeClassifyingAnnotation))]
-    [InlineData("general", typeof(GeneralAnnotation))]
+    [InlineData("general", typeof(Annotation))]
     public void ReadJson_IdentifiesType_FromMotivation(string type, Type expectedType)
     {
         var input = $"{{ \"motivation\": \"{type}\", \"id\": \"{Guid.NewGuid()}\" }}";
 
         JsonConvert.DeserializeObject<ResourceBase>(input, sut)
             .Should().BeOfType(expectedType, "Concrete type identified from motivation");
+    }
+    
+    [Fact]
+    public void ReadJson_IdentifiesGeneralAnnotation_IfHasBody()
+    {
+        var input = "{ \"motivation\": \"general\", \"id\": \"whatever\", \"body\": [{ \"id\":\"foo\"}] }";
+
+        JsonConvert.DeserializeObject<ResourceBase>(input, sut)
+            .Should().BeOfType<GeneralAnnotation>("Concrete type identified from motivation");
+    }
+    
+    [Fact]
+    public void ReadJson_IdentifiesPaintingAnnotation_SingleBody()
+    {
+        var input = "{ \"motivation\": \"painting\", \"id\": \"single\"}";
+
+        JsonConvert.DeserializeObject<ResourceBase>(input, sut)
+            .Should().BeOfType<PaintingAnnotation>("PaintingAnnotation due to motivation and single body");
+    }
+    
+    [Fact]
+    public void ReadJson_IdentifiesPaintingAnnotation_ArrayBody()
+    {
+        var input = "{ \"motivation\": \"painting\", \"id\": \"single\", \"body\": [] }";
+
+        JsonConvert.DeserializeObject<ResourceBase>(input, sut)
+            .Should().BeOfType<GeneralAnnotation>("GeneralAnnotation due to motivation and array body");
     }
     
     [Fact]

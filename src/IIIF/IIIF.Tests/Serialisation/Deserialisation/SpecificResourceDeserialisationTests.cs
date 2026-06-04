@@ -10,7 +10,7 @@ namespace IIIF.Tests.Serialisation.Deserialisation;
 
 public class SpecificResourceDeserialisationTests
 {
-    private static JsonSerializerSettings DeserializerSettings { get; set; } = new()
+    private static JsonSerializerSettings DeserializerSettings { get; } = new()
     {
         NullValueHandling = NullValueHandling.Ignore,
         ContractResolver = new PrettyIIIFContractResolver(),

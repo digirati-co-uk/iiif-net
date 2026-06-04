@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
@@ -141,15 +140,7 @@ internal class ResourceDeserialiser<T>
         if (jsonObject.ContainsKey("motivation"))
         {
             var motivation = jsonObject["motivation"]?.Value<string>();
-            service = motivation switch
-            {
-                Presentation.V3.Constants.Motivation.Supplementing => new SupplementingDocumentAnnotation() as T,
-                Presentation.V3.Constants.Motivation.Painting => new PaintingAnnotation() as T,
-                Presentation.V3.Constants.Motivation.Classifying => new TypeClassifyingAnnotation() as T,
-                _ => new GeneralAnnotation(motivation) as T
-            };
-            
-            if (service != null) return service;
+            return MotivationConverter.TryGetAnnotation(jsonObject, motivation!) as T;
         }
         
         // Look for consumer-provided mapping
@@ -172,7 +163,7 @@ internal class ResourceDeserialiser<T>
 
         if (!string.IsNullOrEmpty(typeValue))
         {
-            return new Presentation.V3.ExternalService(typeValue) as T;
+            return new ExternalService(typeValue) as T;
         }
         
         if (jsonObject.ContainsKey("id"))
