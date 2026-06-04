@@ -67,7 +67,7 @@ public class ResourceBaseV3ConverterTests
         var input = "{ \"motivation\": \"painting\", \"id\": \"single\", \"body\": [] }";
 
         JsonConvert.DeserializeObject<ResourceBase>(input, sut)
-            .Should().BeOfType<GeneralAnnotation>("PaintingAnnotation due to motivation and single body");
+            .Should().BeOfType<GeneralAnnotation>("GeneralAnnotation due to motivation and array body");
     }
     
     [Fact]
