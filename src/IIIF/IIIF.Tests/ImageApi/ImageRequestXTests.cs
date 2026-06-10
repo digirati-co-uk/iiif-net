@@ -475,4 +475,102 @@ public class ImageRequestXTests
         
         imageRequest.ToString().Should().Be(expected);
     }
+
+    // 5000 x 4000 service, 512px square tiles at scaleFactors [1,2,4,8,16]
+    private static readonly List<Tile> StandardTiles = new()
+    {
+        new Tile { Width = 512, Height = 512, ScaleFactors = new[] { 1, 2, 4, 8, 16 } }
+    };
+
+    // 5000 x 4000 service, 256 wide x 512 high (non-square) tiles at scaleFactors [1,2,4]
+    private static readonly List<Tile> NonSquareTiles = new()
+    {
+        new Tile { Width = 256, Height = 512, ScaleFactors = new[] { 1, 2, 4 } }
+    };
+
+    // 5000 x 4000 service offering two distinct tile sets at different sizes
+    private static readonly List<Tile> MixedTiles = new()
+    {
+        new Tile { Width = 256, Height = 256, ScaleFactors = new[] { 1, 2 } },
+        new Tile { Width = 1024, Height = 1024, ScaleFactors = new[] { 1, 2, 4 } }
+    };
+
+    [Theory]
+    [InlineData("id/1024,512,512,512/512,512/0/default.jpg")]   // interior tile, scaleFactor 1
+    [InlineData("id/1024,512,512,512/512,/0/default.jpg")]      // interior tile, width-only size
+    [InlineData("id/4608,512,392,512/392,512/0/default.jpg")]   // right-edge column clamped, scaleFactor 1
+    [InlineData("id/1024,1024,1024,1024/512,512/0/default.jpg")]// interior tile, scaleFactor 2
+    [InlineData("id/0,0,5000,4000/313,250/0/default.jpg")]      // whole image as one tile, scaleFactor 16
+    [InlineData("id/full/313,250/0/default.jpg")]               // whole image expressed as full region
+    public void IsTileRequest_True_ForComputedTiles(string path)
+    {
+        var imageRequest = ImageRequest.Parse(path, string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, StandardTiles).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("id/full/200,/0/default.jpg")]                  // thumbnail, not on the tile grid
+    [InlineData("id/1000,512,512,512/512,512/0/default.jpg")]   // region origin not aligned to grid
+    [InlineData("id/1024,512,512,512/256,256/0/default.jpg")]   // size implies scaleFactor 2 but grid misaligned
+    [InlineData("id/pct:10,10,20,20/512,512/0/default.jpg")]    // percentage region
+    [InlineData("id/square/512,512/0/default.jpg")]             // square region
+    [InlineData("my-asset/info.json")]                          // information request
+    public void IsTileRequest_False_ForNonTiles(string path)
+    {
+        var imageRequest = ImageRequest.Parse(path, string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, StandardTiles).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("id/512,512,256,512/256,512/0/default.jpg")]    // interior tile, scaleFactor 1
+    [InlineData("id/512,1024,512,1024/256,512/0/default.jpg")]  // interior tile, scaleFactor 2
+    [InlineData("id/4864,512,136,512/136,512/0/default.jpg")]   // right-edge column clamped
+    [InlineData("id/0,3584,256,416/256,416/0/default.jpg")]     // bottom-edge row clamped
+    public void IsTileRequest_True_ForNonSquareTiles(string path)
+    {
+        var imageRequest = ImageRequest.Parse(path, string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, NonSquareTiles).Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsTileRequest_False_WhenRegionMatchesWrongTileShape()
+    {
+        // 256x256 square region would be a tile for square tiles, but the service's tiles are 256x512
+        var imageRequest = ImageRequest.Parse("id/512,512,256,256/256,256/0/default.jpg", string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, NonSquareTiles).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("id/256,256,256,256/256,256/0/default.jpg")]      // matches the 256px tile set, scaleFactor 1
+    [InlineData("id/512,512,512,512/256,256/0/default.jpg")]      // matches the 256px tile set, scaleFactor 2
+    [InlineData("id/1024,1024,1024,1024/1024,1024/0/default.jpg")]// matches the 1024px tile set, scaleFactor 1
+    [InlineData("id/2048,0,2048,2048/1024,1024/0/default.jpg")]   // matches the 1024px tile set, scaleFactor 2
+    public void IsTileRequest_True_WhenMatchingAnyTileSet(string path)
+    {
+        var imageRequest = ImageRequest.Parse(path, string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, MixedTiles).Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsTileRequest_False_WhenMatchingNoTileSet()
+    {
+        // 512px region scaled to 512 is scaleFactor 1, but neither tile set has a 512px tile
+        var imageRequest = ImageRequest.Parse("id/512,512,512,512/512,512/0/default.jpg", string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, MixedTiles).Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsTileRequest_Null_WhenNoTiles()
+    {
+        var imageRequest = ImageRequest.Parse("id/1024,512,512,512/512,512/0/default.jpg", string.Empty);
+
+        imageRequest.IsTileRequest(5000, 4000, null).Should().BeNull();
+        imageRequest.IsTileRequest(5000, 4000, new List<Tile>()).Should().BeNull();
+    }
 }
