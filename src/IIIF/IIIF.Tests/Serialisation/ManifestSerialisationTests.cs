@@ -9,9 +9,9 @@ using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Presentation.V3.Strings;
+using IIIF.Search.V2;
 using IIIF.Serialisation;
 using Newtonsoft.Json.Linq;
-using ExternalResource = IIIF.Presentation.V3.Content.ExternalResource;
 
 namespace IIIF.Tests.Serialisation;
 
@@ -30,8 +30,8 @@ public class ManifestSerialisationTests
             },
             Id = "https://test.example.com/manifest",
             Label = new LanguageMap("en", "Test string"),
-            Thumbnail = new List<ExternalResource>
-            {
+            Thumbnail =
+            [
                 new Image
                 {
                     Id = "https://test.image",
@@ -48,21 +48,21 @@ public class ManifestSerialisationTests
                         }
                     }
                 }
-            },
-            Items = new List<Canvas>
-            {
+            ],
+            Items =
+            [
                 new()
                 {
                     Id = "https://test.example.com/canvas/1",
                     Width = 1000,
                     Height = 1001,
-                    Annotations = new List<AnnotationPage>()
-                    {
+                    Annotations =
+                    [
                         new()
                         {
                             Id = "https://test.example.com/canvas/1/page",
-                            Items = new List<IAnnotation>
-                            {
+                            Items =
+                            [
                                 new GeneralAnnotation("canvassing")
                                 {
                                     Body = new List<ResourceBase>
@@ -88,16 +88,16 @@ public class ManifestSerialisationTests
                                         }
                                     }
                                 }
-                            }
+                            ]
                         }
-                    },
-                    Items = new List<AnnotationPage>
-                    {
+                    ],
+                    Items =
+                    [
                         new()
                         {
                             Id = "https://test.example.com/canvas/1/page",
-                            Items = new List<IAnnotation>
-                            {
+                            Items =
+                            [
                                 new PaintingAnnotation
                                 {
                                     Target = new Canvas { Id = "https://test.example.com/canvas/1" },
@@ -107,8 +107,8 @@ public class ManifestSerialisationTests
                                         Id =
                                             "https://test.example.com/canvas/1/image/full/max/1000,1000/0/default.jpg",
                                         Format = "image/jpeg",
-                                        Service = new List<IService>
-                                        {
+                                        Service =
+                                        [
                                             new ImageService2
                                             {
                                                 Id = "https://test.example.com/canvas/1/image",
@@ -117,6 +117,7 @@ public class ManifestSerialisationTests
                                                 Width = 1000,
                                                 Height = 1001
                                             },
+
                                             new ImageService3
                                             {
                                                 Id = "https://test.example.com/canvas/1/image/3",
@@ -125,14 +126,14 @@ public class ManifestSerialisationTests
                                                 Width = 1000,
                                                 Height = 1001
                                             }
-                                        }
+                                        ]
                                     }
                                 }
-                            }
+                            ]
                         }
-                    },
-                    Thumbnail = new List<ExternalResource>
-                    {
+                    ],
+                    Thumbnail =
+                    [
                         new Image
                         {
                             Id = "https://test.image",
@@ -149,11 +150,27 @@ public class ManifestSerialisationTests
                                 }
                             }
                         }
-                    }
+                    ]
                 }
-            },
-            Homepage = new List<ExternalResource>
-            {
+            ],
+            Service =
+            [
+                new SearchService2
+                {
+                    Id = "https://example.org/services/identifier/search",
+                    Label = new LanguageMap("en", "Search this manifest"),
+                    Service =
+                    [
+                        new AutoCompleteService2
+                        {
+                            Id = "https://example.org/services/identifier/autocomplete",
+                            Label = new LanguageMap("en", "Autocomplete this manifest"),
+                        }
+                    ],
+                }
+            ],
+            Homepage =
+            [
                 new("Text")
                 {
                     Id = "https://test.example.com/homepage",
@@ -161,21 +178,21 @@ public class ManifestSerialisationTests
                     Format = "text/html",
                     Language = new List<string> { "en" }
                 }
-            },
-            Metadata = new List<LabelValuePair>
-            {
+            ],
+            Metadata =
+            [
                 new("en", "Gibberish", "foo", "bar"),
                 new("en", "Published", "December 2021")
-            },
+            ],
             Rights = "https://en.wikipedia.org/wiki/All_rights_reserved",
-            Provider = new List<Agent>
-            {
+            Provider =
+            [
                 new()
                 {
                     Id = "https://test.example.com",
                     Label = new LanguageMap("en", new[] { "one", "two" }),
-                    Homepage = new List<ExternalResource>
-                    {
+                    Homepage =
+                    [
                         new("Text")
                         {
                             Id = "https://test.example.com/homepage",
@@ -183,19 +200,19 @@ public class ManifestSerialisationTests
                             Format = "text/html",
                             Language = new List<string> { "en" }
                         }
-                    },
-                    Logo = new List<Image>
-                    {
+                    ],
+                    Logo =
+                    [
                         new()
                         {
                             Id = "https://test.example.com/logo",
                             Format = "image/jpeg"
                         }
-                    }
+                    ]
                 }
-            },
-            SeeAlso = new List<ExternalResource>
-            {
+            ],
+            SeeAlso =
+            [
                 new("Dataset")
                 {
                     Id = "https://test.example.com/other",
@@ -203,12 +220,12 @@ public class ManifestSerialisationTests
                     Label = new LanguageMap("en", "API Stuff"),
                     Format = "application/json"
                 }
-            },
+            ],
             NavPlace = new FeatureCollection
             {
                 Id = "https://test.example.com/nav-place",
-                Features = new List<Feature>
-                {
+                Features =
+                [
                     new()
                     {
                         Id = "https://test.example.com/nav-place/feature",
@@ -218,26 +235,27 @@ public class ManifestSerialisationTests
                         },
                         Geometry = new GeometryCollection
                         {
-                            Geometries = new List<Geometry>
-                            {
+                            Geometries =
+                            [
                                 new MultiPolygon
                                 {
-                                    Coordinates = new List<List<List<List<double>>>>
-                                    {
+                                    Coordinates =
+                                    [
                                         new()
                                         {
                                             new List<List<double>> { new() { 100.0, 20.2, 10.1 } }
                                         }
-                                    }
+                                    ]
                                 },
+
                                 new Point
                                 {
-                                    Coordinates = new List<double> { 100.0, 20.2, 10.1 }
+                                    Coordinates = [100.0, 20.2, 10.1]
                                 }
-                            }
+                            ]
                         }
                     }
-                }
+                ]
             }
         };
     }
@@ -259,7 +277,7 @@ public class ManifestSerialisationTests
             "{\"@context\": [\"http://iiif.io/api/presentation/3/context.json\"],\"id\": \"https://iiif.example/12345\",\"type\": \"Manifest\",\"services\": [{\"id\": \"https://iiif.example.org/1234#tracking\",\"type\": \"Text\",\"profile\": \"http://universalviewer.io/tracking-extensions-profile\",\"label\": {\"en\": [\"Format: Monograph, Institution: n/a, foobarbaz\"]}}]}";
         var expectedServices = new List<ExternalService>
         {
-            new ExternalService("Text")
+            new("Text")
             {
                 Id = "https://iiif.example.org/1234#tracking",
                 Profile = "http://universalviewer.io/tracking-extensions-profile",

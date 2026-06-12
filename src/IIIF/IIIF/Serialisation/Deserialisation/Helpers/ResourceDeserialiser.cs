@@ -7,6 +7,7 @@ using IIIF.Presentation.V3;
 using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Extensions.NavPlace;
+using IIIF.Search.V2;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Serialisation.Deserialisation.Helpers;
@@ -105,11 +106,14 @@ internal class ResourceDeserialiser<T>
                 nameof(Collection) => new Collection() as T,
                 nameof(Manifest) => new Manifest() as T,
                 nameof(SpecificResource) => new SpecificResource() as T,
-                nameof(TextualBody) =>  new TextualBody(jsonObject.ContainsKey("value") ? 
-                    jsonObject["value"].Value<string>() : string.Empty) as T,
+                nameof(TextQuoteSelector) => new SpecificResource() as T,
+                nameof(SearchService2) => new SearchService2() as T,
+                nameof(AutoCompleteService2) => new AutoCompleteService2() as T,
+                nameof(TextualBody) => new TextualBody(jsonObject.ContainsKey("value")
+                    ? jsonObject["value"].Value<string>()
+                    : string.Empty) as T,
                 _ => null
             };
-            
             if (service != null) return service;
         }
         
@@ -123,9 +127,9 @@ internal class ResourceDeserialiser<T>
                 Auth.V1.AuthTokenService.AuthToken1Profile => new Auth.V1.AuthTokenService() as T,
                 Auth.V0.AuthLogoutService.AuthLogout0Profile => new Auth.V0.AuthLogoutService() as T,
                 Auth.V0.AuthTokenService.AuthToken0Profile => new Auth.V0.AuthTokenService() as T,
-                Search.V2.AutoCompleteService.AutoComplete2Profile => new Search.V2.AutoCompleteService() as T,
+                Search.V2.AutoCompleteService2.AutoComplete2Profile => new Search.V2.AutoCompleteService2() as T,
                 Search.V1.AutoCompleteService.AutoCompleteService1Profile => new Search.V1.AutoCompleteService() as T,
-                Search.V2.SearchService.Search2Profile => new Search.V2.SearchService() as T,
+                Search.V2.SearchService2.Search2Profile => new Search.V2.SearchService2() as T,
                 _ => null
             };
             if (service != null) return service;
