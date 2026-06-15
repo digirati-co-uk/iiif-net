@@ -8,6 +8,7 @@ using IIIF.Presentation.V3.Annotation;
 using IIIF.Presentation.V3.Content;
 using IIIF.Presentation.V3.Extensions.NavPlace;
 using IIIF.Search.V1;
+using IIIF.Search.V2;
 using IIIF.Serialisation;
 using IIIF.Serialisation.Deserialisation;
 using Newtonsoft.Json;
@@ -89,6 +90,8 @@ public class ResourceConverterTests
     [InlineData("Collection", typeof(Collection))]
     [InlineData("Manifest", typeof(Manifest))]
     [InlineData("SpecificResource", typeof(SpecificResource))]
+    [InlineData("AutoCompleteService2", typeof(AutoCompleteService2))]
+    [InlineData("SearchService2", typeof(SearchService2))]
     public void ReadJson_IdentifiesType_FromType(string type, Type expectedType)
     {
         var input = $"{{ \"type\": \"{type}\", \"id\": \"{Guid.NewGuid()}\"}}";
@@ -110,9 +113,9 @@ public class ResourceConverterTests
     [InlineData("http://iiif.io/api/auth/1/clickthrough", typeof(AuthCookieService))]
     [InlineData("http://iiif.io/api/auth/1/kiosk", typeof(AuthCookieService))]
     [InlineData("http://iiif.io/api/auth/1/external", typeof(AuthCookieService))]
-    [InlineData("http://iiif.io/api/search/2/autocomplete", typeof(IIIF.Search.V2.AutoCompleteService))]
+    [InlineData("http://iiif.io/api/search/2/autocomplete", typeof(IIIF.Search.V2.AutoCompleteService2))]
     [InlineData("http://iiif.io/api/search/1/autocomplete", typeof(AutoCompleteService))]
-    [InlineData("http://iiif.io/api/search/2/search", typeof(IIIF.Search.V2.SearchService))]
+    [InlineData("http://iiif.io/api/search/2/search", typeof(IIIF.Search.V2.SearchService2))]
     public void ReadJson_IdentifiesType_FromProfile(string profile, Type expectedType)
     {
         var input = $"{{ \"profile\": \"{profile}\", \"id\": \"{Guid.NewGuid()}\"}}";

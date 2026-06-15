@@ -124,9 +124,9 @@ public class ServiceConverterTests
     }
     
     [Theory]
-    [InlineData(IIIF.Search.V2.AutoCompleteService.AutoComplete2Profile, typeof(IIIF.Search.V2.AutoCompleteService))]
+    [InlineData(IIIF.Search.V2.AutoCompleteService2.AutoComplete2Profile, typeof(IIIF.Search.V2.AutoCompleteService2))]
     [InlineData(IIIF.Search.V1.AutoCompleteService.AutoCompleteService1Profile, typeof(IIIF.Search.V1.AutoCompleteService))]
-    [InlineData(IIIF.Search.V2.SearchService.Search2Profile, typeof(IIIF.Search.V2.SearchService))]
+    [InlineData(IIIF.Search.V2.SearchService2.Search2Profile, typeof(IIIF.Search.V2.SearchService2))]
     public void ReadJson_KnownSearchServices_FromProfile(string profile, Type expected)
     {
         var jsonId = $$"""{"profile": "{{profile}}"}""";
