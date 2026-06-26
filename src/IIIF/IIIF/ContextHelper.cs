@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace IIIF;
 
@@ -59,12 +60,14 @@ public static class ContextHelper
     private static void SetContext(JsonLdBase resource, IReadOnlyList<string> workingContexts)
         => resource.Context = workingContexts.Count == 1 ? workingContexts[0] : workingContexts;
 
-    private static List<string> GetWorkingContexts(JsonLdBase resource)
-    {
-        if (resource.Context is List<string> existingContexts) return existingContexts;
-        
-        if (resource.Context is string singleContext) return new List<string> { singleContext };
-
-        return new List<string>(1);
-    }
+    private static List<string> GetWorkingContexts(JsonLdBase resource) =>
+        resource.Context switch
+        {
+            List<string> existingContexts => existingContexts,
+            JArray jArray => jArray.Values<string>().Where(s => s != null).Select(s => s!).ToList(),
+            IEnumerable<string> enumerable => enumerable.ToList(),
+            string singleContext => new List<string> { singleContext },
+            JValue { Type: JTokenType.String } jValue when jValue.ToString() is { } plain => new List<string> { plain },
+            _ => new List<string>(1)
+        };
 }

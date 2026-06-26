@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace IIIF.Tests;
 
@@ -134,6 +135,106 @@ public class ContextHelperTests
         
         // Assert
         action.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void EnsureContext_AddsContext_WhenExistingIsJArray()
+    {
+        // Arrange
+        const string context = "http://existing-context";
+        const string customContext = "http://my-custom-context";
+        var jsonLdBase = new TestJsonLdBase { Context = new JArray { context } };
+
+        var expected = new List<string> { context, customContext };
+
+        // Act
+        jsonLdBase.EnsureContext(customContext);
+
+        // Assert
+        (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
+    }
+
+    [Fact]
+    public void EnsureContext_NoOp_IfContextAlreadyExistsInJArray()
+    {
+        // Arrange
+        const string context = "http://existing-context";
+        const string customContext = "http://my-custom-context";
+        var jsonLdBase = new TestJsonLdBase { Context = new JArray { context, customContext } };
+
+        var expected = new List<string> { context, customContext };
+
+        // Act
+        jsonLdBase.EnsureContext(customContext);
+
+        // Assert
+        (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
+    }
+
+    [Fact]
+    public void EnsureContext_ReordersIIIFContext_WhenExistingIsJArray()
+    {
+        // Arrange
+        const string customContext = "http://my-custom-context";
+        var iiifContext = IIIF.Presentation.Context.Presentation3Context;
+        var jsonLdBase = new TestJsonLdBase { Context = new JArray { iiifContext } };
+
+        var expected = new List<string> { customContext, iiifContext };
+
+        // Act
+        jsonLdBase.EnsureContext(customContext);
+
+        // Assert
+        (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
+    }
+
+    [Fact]
+    public void EnsureContext_AddsContext_WhenExistingIsEnumerable()
+    {
+        // Arrange
+        const string context = "http://existing-context";
+        const string customContext = "http://my-custom-context";
+        var jsonLdBase = new TestJsonLdBase { Context = new[] { context } };
+
+        var expected = new List<string> { context, customContext };
+
+        // Act
+        jsonLdBase.EnsureContext(customContext);
+
+        // Assert
+        (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
+    }
+
+    [Fact]
+    public void EnsureContext_AddsContext_WhenExistingIsJValueString()
+    {
+        // Arrange
+        const string context = "http://existing-context";
+        const string customContext = "http://my-custom-context";
+        var jsonLdBase = new TestJsonLdBase { Context = new JValue(context) };
+
+        var expected = new List<string> { context, customContext };
+
+        // Act
+        jsonLdBase.EnsureContext(customContext);
+
+        // Assert
+        (jsonLdBase.Context as List<string>).Should().ContainInOrder(expected);
+    }
+
+    [Fact]
+    public void EnsureContext_NoOp_IfContextAlreadyExistsAsJValueString()
+    {
+        // Arrange
+        const string context = "http://existing-context";
+        var jsonLdBase = new TestJsonLdBase { Context = new JValue(context) };
+
+        // Act
+        jsonLdBase.EnsureContext(context);
+
+        // Assert
+        jsonLdBase.Context.Should().BeOfType<string>()
+            .And.Subject.Should().Be(context);
     }
 
     public static IEnumerable<object[]> SampleContexts =>
