@@ -1,5 +1,6 @@
-﻿using IIIF.Presentation.V2;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using IIIF.Presentation.V2;
+using IIIF.Serialisation;
 
 namespace IIIF.Search.V1;
 
@@ -11,5 +12,7 @@ public class SearchService : ResourceBase, IService
     [JsonProperty(PropertyName = "@type", Order = 3)]
     public override string? Type { get; set; } = "SearchService1";
 
-    [JsonProperty(Order = 28)] public AutoCompleteService? Service { get; set; }
+    [JsonProperty(Order = 28)] 
+    [ObjectIfSingle]
+    public List<IService>? Service { get; set; }
 }
