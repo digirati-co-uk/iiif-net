@@ -136,9 +136,11 @@ internal class ResourceDeserialiser<T>
 
             const string auth0 = "http://iiif.io/api/auth/0/";
             const string auth1 = "http://iiif.io/api/auth/1/";
+            const string image2 = "http://iiif.io/api/image/2/";
 
             if (profile.StartsWith(auth0)) return new Auth.V0.AuthCookieService(profile) as T;
             if (profile.StartsWith(auth1)) return new Auth.V1.AuthCookieService(profile) as T;
+            if (profile.StartsWith(image2)) return new ImageService2() as T;
         }
         
         if (jsonObject.ContainsKey("motivation"))
