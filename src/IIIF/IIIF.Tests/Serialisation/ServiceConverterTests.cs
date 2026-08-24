@@ -94,7 +94,7 @@ public class ServiceConverterTests
     [Fact]
     public void ReadJson_ImageService3_FromType()
     {
-        var jsonId = $$"""{"type": "ImageService3"}""";
+        var jsonId = """{"type": "ImageService3"}""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
 
@@ -154,7 +154,7 @@ public class ServiceConverterTests
     [Fact]
     public void ReadJson_V2ServiceReference_IfTypeAndIdOnly()
     {
-        var jsonId = $$"""{"@type": "AuthCookieService1", "@id": "https://service-reference-test" }""";
+        var jsonId = """{"@type": "AuthCookieService1", "@id": "https://service-reference-test" }""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
@@ -164,7 +164,7 @@ public class ServiceConverterTests
     [Fact]
     public void ReadJson_FallsBackTo_V2ExternalService_IfAtType_AndUnableToDetermine()
     {
-        var jsonId = $$"""{"@type": "Text", "@id": "https://service-reference-test", "label": "test" }""";
+        var jsonId = """{"@type": "Text", "@id": "https://service-reference-test", "label": "test" }""";
         
         var result = JsonConvert.DeserializeObject<IService>(jsonId, sut);
         
