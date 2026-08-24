@@ -116,6 +116,8 @@ public class ResourceConverterTests
     [InlineData("http://iiif.io/api/search/2/autocomplete", typeof(IIIF.Search.V2.AutoCompleteService2))]
     [InlineData("http://iiif.io/api/search/1/autocomplete", typeof(AutoCompleteService))]
     [InlineData("http://iiif.io/api/search/2/search", typeof(IIIF.Search.V2.SearchService2))]
+    [InlineData("http://iiif.io/api/image/2/level1.json", typeof(ImageService2))]
+    [InlineData("http://iiif.io/api/image/2/level2.json", typeof(ImageService2))]
     public void ReadJson_IdentifiesType_FromProfile(string profile, Type expectedType)
     {
         var input = $"{{ \"profile\": \"{profile}\", \"id\": \"{Guid.NewGuid()}\"}}";
