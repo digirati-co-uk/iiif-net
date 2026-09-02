@@ -30,6 +30,19 @@ public class LanguageMapSerialiserTests
         // Assert
         result.Should().Be(expected.Trim());
     }
+    
+    [Fact]
+    public void ReadJson_HandlesEmptyObject()
+    {
+        // Arrange
+        const string json = "{}";
+
+        // Act
+        var result = JsonConvert.DeserializeObject<LanguageMap>(json.Trim(), sut);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
 
     [Fact]
     public void ReadJson_SingleLanguageSingleValue()
@@ -76,6 +89,15 @@ public class LanguageMapSerialiserTests
 
         // Assert
         result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void WriteJson_EmptyLanguageMap_WrittenAsNoneLanguage()
+    {
+        var languageMap = new LanguageMap();
+        
+        var result = JsonConvert.SerializeObject(languageMap, Formatting.None, sut);
+        result.Should().Be("{\"none\":[\"\"]}");
     }
 
     [Fact]

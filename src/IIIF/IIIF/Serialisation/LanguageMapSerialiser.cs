@@ -12,7 +12,7 @@ namespace IIIF.Serialisation;
 /// </summary>
 public class LanguageMapSerialiser : JsonConverter<LanguageMap>
 {
-    public override LanguageMap? ReadJson(JsonReader reader, Type objectType, LanguageMap? existingValue,
+    public override LanguageMap ReadJson(JsonReader reader, Type objectType, LanguageMap? existingValue,
         bool hasExistingValue, JsonSerializer serializer)
     {
         var map = existingValue ?? new LanguageMap();
@@ -28,9 +28,8 @@ public class LanguageMapSerialiser : JsonConverter<LanguageMap>
             throw new ArgumentException(
                 "LanguageMapSerialiser cannot serialise a null object", nameof(value));
 
-        if (value.Count == 0)
-            throw new ArgumentException(
-                $"LanguageMapSerialiser cannot serialise an empty array {value.GetType().Name}", nameof(value));
+        // If we have an empty LanguageMap ({}), use "none language, no value" output
+        if (value.Count == 0) value = new LanguageMap("none", string.Empty);
 
         // if has a single language, with a single value, of length less than X, output without formatting
         if (value.Count == 1)
