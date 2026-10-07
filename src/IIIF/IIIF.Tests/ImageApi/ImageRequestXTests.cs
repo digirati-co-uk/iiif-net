@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using IIIF.Exceptions;
 using IIIF.ImageApi;
 
 namespace IIIF.Tests.ImageApi;
@@ -308,6 +309,70 @@ public class ImageRequestXTests
             .WithMessage("Path contains empty or an invalid number of segments");
     }
     
+    [Theory]
+    [InlineData("my-asset/info.json/full/1200,/0/default.jpg")]
+    [InlineData("my-asset/info.json/full")]
+    [InlineData("my-asset/info.json/")]
+    public void Parse_Validate_Fails_WhenInfoJsonNotFinalSegment(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Path contains empty or an invalid number of segments");
+    }
+
+    [Fact]
+    public void Parse_NoValidate_InfoJsonWithExtraSegments_IsInformationRequest()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/info.json/full/1200,/0/default.jpg", prefix);
+
+        // Assert
+        result.IsInformationRequest.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Parse_Validate_InfoJson()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/info.json", prefix, true);
+
+        // Assert
+        result.IsInformationRequest.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("my-asset/full/!100,/0/default.jpg")]
+    [InlineData("my-asset/full/!,100/0/default.jpg")]
+    [InlineData("my-asset/full/!100/0/default.jpg")]
+    public void Parse_Throws_WhenInvalidSize(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+
+        // Assert
+        action.Should().ThrowExactly<SizeException>();
+    }
+
+    [Theory]
+    [InlineData("iiif-img/27/1/my-asset/full/!100,/0/default.jpg")]
+    [InlineData("iiif-img/27/1/my-asset/full/max/abc/default.jpg")]
+    public void TryParse_InvalidParameter_ReturnsFalse(string input)
+    {
+        // Act
+        var result = ImageRequest.TryParse(input, out var imageRequest);
+
+        // Assert
+        result.Should().BeFalse();
+        imageRequest.Should().BeNull();
+    }
+
     public static IEnumerable<object[]> ImageRequests =>
         new List<object[]>
         {

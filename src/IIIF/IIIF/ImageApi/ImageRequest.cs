@@ -67,13 +67,16 @@ public class ImageRequest
 
         if (parts[1] == InfoJson)
         {
+            // info.json must be the final segment, e.g. not /my-asset/info.json/full/max/0/default.jpg
+            if (validateSegments && parts.Length != 2) ThrowInvalidSegments();
+
             request.IsInformationRequest = true;
             return request;
         }
-        
+
         if (validateSegments && (parts.Length != 5 || parts.Any(string.IsNullOrEmpty)))
         {
-            throw new ArgumentException("Path contains empty or an invalid number of segments");
+            ThrowInvalidSegments();
         }
 
         request.OriginalPath = path;
@@ -86,7 +89,10 @@ public class ImageRequest
 
         return request;
     }
-    
+
+    private static void ThrowInvalidSegments()
+        => throw new ArgumentException("Path contains empty or an invalid number of segments");
+
     /// <summary>
     /// Parses an image request path as a IIIF ImageRequest object
     /// </summary>
