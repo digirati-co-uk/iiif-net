@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using IIIF.Exceptions;
 
 namespace IIIF.ImageApi;
 
@@ -45,8 +46,31 @@ public class SizeParameter
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Parse provided {size} parameter to <see cref="SizeParameter"/> object
+    /// </summary>
+    /// <param name="pathPart">{size} parameter of IIIF image request (e.g. "max", "!100,100", "^,200")</param>
+    /// <returns>Parsed <see cref="SizeParameter"/></returns>
+    /// <exception cref="SizeException">Thrown if provided value is not a valid {size} parameter</exception>
     public static SizeParameter Parse(string pathPart)
     {
+        try
+        {
+            return ParseInternal(pathPart);
+        }
+        catch (SizeException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new SizeException(GetErrorMessage(pathPart), ex);
+        }
+    }
+
+    private static SizeParameter ParseInternal(string pathPart)
+    {
+        var original = pathPart;
         var size = new SizeParameter();
 
         if (pathPart[0] == '^')
@@ -67,18 +91,32 @@ public class SizeParameter
             pathPart = pathPart[1..];
         }
 
-        if (pathPart[0] == 'p')
+        if (pathPart.StartsWith("pct:"))
         {
+            // Confined (!) is only valid with w,h
+            if (size.Confined) throw new SizeException(GetErrorMessage(original));
             size.PercentScale = float.Parse(pathPart[4..]);
             return size;
         }
 
-        string[] wh = pathPart.Split(',');
+        var wh = pathPart.Split(',');
+        if (wh.Length != 2) throw new SizeException(GetErrorMessage(original));
+
         if (wh[0] != string.Empty) size.Width = int.Parse(wh[0]);
         if (wh[1] != string.Empty) size.Height = int.Parse(wh[1]);
 
+        // At least 1 dimension required, confined (!) requires both
+        if ((size.Width == null && size.Height == null) ||
+            (size.Confined && (size.Width == null || size.Height == null)))
+        {
+            throw new SizeException(GetErrorMessage(original));
+        }
+
         return size;
     }
+
+    private static string GetErrorMessage(string pathPart)
+        => $"Expected 'max', 'w,', ',h', 'pct:n', 'w,h' or '!w,h', optionally prefixed with '^'. Found: {pathPart}";
     
     /// <summary>
     /// Resize given size in accordance with <see cref="SizeParameter"/>

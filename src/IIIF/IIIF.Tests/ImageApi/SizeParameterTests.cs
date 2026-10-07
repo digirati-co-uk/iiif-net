@@ -1,4 +1,5 @@
 ﻿using System;
+using IIIF.Exceptions;
 using IIIF.ImageApi;
 
 namespace IIIF.Tests.ImageApi;
@@ -219,6 +220,37 @@ public class SizeParameterTests
         // Assert
         sizeParameter.Should().BeEquivalentTo(expected);
         sizeParameter.ToString().Should().Be(size);
+    }
+
+    [Theory]
+    [InlineData("", "Empty")]
+    [InlineData("^", "Upscale only")]
+    [InlineData("!", "Confined only")]
+    [InlineData(",", "No dimensions")]
+    [InlineData("^,", "Upscaled no dimensions")]
+    [InlineData("100", "No comma")]
+    [InlineData("!100", "Confined no comma")]
+    [InlineData("1,2,3", "Too many commas")]
+    [InlineData("a,100", "Non-numeric width")]
+    [InlineData("100,b", "Non-numeric height")]
+    [InlineData("!100,", "Confined width only")]
+    [InlineData("!,100", "Confined height only")]
+    [InlineData("^!100,", "Upscaled confined width only")]
+    [InlineData("^!,100", "Upscaled confined height only")]
+    [InlineData("!,", "Confined no dimensions")]
+    [InlineData("pct:", "Percent no value")]
+    [InlineData("pct:abc", "Percent non-numeric")]
+    [InlineData("!pct:50", "Confined percent")]
+    [InlineData("pc:50", "Invalid percent prefix")]
+    [InlineData("!max", "Confined max")]
+    public void Parse_Throws_IfInvalid(string size, string reason)
+    {
+        // Act
+        Action action = () => SizeParameter.Parse(size);
+
+        // Assert
+        action.Should().ThrowExactly<SizeException>(reason)
+            .WithMessage($"Expected 'max', 'w,', ',h', 'pct:n', 'w,h' or '!w,h', optionally prefixed with '^'. Found: {size}");
     }
 
     [Theory]
