@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using IIIF.Exceptions;
 using IIIF.ImageApi;
 
@@ -72,6 +73,30 @@ public class RegionParameterTests
         // Assert
         rotationParameter.Should().BeEquivalentTo(expected);
         rotationParameter.ToString().Should().Be(percent);
+    }
+
+    [Fact]
+    public void Parse_Percent_IsCultureInvariant()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            // Arrange - de-DE uses ',' as decimal separator and '.' as group separator
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+            const string percent = "pct:10.1,20.5,30,40";
+
+            // Act
+            var regionParameter = RegionParameter.Parse(percent);
+
+            // Assert
+            regionParameter.X.Should().Be(10.1F);
+            regionParameter.Y.Should().Be(20.5F);
+            regionParameter.ToString().Should().Be(percent);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Theory]

@@ -38,7 +38,7 @@ public class ImageRequest
     /// <param name="path">The image request path</param>
     /// <param name="prefix">The image request prefix</param>
     /// <param name="validateSegments">If true, throws an ArgumentException if the image request contains empty values,
-    /// or an invalid number of segments</param>
+    /// an invalid number of segments or an invalid {quality}.{format}</param>
     public static ImageRequest Parse(string path, string prefix, bool validateSegments = false)
     {
         if (path[0] == '/') path = path[1..];
@@ -84,6 +84,14 @@ public class ImageRequest
         request.Size = SizeParameter.Parse(parts[2]);
         request.Rotation = RotationParameter.Parse(parts[3]);
         var filenameParts = parts[4].Split('.');
+        if (filenameParts.Length < 2 ||
+            (validateSegments && (filenameParts.Length != 2 || filenameParts[1] == string.Empty ||
+                                  !Qualities.All.Contains(filenameParts[0]))))
+        {
+            throw new ArgumentException(
+                $"Expected '{{quality}}.{{format}}' with quality of '{string.Join("', '", Qualities.All)}'. Found: {parts[4]}");
+        }
+
         request.Quality = filenameParts[0];
         request.Format = filenameParts[1];
 

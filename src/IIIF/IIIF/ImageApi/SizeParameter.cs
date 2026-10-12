@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using IIIF.Exceptions;
 
@@ -35,7 +36,7 @@ public class SizeParameter
         if (Confined) sb.Append('!');
         if (PercentScale > 0)
         {
-            sb.Append("pct:" + PercentScale);
+            sb.Append("pct:" + PercentScale.Value.ToString(CultureInfo.InvariantCulture));
             return sb.ToString();
         }
 
@@ -95,25 +96,33 @@ public class SizeParameter
         {
             // Confined (!) is only valid with w,h
             if (size.Confined) throw new SizeException(GetErrorMessage(original));
-            size.PercentScale = float.Parse(pathPart[4..]);
+            size.PercentScale = float.Parse(pathPart[4..], NumberStyles.AllowDecimalPoint,
+                CultureInfo.InvariantCulture);
+            if (!float.IsFinite(size.PercentScale.Value) || size.PercentScale <= 0)
+                throw new SizeException(GetErrorMessage(original));
             return size;
         }
 
         var wh = pathPart.Split(',');
         if (wh.Length != 2) throw new SizeException(GetErrorMessage(original));
 
-        if (wh[0] != string.Empty) size.Width = int.Parse(wh[0]);
-        if (wh[1] != string.Empty) size.Height = int.Parse(wh[1]);
+        if (wh[0] != string.Empty) size.Width = ParseDimension(wh[0]);
+        if (wh[1] != string.Empty) size.Height = ParseDimension(wh[1]);
 
-        // At least 1 dimension required, confined (!) requires both
+        // At least 1 dimension required, confined (!) requires both, dimensions must be positive
         if ((size.Width == null && size.Height == null) ||
-            (size.Confined && (size.Width == null || size.Height == null)))
+            (size.Confined && (size.Width == null || size.Height == null)) ||
+            size.Width <= 0 || size.Height <= 0)
         {
             throw new SizeException(GetErrorMessage(original));
         }
 
         return size;
     }
+
+    // Only digits are valid, no sign, whitespace or separators
+    private static int ParseDimension(string value)
+        => int.Parse(value, NumberStyles.None, CultureInfo.InvariantCulture);
 
     private static string GetErrorMessage(string pathPart)
         => $"Expected 'max', 'w,', ',h', 'pct:n', 'w,h' or '!w,h', optionally prefixed with '^'. Found: {pathPart}";

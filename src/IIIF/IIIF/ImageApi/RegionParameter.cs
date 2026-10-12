@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using IIIF.Exceptions;
 using IIIF.Utils;
 
@@ -35,7 +36,7 @@ public class RegionParameter
     {
         if (Full) return FullRegion;
         if (Square) return SquareRegion;
-        var xywh = $"{X},{Y},{W},{H}";
+        var xywh = FormattableString.Invariant($"{X},{Y},{W},{H}");
         if (Percent) return $"pct:{xywh}";
         return xywh;
     }
@@ -49,7 +50,7 @@ public class RegionParameter
 
             var percent = pathPart.StartsWith(PercentPrefix);
             var stringParts = pathPart.Substring(percent ? 4 : 0).Split(',');
-            var xywh = Array.ConvertAll(stringParts, float.Parse);
+            var xywh = Array.ConvertAll(stringParts, p => float.Parse(p, CultureInfo.InvariantCulture));
             return new RegionParameter
             {
                 X = xywh[0], Y = xywh[1], W = xywh[2], H = xywh[3],

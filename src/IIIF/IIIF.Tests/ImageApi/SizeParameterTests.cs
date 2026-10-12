@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using IIIF.Exceptions;
 using IIIF.ImageApi;
 
@@ -243,6 +244,18 @@ public class SizeParameterTests
     [InlineData("!pct:50", "Confined percent")]
     [InlineData("pc:50", "Invalid percent prefix")]
     [InlineData("!max", "Confined max")]
+    [InlineData("0,", "Zero width")]
+    [InlineData(",0", "Zero height")]
+    [InlineData("!0,0", "Confined zero")]
+    [InlineData("-100,", "Negative width")]
+    [InlineData(",-100", "Negative height")]
+    [InlineData("+100,", "Signed width")]
+    [InlineData(" 100,", "Whitespace width")]
+    [InlineData("1.5,", "Decimal width")]
+    [InlineData("pct:0", "Zero percent")]
+    [InlineData("pct:-5", "Negative percent")]
+    [InlineData("pct:NaN", "NaN percent")]
+    [InlineData("pct:1e2", "Exponent percent")]
     public void Parse_Throws_IfInvalid(string size, string reason)
     {
         // Act
@@ -251,6 +264,30 @@ public class SizeParameterTests
         // Assert
         action.Should().ThrowExactly<SizeException>(reason)
             .WithMessage($"Expected 'max', 'w,', ',h', 'pct:n', 'w,h' or '!w,h', optionally prefixed with '^'. Found: {size}");
+    }
+
+    [Theory]
+    [InlineData("pct:12.5", 12.5f)]
+    [InlineData("^pct:150.25", 150.25f)]
+    public void Parse_Percent_IsCultureInvariant(string size, float expectedPercent)
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            // Arrange - de-DE uses ',' as decimal separator and '.' as group separator
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+
+            // Act
+            var sizeParameter = SizeParameter.Parse(size);
+
+            // Assert
+            sizeParameter.PercentScale.Should().Be(expectedPercent);
+            sizeParameter.ToString().Should().Be(size);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Theory]

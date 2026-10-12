@@ -361,6 +361,51 @@ public class ImageRequestXTests
     }
 
     [Theory]
+    [InlineData("my-asset/full/max/0/default")]
+    [InlineData("my-asset/full/max/0/default.")]
+    [InlineData("my-asset/full/max/0/default.jpg.png")]
+    [InlineData("my-asset/full/max/0/foo.jpg")]
+    [InlineData("my-asset/full/max/0/.jpg")]
+    public void Parse_Validate_Throws_WhenInvalidQualityFormat(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Expected '{quality}.{format}'*");
+    }
+
+    [Fact]
+    public void Parse_NoValidate_Throws_WhenNoFormat()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}my-asset/full/max/0/default", prefix);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Expected '{quality}.{format}'*");
+    }
+
+    [Theory]
+    [InlineData("color")]
+    [InlineData("gray")]
+    [InlineData("bitonal")]
+    [InlineData("default")]
+    public void Parse_Validate_AllowsKnownQualities(string quality)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/full/max/0/{quality}.png", prefix, true);
+
+        // Assert
+        result.Quality.Should().Be(quality);
+        result.Format.Should().Be("png");
+    }
+
+    [Theory]
     [InlineData("iiif-img/27/1/my-asset/full/!100,/0/default.jpg")]
     [InlineData("iiif-img/27/1/my-asset/full/max/abc/default.jpg")]
     public void TryParse_InvalidParameter_ReturnsFalse(string input)

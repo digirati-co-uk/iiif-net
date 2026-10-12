@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using IIIF.Exceptions;
 
 namespace IIIF.ImageApi;
@@ -30,7 +31,11 @@ public class RotationParameter
                 anglePart = anglePart[1..];
             }
 
-            rotation.Angle = float.Parse(anglePart);
+            // Only digits and decimal point are valid, angle must be 0-360
+            rotation.Angle = float.Parse(anglePart, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            if (!float.IsFinite(rotation.Angle) || rotation.Angle > 360)
+                throw new ArgumentOutOfRangeException(nameof(pathPart));
+
             return rotation;
         }
         catch (Exception ex)
@@ -40,5 +45,5 @@ public class RotationParameter
     }
 
     public override string ToString()
-        => $"{(Mirror ? "!" : string.Empty)}{Angle}";
+        => $"{(Mirror ? "!" : string.Empty)}{Angle.ToString(CultureInfo.InvariantCulture)}";
 }
