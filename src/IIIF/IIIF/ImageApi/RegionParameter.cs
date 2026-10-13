@@ -48,7 +48,7 @@ public class RegionParameter
             if (pathPart == FullRegion) return new RegionParameter { Full = true };
             if (pathPart == SquareRegion) return new RegionParameter { Square = true };
 
-            var percent = pathPart.StartsWith(PercentPrefix);
+            var percent = pathPart.StartsWith(PercentPrefix, StringComparison.Ordinal);
             var stringParts = pathPart.Substring(percent ? 4 : 0).Split(',');
             if (stringParts.Length != 4)
             {
@@ -56,12 +56,16 @@ public class RegionParameter
             }
 
             var xywh = Array.ConvertAll(stringParts, ParseRegionValue);
+            if (xywh[2] <= 0 || xywh[3] <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pathPart), "w and h must be positive");
+            }
 
-            return EnsureRegionParameterValid(new RegionParameter
+            return new RegionParameter
             {
                 X = xywh[0], Y = xywh[1], W = xywh[2], H = xywh[3],
                 Percent = percent
-            });
+            };
         }
         catch (Exception ex)
         {
@@ -75,16 +79,6 @@ public class RegionParameter
         var regionValue = float.Parse(p, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         if (!float.IsFinite(regionValue)) throw new ArgumentOutOfRangeException(nameof(p));
         return regionValue;
-    }
-    
-    private static RegionParameter EnsureRegionParameterValid(RegionParameter regionParameter)
-    {
-        if (regionParameter.H <= 0 || regionParameter.W <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(regionParameter), "w and h must be positive");
-        }
-        
-        return regionParameter;
     }
 
     /// <summary>
