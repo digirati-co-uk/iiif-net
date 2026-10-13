@@ -50,12 +50,18 @@ public class RegionParameter
 
             var percent = pathPart.StartsWith(PercentPrefix);
             var stringParts = pathPart.Substring(percent ? 4 : 0).Split(',');
-            var xywh = Array.ConvertAll(stringParts, p => float.Parse(p, CultureInfo.InvariantCulture));
-            return new RegionParameter
+            if (stringParts.Length != 4)
+            {
+                throw new FormatException($"Expected 4 values, got {stringParts.Length}");
+            }
+
+            var xywh = Array.ConvertAll(stringParts, ParseRegionValue);
+
+            return EnsureRegionParameterValid(new RegionParameter
             {
                 X = xywh[0], Y = xywh[1], W = xywh[2], H = xywh[3],
                 Percent = percent
-            };
+            });
         }
         catch (Exception ex)
         {
@@ -63,7 +69,24 @@ public class RegionParameter
                 ex);
         }
     }
+
+    private static float ParseRegionValue(string p)
+    {
+        var regionValue = float.Parse(p, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        if (!float.IsFinite(regionValue)) throw new ArgumentOutOfRangeException(nameof(p));
+        return regionValue;
+    }
     
+    private static RegionParameter EnsureRegionParameterValid(RegionParameter regionParameter)
+    {
+        if (regionParameter.H <= 0 || regionParameter.W <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(regionParameter), "w and h must be positive");
+        }
+        
+        return regionParameter;
+    }
+
     /// <summary>
     /// Calculate the extracted region size from the full image size. 
     /// </summary>
