@@ -18,6 +18,16 @@ public class SizeParameterTests
     }
 
     [Fact]
+    public void Parse_Full_IsMax()
+    {
+        // Act
+        var sizeParameter = SizeParameter.Parse("full");
+
+        // Assert
+        sizeParameter.Should().BeEquivalentTo(new SizeParameter { Max = true });
+    }
+
+    [Fact]
     public void Parse_CorrectMax()
     {
         // Arrange
@@ -254,6 +264,8 @@ public class SizeParameterTests
     [InlineData("!pct:50", "Confined percent")]
     [InlineData("pc:50", "Invalid percent prefix")]
     [InlineData("!max", "Confined max")]
+    [InlineData("^full", "Upscaled full")]
+    [InlineData("!full", "Confined full")]
     [InlineData("0,", "Zero width")]
     [InlineData(",0", "Zero height")]
     [InlineData("!0,0", "Confined zero")]

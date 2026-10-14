@@ -82,6 +82,9 @@ public class SizeParameter
             pathPart = pathPart[1..];
         }
 
+        // "full" is Image API 2 only, upscaling (^) is Image API 3 only
+        if (pathPart == "full" && size.Upscaled) throw new SizeException(GetErrorMessage(original));
+
         if (pathPart is "max" or "full")
         {
             size.Max = true;
