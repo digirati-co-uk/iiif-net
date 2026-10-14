@@ -277,9 +277,15 @@ public class SizeParameterTests
     }
 
     [Theory]
-    [InlineData("pct:12.5", 12.5f)]
-    [InlineData("^pct:150.25", 150.25f)]
-    public void Parse_Percent_IsCultureInvariant(string size, float expectedPercent)
+    [InlineData("pct:12.5", null, null, 12.5f)]
+    [InlineData("^pct:150.25", null, null, 150.25f)]
+    [InlineData("1000,", 1000, null, null)]
+    [InlineData(",2000", null, 2000, null)]
+    [InlineData("1000,2000", 1000, 2000, null)]
+    [InlineData("!1000,2000", 1000, 2000, null)]
+    [InlineData("^1000,2000", 1000, 2000, null)]
+    public void Parse_IsCultureInvariant(string size, int? expectedWidth, int? expectedHeight,
+        float? expectedPercent)
     {
         var originalCulture = CultureInfo.CurrentCulture;
         try
@@ -291,8 +297,34 @@ public class SizeParameterTests
             var sizeParameter = SizeParameter.Parse(size);
 
             // Assert
+            sizeParameter.Width.Should().Be(expectedWidth);
+            sizeParameter.Height.Should().Be(expectedHeight);
             sizeParameter.PercentScale.Should().Be(expectedPercent);
             sizeParameter.ToString().Should().Be(size);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [Theory]
+    [InlineData("1.000,")]
+    [InlineData(",2.000")]
+    [InlineData("1.000,2.000")]
+    public void Parse_Throws_IfGroupSeparator_InNonInvariantCulture(string size)
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            // Arrange - '.' is the de-DE group separator
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+
+            // Act
+            Action action = () => SizeParameter.Parse(size);
+
+            // Assert
+            action.Should().ThrowExactly<SizeException>();
         }
         finally
         {
