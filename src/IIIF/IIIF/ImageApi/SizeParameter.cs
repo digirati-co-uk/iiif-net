@@ -94,7 +94,7 @@ public class SizeParameter
             pathPart = pathPart[1..];
         }
 
-        if (pathPart.StartsWith("pct:"))
+        if (pathPart.StartsWith("pct:", StringComparison.Ordinal))
         {
             // Confined (!) is only valid with w,h
             if (size.Confined) throw new SizeException(GetErrorMessage(original));

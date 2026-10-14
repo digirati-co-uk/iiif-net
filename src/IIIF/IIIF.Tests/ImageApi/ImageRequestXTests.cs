@@ -17,6 +17,53 @@ public class ImageRequestXTests
         action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("path");
     }
 
+    [Theory]
+    [InlineData("", "", "Empty path")]
+    [InlineData("/", "", "Slash only")]
+    [InlineData("iiif-img", "iiif-img", "Path equals prefix")]
+    [InlineData("/iiif-img/", "iiif-img/", "Path equals prefix with slashes")]
+    [InlineData("/iiif-img/", "/iiif-img", "Path equals prefix with trailing slash")]
+    public void Parse_Throws_IfNoIdentifier(string path, string prefix, string reason)
+    {
+        // Act
+        Action action = () => ImageRequest.Parse(path, prefix);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>(reason)
+            .WithMessage("Path does not contain an identifier*")
+            .WithParameterName("path");
+    }
+
+    [Theory]
+    [InlineData("ii", "iiif", "Path shorter than prefix")]
+    [InlineData("other/id/full/max/0/default.jpg", "iiif", "Different prefix")]
+    [InlineData("iiif-img/id/full/max/0/default.jpg", "iiif", "Prefix matches part of segment")]
+    [InlineData("iiif-img/id/full/max/0/default.jpg", "/iiif", "Prefix with slash matches part of segment")]
+    public void Parse_Throws_IfPathDoesNotStartWithPrefix(string path, string prefix, string reason)
+    {
+        // Act
+        Action action = () => ImageRequest.Parse(path, prefix);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>(reason)
+            .WithMessage("Path does not start with prefix*")
+            .WithParameterName("prefix");
+    }
+
+    [Theory]
+    [InlineData("iiif/id/full/max/0/default.jpg", "iiif")]
+    [InlineData("iiif/id/full/max/0/default.jpg", "iiif/")]
+    [InlineData("/iiif/id/full/max/0/default.jpg", "/iiif")]
+    [InlineData("iiif/v3/id/full/max/0/default.jpg", "iiif/v3")]
+    public void Parse_StripsPrefix_OnSegmentBoundary(string path, string prefix)
+    {
+        // Act
+        var imageRequest = ImageRequest.Parse(path, prefix);
+
+        // Assert
+        imageRequest.Identifier.Should().Be("id");
+    }
+
     [Fact]
     public void Parse_Throws_IfPrefixNull()
     {

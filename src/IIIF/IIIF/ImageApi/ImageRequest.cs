@@ -44,15 +44,19 @@ public class ImageRequest
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(prefix);
 
-        if (path[0] == '/') path = path[1..];
+        if (path.StartsWith('/')) path = path[1..];
+        if (path.Length == 0) ThrowMissingIdentifier();
 
         if (prefix.Length > 0)
         {
             if (prefix[0] == '/') prefix = prefix[1..];
-            if (prefix != path[..prefix.Length])
+            // Prefix must match whole segments, e.g. "iiif" matches "iiif/id/..." but not "iiif-img/id/..."
+            if (!path.StartsWith(prefix, StringComparison.Ordinal) ||
+                (!prefix.EndsWith('/') && path.Length > prefix.Length && path[prefix.Length] != '/'))
                 throw new ArgumentException("Path does not start with prefix", nameof(prefix));
             path = path[prefix.Length..];
-            if (path[0] == '/') path = path[1..];
+            if (path.StartsWith('/')) path = path[1..];
+            if (path.Length == 0) ThrowMissingIdentifier();
         }
 
         var request = new ImageRequest { Prefix = prefix };
@@ -103,6 +107,9 @@ public class ImageRequest
 
     private static void ThrowInvalidSegments()
         => throw new ArgumentException("Path contains empty or an invalid number of segments");
+
+    private static void ThrowMissingIdentifier()
+        => throw new ArgumentException("Path does not contain an identifier", "path");
 
     /// <summary>
     /// Parses an image request path as a IIIF ImageRequest object
