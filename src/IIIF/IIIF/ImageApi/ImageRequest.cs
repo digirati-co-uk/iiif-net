@@ -92,11 +92,9 @@ public class ImageRequest
         request.Rotation = RotationParameter.Parse(parts[3]);
         var filenameParts = parts[4].Split('.');
         if (filenameParts.Length < 2 ||
-            (validateSegments && (filenameParts.Length != 2 || filenameParts[1] == string.Empty ||
-                                  !Qualities.All.Contains(filenameParts[0]))))
+            (validateSegments && (filenameParts.Length != 2 || filenameParts.Any(string.IsNullOrEmpty))))
         {
-            throw new ArgumentException(
-                $"Expected '{{quality}}.{{format}}' with quality of '{string.Join("', '", Qualities.All)}'. Found: {parts[4]}");
+            throw new ArgumentException($"Expected '{{quality}}.{{format}}'. Found: {parts[4]}");
         }
 
         request.Quality = filenameParts[0];

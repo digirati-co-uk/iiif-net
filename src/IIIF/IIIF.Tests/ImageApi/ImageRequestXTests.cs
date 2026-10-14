@@ -431,7 +431,6 @@ public class ImageRequestXTests
     [InlineData("my-asset/full/max/0/default")]
     [InlineData("my-asset/full/max/0/default.")]
     [InlineData("my-asset/full/max/0/default.jpg.png")]
-    [InlineData("my-asset/full/max/0/foo.jpg")]
     [InlineData("my-asset/full/max/0/.jpg")]
     public void Parse_Validate_Throws_WhenInvalidQualityFormat(string path)
     {
@@ -457,19 +456,20 @@ public class ImageRequestXTests
     }
 
     [Theory]
-    [InlineData("color")]
-    [InlineData("gray")]
-    [InlineData("bitonal")]
-    [InlineData("default")]
-    public void Parse_Validate_AllowsKnownQualities(string quality)
+    [InlineData("color", "png")]
+    [InlineData("gray", "png")]
+    [InlineData("bitonal", "png")]
+    [InlineData("default", "png")]
+    [InlineData("foo", "flurb")]
+    public void Parse_Validate_AllowsAnyQualityAndFormat(string quality, string format)
     {
         // Arrange and Act
         const string prefix = "iiif-img/27/1/";
-        var result = ImageRequest.Parse($"{prefix}my-asset/full/max/0/{quality}.png", prefix, true);
+        var result = ImageRequest.Parse($"{prefix}my-asset/full/max/0/{quality}.{format}", prefix, true);
 
         // Assert
         result.Quality.Should().Be(quality);
-        result.Format.Should().Be("png");
+        result.Format.Should().Be(format);
     }
 
     [Theory]
