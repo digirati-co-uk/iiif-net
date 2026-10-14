@@ -43,6 +43,8 @@ public class RegionParameter
 
     public static RegionParameter Parse(string pathPart)
     {
+        ArgumentNullException.ThrowIfNull(pathPart);
+
         try
         {
             if (pathPart == FullRegion) return new RegionParameter { Full = true };

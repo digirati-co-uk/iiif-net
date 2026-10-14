@@ -21,6 +21,8 @@ public class RotationParameter
     /// <exception cref="RotationException">Thrown if provided value is not a valid {rotation} parameter</exception>
     public static RotationParameter Parse(string pathPart)
     {
+        ArgumentNullException.ThrowIfNull(pathPart);
+
         try
         {
             var rotation = new RotationParameter();

@@ -55,6 +55,8 @@ public class SizeParameter
     /// <exception cref="SizeException">Thrown if provided value is not a valid {size} parameter</exception>
     public static SizeParameter Parse(string pathPart)
     {
+        ArgumentNullException.ThrowIfNull(pathPart);
+
         try
         {
             return ParseInternal(pathPart);

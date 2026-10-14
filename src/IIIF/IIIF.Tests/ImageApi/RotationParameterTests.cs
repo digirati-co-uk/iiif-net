@@ -65,6 +65,16 @@ public class RotationParameterTests
             .WithMessage($"Expected 'n' or '!n' where n is 0-360. Found: {rotation}");
     }
 
+    [Fact]
+    public void Parse_Throws_IfNull()
+    {
+        // Act
+        Action action = () => RotationParameter.Parse(null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>();
+    }
+
     [Theory]
     [InlineData("0", 0f, false)]
     [InlineData("360", 360f, false)]

@@ -8,6 +8,26 @@ namespace IIIF.Tests.ImageApi;
 public class ImageRequestXTests
 {
     [Fact]
+    public void Parse_Throws_IfPathNull()
+    {
+        // Act
+        Action action = () => ImageRequest.Parse(null!, "iiif-img");
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("path");
+    }
+
+    [Fact]
+    public void Parse_Throws_IfPrefixNull()
+    {
+        // Act
+        Action action = () => ImageRequest.Parse("iiif-img/1/full/max/0/default.jpg", null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("prefix");
+    }
+
+    [Fact]
     public void GetResultingSize_CorrectMax()
     {
         // Arrange

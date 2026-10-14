@@ -8,6 +8,16 @@ namespace IIIF.Tests.ImageApi;
 public class SizeParameterTests
 {
     [Fact]
+    public void Parse_Throws_IfNull()
+    {
+        // Act
+        Action action = () => SizeParameter.Parse(null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Parse_CorrectMax()
     {
         // Arrange

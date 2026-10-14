@@ -41,6 +41,9 @@ public class ImageRequest
     /// an invalid number of segments or an invalid {quality}.{format}</param>
     public static ImageRequest Parse(string path, string prefix, bool validateSegments = false)
     {
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(prefix);
+
         if (path[0] == '/') path = path[1..];
 
         if (prefix.Length > 0)

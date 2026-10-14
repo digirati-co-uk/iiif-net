@@ -8,6 +8,16 @@ namespace IIIF.Tests.ImageApi;
 public class RegionParameterTests
 {
     [Fact]
+    public void Parse_Throws_IfNull()
+    {
+        // Act
+        Action action = () => RegionParameter.Parse(null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Parse_Correct_Full()
     {
         const string full = "full";
