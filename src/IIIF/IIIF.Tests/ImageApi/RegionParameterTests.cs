@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using IIIF.Exceptions;
 using IIIF.ImageApi;
 
@@ -6,6 +7,16 @@ namespace IIIF.Tests.ImageApi;
 
 public class RegionParameterTests
 {
+    [Fact]
+    public void Parse_Throws_IfNull()
+    {
+        // Act
+        Action action = () => RegionParameter.Parse(null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>();
+    }
+
     [Fact]
     public void Parse_Correct_Full()
     {
@@ -74,14 +85,95 @@ public class RegionParameterTests
         rotationParameter.ToString().Should().Be(percent);
     }
 
+    [Fact]
+    public void Parse_Percent_IsCultureInvariant()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            // Arrange - de-DE uses ',' as decimal separator and '.' as group separator
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+            const string percent = "pct:10.1,20.5,30,40";
+
+            // Act
+            var regionParameter = RegionParameter.Parse(percent);
+
+            // Assert
+            regionParameter.X.Should().Be(10.1F);
+            regionParameter.Y.Should().Be(20.5F);
+            regionParameter.ToString().Should().Be(percent);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
     [Theory]
     [InlineData("pct:10,20,30")]
     [InlineData("all")]
     [InlineData("foo,bar")]
+    [InlineData("1,2,3,4,5")]
     public void Parse_Throws_IfUnableToParse(string input)
     {
         Action act = () => RegionParameter.Parse(input);
         act.Should().Throw<ArgumentException>();
+    }
+    
+    [Theory]
+    [InlineData("NaN,0,25,25")]
+    [InlineData("0,NaN,25,25")]
+    [InlineData("0,0,NaN,25")]
+    [InlineData("0,0,25,NaN")]
+    [InlineData("Infinity,0,25,25")]
+    [InlineData("0,Infinity,25,25")]
+    [InlineData("0,0,Infinity,25")]
+    [InlineData("0,0,25,Infinity")]
+    [InlineData("∞,0,25,25")]
+    [InlineData("0,∞,25,25")]
+    [InlineData("0,0,∞,25")]
+    [InlineData("0,0,25,∞")]
+    [InlineData("3e4,0,25,25")]
+    [InlineData("0,3e4,25,25")]
+    [InlineData("0,0,3e4,25")]
+    [InlineData("0,0,25,3e4")]
+    [InlineData("+1,0,25,25")]
+    [InlineData("0,+1,25,25")]
+    [InlineData("0,0,+1,25")]
+    [InlineData("0,0,25,+1")]
+    public void Parse_Throws_IfAnyValueNonNumeric_Exponent_OrSigned(string region)
+    {
+        Action act = () => RegionParameter.Parse(region);
+        act.Should().ThrowExactly<RegionException>()
+            .WithMessage("Expected 'full', 'square', 'pct:x,y,w,h' or 'x,y,w,h'. Found: *");
+    }
+    
+    [Theory]
+    [InlineData("0,0,0,25")]
+    [InlineData("0,0,25,0")]
+    [InlineData("pct:0,0,0,25")]
+    [InlineData("pct:0,0,25,0")]
+    [InlineData("0,0,-1,25")]
+    [InlineData("0,0,25,-1")]
+    [InlineData("pct:0,0,-1,25")]
+    [InlineData("pct:0,0,25,-1")]
+    public void Parse_Throws_IfRegionWidthOrHeightNonPositive(string region)
+    {
+        Action act = () => RegionParameter.Parse(region);
+        act.Should().ThrowExactly<RegionException>()
+            .WithMessage("Expected 'full', 'square', 'pct:x,y,w,h' or 'x,y,w,h'. Found: *");
+    }
+    
+    [Theory]
+    [InlineData("-1,0,25,25")]
+    [InlineData("0,-1,25,25")]
+    [InlineData("pct:-10,0,25,25")]
+    [InlineData("pct:-0,10,25,25")]
+    public void Parse_Throws_IfRegionXOrYNegative(string region)
+    {
+        Action act = () => RegionParameter.Parse(region);
+        act.Should().ThrowExactly<RegionException>()
+            .WithMessage("Expected 'full', 'square', 'pct:x,y,w,h' or 'x,y,w,h'. Found: *");
     }
 
     [Fact]
@@ -155,13 +247,16 @@ public class RegionParameterTests
     }
     
     [Theory]
-    [InlineData("0,0,0,25")]
-    [InlineData("0,0,25,0")]
-    [InlineData("pct:0,0,0,25")]
-    [InlineData("pct:0,0,25,0")]
-    public void GetExtractedRegionSize_Throws_IfRegionWithOrHeight0(string region)
+    [InlineData(0,25, false)]
+    [InlineData(25,0, false)]
+    [InlineData(0,25, true)]
+    [InlineData(25,0, true)]
+    public void GetExtractedRegionSize_Throws_IfRegionWidthOrHeight0(float w, float h, bool percent)
     {
-        var regionParameter = RegionParameter.Parse(region);
+        var regionParameter = new RegionParameter
+        {
+            X = 0, Y = 0, W = w, H = h, Percent = percent
+        };
         var imageSize = new Size(300, 200);
         
         Action act = () => regionParameter.GetExtractedRegionSize(imageSize);

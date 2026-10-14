@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using IIIF.Exceptions;
 using IIIF.Utils;
 
@@ -35,21 +36,33 @@ public class RegionParameter
     {
         if (Full) return FullRegion;
         if (Square) return SquareRegion;
-        var xywh = $"{X},{Y},{W},{H}";
+        var xywh = FormattableString.Invariant($"{X},{Y},{W},{H}");
         if (Percent) return $"pct:{xywh}";
         return xywh;
     }
 
     public static RegionParameter Parse(string pathPart)
     {
+        ArgumentNullException.ThrowIfNull(pathPart);
+
         try
         {
             if (pathPart == FullRegion) return new RegionParameter { Full = true };
             if (pathPart == SquareRegion) return new RegionParameter { Square = true };
 
-            var percent = pathPart.StartsWith(PercentPrefix);
+            var percent = pathPart.StartsWith(PercentPrefix, StringComparison.Ordinal);
             var stringParts = pathPart.Substring(percent ? 4 : 0).Split(',');
-            var xywh = Array.ConvertAll(stringParts, float.Parse);
+            if (stringParts.Length != 4)
+            {
+                throw new FormatException($"Expected 4 values, got {stringParts.Length}");
+            }
+
+            var xywh = Array.ConvertAll(stringParts, ParseRegionValue);
+            if (xywh[2] <= 0 || xywh[3] <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pathPart), "w and h must be positive");
+            }
+
             return new RegionParameter
             {
                 X = xywh[0], Y = xywh[1], W = xywh[2], H = xywh[3],
@@ -62,7 +75,14 @@ public class RegionParameter
                 ex);
         }
     }
-    
+
+    private static float ParseRegionValue(string p)
+    {
+        var regionValue = float.Parse(p, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        if (!float.IsFinite(regionValue)) throw new ArgumentOutOfRangeException(nameof(p));
+        return regionValue;
+    }
+
     /// <summary>
     /// Calculate the extracted region size from the full image size. 
     /// </summary>

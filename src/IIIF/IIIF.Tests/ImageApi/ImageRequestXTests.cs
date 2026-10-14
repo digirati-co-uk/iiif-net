@@ -1,11 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using IIIF.Exceptions;
 using IIIF.ImageApi;
 
 namespace IIIF.Tests.ImageApi;
 
 public class ImageRequestXTests
 {
+    [Fact]
+    public void Parse_Throws_IfPathNull()
+    {
+        // Act
+        Action action = () => ImageRequest.Parse(null!, "iiif-img");
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("path");
+    }
+
+    [Theory]
+    [InlineData("", "", "Empty path")]
+    [InlineData("/", "", "Slash only")]
+    [InlineData("iiif-img", "iiif-img", "Path equals prefix")]
+    [InlineData("/iiif-img/", "iiif-img/", "Path equals prefix with slashes")]
+    [InlineData("/iiif-img/", "/iiif-img", "Path equals prefix with trailing slash")]
+    public void Parse_Throws_IfNoIdentifier(string path, string prefix, string reason)
+    {
+        // Act
+        Action action = () => ImageRequest.Parse(path, prefix);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>(reason)
+            .WithMessage("Path does not contain an identifier*")
+            .WithParameterName("path");
+    }
+
+    [Theory]
+    [InlineData("ii", "iiif", "Path shorter than prefix")]
+    [InlineData("other/id/full/max/0/default.jpg", "iiif", "Different prefix")]
+    [InlineData("iiif-img/id/full/max/0/default.jpg", "iiif", "Prefix matches part of segment")]
+    [InlineData("iiif-img/id/full/max/0/default.jpg", "/iiif", "Prefix with slash matches part of segment")]
+    public void Parse_Throws_IfPathDoesNotStartWithPrefix(string path, string prefix, string reason)
+    {
+        // Act
+        Action action = () => ImageRequest.Parse(path, prefix);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>(reason)
+            .WithMessage("Path does not start with prefix*")
+            .WithParameterName("prefix");
+    }
+
+    [Theory]
+    [InlineData("iiif/id/full/max/0/default.jpg", "iiif")]
+    [InlineData("iiif/id/full/max/0/default.jpg", "iiif/")]
+    [InlineData("/iiif/id/full/max/0/default.jpg", "/iiif")]
+    [InlineData("iiif/v3/id/full/max/0/default.jpg", "iiif/v3")]
+    public void Parse_StripsPrefix_OnSegmentBoundary(string path, string prefix)
+    {
+        // Act
+        var imageRequest = ImageRequest.Parse(path, prefix);
+
+        // Assert
+        imageRequest.Identifier.Should().Be("id");
+    }
+
+    [Fact]
+    public void Parse_Throws_IfPrefixNull()
+    {
+        // Act
+        Action action = () => ImageRequest.Parse("iiif-img/1/full/max/0/default.jpg", null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("prefix");
+    }
+
     [Fact]
     public void GetResultingSize_CorrectMax()
     {
@@ -308,6 +376,115 @@ public class ImageRequestXTests
             .WithMessage("Path contains empty or an invalid number of segments");
     }
     
+    [Theory]
+    [InlineData("my-asset/info.json/full/1200,/0/default.jpg")]
+    [InlineData("my-asset/info.json/full")]
+    [InlineData("my-asset/info.json/")]
+    public void Parse_Validate_Fails_WhenInfoJsonNotFinalSegment(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Path contains empty or an invalid number of segments");
+    }
+
+    [Fact]
+    public void Parse_NoValidate_InfoJsonWithExtraSegments_IsInformationRequest()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/info.json/full/1200,/0/default.jpg", prefix);
+
+        // Assert
+        result.IsInformationRequest.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Parse_Validate_InfoJson()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/info.json", prefix, true);
+
+        // Assert
+        result.IsInformationRequest.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("my-asset/full/!100,/0/default.jpg")]
+    [InlineData("my-asset/full/!,100/0/default.jpg")]
+    [InlineData("my-asset/full/!100/0/default.jpg")]
+    public void Parse_Throws_WhenInvalidSize(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+
+        // Assert
+        action.Should().ThrowExactly<SizeException>();
+    }
+
+    [Theory]
+    [InlineData("my-asset/full/max/0/default")]
+    [InlineData("my-asset/full/max/0/default.")]
+    [InlineData("my-asset/full/max/0/default.jpg.png")]
+    [InlineData("my-asset/full/max/0/.jpg")]
+    public void Parse_Validate_Throws_WhenInvalidQualityFormat(string path)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}{path}", prefix, true);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Expected '{quality}.{format}'*");
+    }
+
+    [Fact]
+    public void Parse_NoValidate_Throws_WhenNoFormat()
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var action = () => ImageRequest.Parse($"{prefix}my-asset/full/max/0/default", prefix);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentException>()
+            .WithMessage("Expected '{quality}.{format}'*");
+    }
+
+    [Theory]
+    [InlineData("color", "png")]
+    [InlineData("gray", "png")]
+    [InlineData("bitonal", "png")]
+    [InlineData("default", "png")]
+    [InlineData("foo", "flurb")]
+    public void Parse_Validate_AllowsAnyQualityAndFormat(string quality, string format)
+    {
+        // Arrange and Act
+        const string prefix = "iiif-img/27/1/";
+        var result = ImageRequest.Parse($"{prefix}my-asset/full/max/0/{quality}.{format}", prefix, true);
+
+        // Assert
+        result.Quality.Should().Be(quality);
+        result.Format.Should().Be(format);
+    }
+
+    [Theory]
+    [InlineData("iiif-img/27/1/my-asset/full/!100,/0/default.jpg")]
+    [InlineData("iiif-img/27/1/my-asset/full/max/abc/default.jpg")]
+    public void TryParse_InvalidParameter_ReturnsFalse(string input)
+    {
+        // Act
+        var result = ImageRequest.TryParse(input, out var imageRequest);
+
+        // Assert
+        result.Should().BeFalse();
+        imageRequest.Should().BeNull();
+    }
+
     public static IEnumerable<object[]> ImageRequests =>
         new List<object[]>
         {

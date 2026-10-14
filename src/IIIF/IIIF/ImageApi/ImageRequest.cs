@@ -38,18 +38,25 @@ public class ImageRequest
     /// <param name="path">The image request path</param>
     /// <param name="prefix">The image request prefix</param>
     /// <param name="validateSegments">If true, throws an ArgumentException if the image request contains empty values,
-    /// or an invalid number of segments</param>
+    /// an invalid number of segments or an invalid {quality}.{format}</param>
     public static ImageRequest Parse(string path, string prefix, bool validateSegments = false)
     {
-        if (path[0] == '/') path = path[1..];
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(prefix);
+
+        if (path.StartsWith('/')) path = path[1..];
+        if (path.Length == 0) ThrowMissingIdentifier();
 
         if (prefix.Length > 0)
         {
             if (prefix[0] == '/') prefix = prefix[1..];
-            if (prefix != path[..prefix.Length])
+            // Prefix must match whole segments, e.g. "iiif" matches "iiif/id/..." but not "iiif-img/id/..."
+            if (!path.StartsWith(prefix, StringComparison.Ordinal) ||
+                (!prefix.EndsWith('/') && path.Length > prefix.Length && path[prefix.Length] != '/'))
                 throw new ArgumentException("Path does not start with prefix", nameof(prefix));
             path = path[prefix.Length..];
-            if (path[0] == '/') path = path[1..];
+            if (path.StartsWith('/')) path = path[1..];
+            if (path.Length == 0) ThrowMissingIdentifier();
         }
 
         var request = new ImageRequest { Prefix = prefix };
@@ -67,13 +74,16 @@ public class ImageRequest
 
         if (parts[1] == InfoJson)
         {
+            // info.json must be the final segment, e.g. not /my-asset/info.json/full/max/0/default.jpg
+            if (validateSegments && parts.Length != 2) ThrowInvalidSegments();
+
             request.IsInformationRequest = true;
             return request;
         }
-        
+
         if (validateSegments && (parts.Length != 5 || parts.Any(string.IsNullOrEmpty)))
         {
-            throw new ArgumentException("Path contains empty or an invalid number of segments");
+            ThrowInvalidSegments();
         }
 
         request.OriginalPath = path;
@@ -81,12 +91,24 @@ public class ImageRequest
         request.Size = SizeParameter.Parse(parts[2]);
         request.Rotation = RotationParameter.Parse(parts[3]);
         var filenameParts = parts[4].Split('.');
+        if (filenameParts.Length < 2 ||
+            (validateSegments && (filenameParts.Length != 2 || filenameParts.Any(string.IsNullOrEmpty))))
+        {
+            throw new ArgumentException($"Expected '{{quality}}.{{format}}'. Found: {parts[4]}");
+        }
+
         request.Quality = filenameParts[0];
         request.Format = filenameParts[1];
 
         return request;
     }
-    
+
+    private static void ThrowInvalidSegments()
+        => throw new ArgumentException("Path contains empty or an invalid number of segments");
+
+    private static void ThrowMissingIdentifier()
+        => throw new ArgumentException("Path does not contain an identifier", "path");
+
     /// <summary>
     /// Parses an image request path as a IIIF ImageRequest object
     /// </summary>

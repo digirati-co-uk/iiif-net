@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
+using IIIF.Exceptions;
 
 namespace IIIF.ImageApi;
 
@@ -34,7 +36,7 @@ public class SizeParameter
         if (Confined) sb.Append('!');
         if (PercentScale > 0)
         {
-            sb.Append("pct:" + PercentScale);
+            sb.Append("pct:" + PercentScale.Value.ToString(CultureInfo.InvariantCulture));
             return sb.ToString();
         }
 
@@ -45,8 +47,33 @@ public class SizeParameter
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Parse provided {size} parameter to <see cref="SizeParameter"/> object
+    /// </summary>
+    /// <param name="pathPart">{size} parameter of IIIF image request (e.g. "max", "!100,100", "^,200")</param>
+    /// <returns>Parsed <see cref="SizeParameter"/></returns>
+    /// <exception cref="SizeException">Thrown if provided value is not a valid {size} parameter</exception>
     public static SizeParameter Parse(string pathPart)
     {
+        ArgumentNullException.ThrowIfNull(pathPart);
+
+        try
+        {
+            return ParseInternal(pathPart);
+        }
+        catch (SizeException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new SizeException(GetErrorMessage(pathPart), ex);
+        }
+    }
+
+    private static SizeParameter ParseInternal(string pathPart)
+    {
+        var original = pathPart;
         var size = new SizeParameter();
 
         if (pathPart[0] == '^')
@@ -54,6 +81,9 @@ public class SizeParameter
             size.Upscaled = true;
             pathPart = pathPart[1..];
         }
+
+        // "full" is Image API 2 only, upscaling (^) is Image API 3 only
+        if (pathPart == "full" && size.Upscaled) throw new SizeException(GetErrorMessage(original));
 
         if (pathPart is "max" or "full")
         {
@@ -67,18 +97,40 @@ public class SizeParameter
             pathPart = pathPart[1..];
         }
 
-        if (pathPart[0] == 'p')
+        if (pathPart.StartsWith("pct:", StringComparison.Ordinal))
         {
-            size.PercentScale = float.Parse(pathPart[4..]);
+            // Confined (!) is only valid with w,h
+            if (size.Confined) throw new SizeException(GetErrorMessage(original));
+            size.PercentScale = float.Parse(pathPart[4..], NumberStyles.AllowDecimalPoint,
+                CultureInfo.InvariantCulture);
+            if (!float.IsFinite(size.PercentScale.Value) || size.PercentScale <= 0)
+                throw new SizeException(GetErrorMessage(original));
             return size;
         }
 
-        string[] wh = pathPart.Split(',');
-        if (wh[0] != string.Empty) size.Width = int.Parse(wh[0]);
-        if (wh[1] != string.Empty) size.Height = int.Parse(wh[1]);
+        var wh = pathPart.Split(',');
+        if (wh.Length != 2) throw new SizeException(GetErrorMessage(original));
+
+        if (wh[0] != string.Empty) size.Width = ParseDimension(wh[0]);
+        if (wh[1] != string.Empty) size.Height = ParseDimension(wh[1]);
+
+        // At least 1 dimension required, confined (!) requires both, dimensions must be positive
+        if ((size.Width == null && size.Height == null) ||
+            (size.Confined && (size.Width == null || size.Height == null)) ||
+            size.Width <= 0 || size.Height <= 0)
+        {
+            throw new SizeException(GetErrorMessage(original));
+        }
 
         return size;
     }
+
+    // Only digits are valid, no sign, whitespace or separators
+    private static int ParseDimension(string value)
+        => int.Parse(value, NumberStyles.None, CultureInfo.InvariantCulture);
+
+    private static string GetErrorMessage(string pathPart)
+        => $"Expected 'max', 'w,', ',h', 'pct:n', 'w,h' or '!w,h', optionally prefixed with '^'. Found: {pathPart}";
     
     /// <summary>
     /// Resize given size in accordance with <see cref="SizeParameter"/>

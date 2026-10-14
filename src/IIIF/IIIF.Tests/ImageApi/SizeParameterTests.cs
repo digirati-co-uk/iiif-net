@@ -1,10 +1,32 @@
 ﻿using System;
+using System.Globalization;
+using IIIF.Exceptions;
 using IIIF.ImageApi;
 
 namespace IIIF.Tests.ImageApi;
 
 public class SizeParameterTests
 {
+    [Fact]
+    public void Parse_Throws_IfNull()
+    {
+        // Act
+        Action action = () => SizeParameter.Parse(null!);
+
+        // Assert
+        action.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Parse_Full_IsMax()
+    {
+        // Act
+        var sizeParameter = SizeParameter.Parse("full");
+
+        // Assert
+        sizeParameter.Should().BeEquivalentTo(new SizeParameter { Max = true });
+    }
+
     [Fact]
     public void Parse_CorrectMax()
     {
@@ -219,6 +241,107 @@ public class SizeParameterTests
         // Assert
         sizeParameter.Should().BeEquivalentTo(expected);
         sizeParameter.ToString().Should().Be(size);
+    }
+
+    [Theory]
+    [InlineData("", "Empty")]
+    [InlineData("^", "Upscale only")]
+    [InlineData("!", "Confined only")]
+    [InlineData(",", "No dimensions")]
+    [InlineData("^,", "Upscaled no dimensions")]
+    [InlineData("100", "No comma")]
+    [InlineData("!100", "Confined no comma")]
+    [InlineData("1,2,3", "Too many commas")]
+    [InlineData("a,100", "Non-numeric width")]
+    [InlineData("100,b", "Non-numeric height")]
+    [InlineData("!100,", "Confined width only")]
+    [InlineData("!,100", "Confined height only")]
+    [InlineData("^!100,", "Upscaled confined width only")]
+    [InlineData("^!,100", "Upscaled confined height only")]
+    [InlineData("!,", "Confined no dimensions")]
+    [InlineData("pct:", "Percent no value")]
+    [InlineData("pct:abc", "Percent non-numeric")]
+    [InlineData("!pct:50", "Confined percent")]
+    [InlineData("pc:50", "Invalid percent prefix")]
+    [InlineData("!max", "Confined max")]
+    [InlineData("^full", "Upscaled full")]
+    [InlineData("!full", "Confined full")]
+    [InlineData("0,", "Zero width")]
+    [InlineData(",0", "Zero height")]
+    [InlineData("!0,0", "Confined zero")]
+    [InlineData("-100,", "Negative width")]
+    [InlineData(",-100", "Negative height")]
+    [InlineData("+100,", "Signed width")]
+    [InlineData(" 100,", "Whitespace width")]
+    [InlineData("1.5,", "Decimal width")]
+    [InlineData("pct:0", "Zero percent")]
+    [InlineData("pct:-5", "Negative percent")]
+    [InlineData("pct:NaN", "NaN percent")]
+    [InlineData("pct:1e2", "Exponent percent")]
+    public void Parse_Throws_IfInvalid(string size, string reason)
+    {
+        // Act
+        Action action = () => SizeParameter.Parse(size);
+
+        // Assert
+        action.Should().ThrowExactly<SizeException>(reason)
+            .WithMessage($"Expected 'max', 'w,', ',h', 'pct:n', 'w,h' or '!w,h', optionally prefixed with '^'. Found: {size}");
+    }
+
+    [Theory]
+    [InlineData("pct:12.5", null, null, 12.5f)]
+    [InlineData("^pct:150.25", null, null, 150.25f)]
+    [InlineData("1000,", 1000, null, null)]
+    [InlineData(",2000", null, 2000, null)]
+    [InlineData("1000,2000", 1000, 2000, null)]
+    [InlineData("!1000,2000", 1000, 2000, null)]
+    [InlineData("^1000,2000", 1000, 2000, null)]
+    public void Parse_IsCultureInvariant(string size, int? expectedWidth, int? expectedHeight,
+        float? expectedPercent)
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            // Arrange - de-DE uses ',' as decimal separator and '.' as group separator
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+
+            // Act
+            var sizeParameter = SizeParameter.Parse(size);
+
+            // Assert
+            sizeParameter.Width.Should().Be(expectedWidth);
+            sizeParameter.Height.Should().Be(expectedHeight);
+            sizeParameter.PercentScale.Should().Be(expectedPercent);
+            sizeParameter.ToString().Should().Be(size);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [Theory]
+    [InlineData("1.000,")]
+    [InlineData(",2.000")]
+    [InlineData("1.000,2.000")]
+    public void Parse_Throws_IfGroupSeparator_InNonInvariantCulture(string size)
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            // Arrange - '.' is the de-DE group separator
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+
+            // Act
+            Action action = () => SizeParameter.Parse(size);
+
+            // Assert
+            action.Should().ThrowExactly<SizeException>();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Theory]
