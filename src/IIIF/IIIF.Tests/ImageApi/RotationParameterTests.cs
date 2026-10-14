@@ -62,7 +62,7 @@ public class RotationParameterTests
 
         // Assert
         action.Should().ThrowExactly<RotationException>(reason)
-            .WithMessage($"Expected 'n' or '!n'. Found: {rotation}");
+            .WithMessage($"Expected 'n' or '!n' where n is 0-360. Found: {rotation}");
     }
 
     [Theory]

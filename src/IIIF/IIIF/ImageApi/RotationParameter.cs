@@ -40,7 +40,7 @@ public class RotationParameter
         }
         catch (Exception ex)
         {
-            throw new RotationException($"Expected 'n' or '!n'. Found: {pathPart}", ex);
+            throw new RotationException($"Expected 'n' or '!n' where n is 0-360. Found: {pathPart}", ex);
         }
     }
 
