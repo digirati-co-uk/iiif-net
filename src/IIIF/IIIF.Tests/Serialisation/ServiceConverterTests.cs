@@ -78,6 +78,46 @@ public class ServiceConverterTests
     }
     
     [Theory]
+    [InlineData("\"type\": \"ImageService2\",", "'type' used rather than '@type'")]
+    [InlineData("", "no type, identified from profile")]
+    public void ReadJson_ImageService2_WorksWithExpandedProfile_WithoutAtType(string typeProp, string because)
+    {
+        var jsonId = $$"""
+                       {
+                          "@context": "http://iiif.io/api/image/2/context.json",
+                          "@id": "https://iiif-net/image.jpg",
+                          {{typeProp}}
+                          "profile": [
+                              "http://iiif.io/api/image/2/level1.json",
+                              {
+                                  "formats": ["tif"],
+                                  "qualities": ["bitonal"],
+                                  "supports": ["regionByPx"]
+                              }
+                          ],
+                          "protocol": "http://iiif.io/api/image"
+                       }
+                       """;
+
+        var result = JsonConvert.DeserializeObject<IService>(jsonId, sut, new ImageService2Converter());
+
+        var imageService2 = result.Should().BeOfType<ImageService2>(because).Subject;
+        imageService2.Profile.Should().Be("http://iiif.io/api/image/2/level1.json");
+        imageService2.ProfileDescription.Formats.Should().Contain("tif");
+    }
+
+    [Fact]
+    public void ReadJson_ImageService2_FromStringProfile_WithoutType()
+    {
+        var jsonId = """{"@id": "https://iiif-net/image.jpg", "profile": "http://iiif.io/api/image/2/level1.json"}""";
+
+        var result = JsonConvert.DeserializeObject<IService>(jsonId, sut, new ImageService2Converter());
+
+        var imageService2 = result.Should().BeOfType<ImageService2>().Subject;
+        imageService2.Profile.Should().Be("http://iiif.io/api/image/2/level1.json");
+    }
+
+    [Theory]
     [InlineData("AuthAccessService2", typeof(IIIF.Auth.V2.AuthAccessService2))]
     [InlineData("AuthAccessTokenService2", typeof(IIIF.Auth.V2.AuthAccessTokenService2))]
     [InlineData("AuthLogoutService2", typeof(IIIF.Auth.V2.AuthLogoutService2))]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using IIIF.Auth.V2;
 using IIIF.ImageApi.V2;
 using IIIF.ImageApi.V3;
@@ -60,7 +61,7 @@ internal class ResourceDeserialiser<T>
     {
         // ImageService2 has a specific ImageService2Converter to handle "profile" prop, if type is ImageService2,
         // copy serializers, minus current, to avoid 
-        if (atTypeValue is "iiif:Image" or nameof(ImageService2))
+        if (IsImageService2(jsonObject, atTypeValue))
         {
             var copiedSerializer = serializer.CreateCopy(converter => converter.GetType() != callingConverterType);
             var result = jsonObject.ToObject(typeof(ImageService2), copiedSerializer);
@@ -69,6 +70,30 @@ internal class ResourceDeserialiser<T>
 
         return null;
     }
+
+    private const string Image2ProfilePrefix = "http://iiif.io/api/image/2/";
+
+    private static bool IsImageService2(JObject jsonObject, string? atTypeValue)
+    {
+        if (atTypeValue is "iiif:Image" or nameof(ImageService2)) return true;
+        if (jsonObject["type"]?.Type == JTokenType.String &&
+            jsonObject["type"]!.Value<string>() == nameof(ImageService2)) return true;
+
+        // No explicit type - fall back to "profile", which may be a string or [ "string", { .. } ] array
+        var profile = GetProfileString(jsonObject["profile"]);
+        return profile != null && profile.StartsWith(Image2ProfilePrefix);
+    }
+
+    /// <summary>
+    /// Get string "profile" value. Handles string or array (first string element) values.
+    /// </summary>
+    private static string? GetProfileString(JToken? profileToken) =>
+        profileToken switch
+        {
+            { Type: JTokenType.String } => profileToken.Value<string>(),
+            JArray array => array.FirstOrDefault(t => t.Type == JTokenType.String)?.Value<string>(),
+            _ => null,
+        };
 
     private T? IdentifyConcreteType(JObject jsonObject, JsonSerializer serializer, string? atTypeValue)
     {
@@ -117,10 +142,9 @@ internal class ResourceDeserialiser<T>
             if (service != null) return service;
         }
         
-        var profileToken = jsonObject["profile"];
-        if (profileToken != null)
+        var profile = GetProfileString(jsonObject["profile"]);
+        if (profile != null)
         {
-            var profile = profileToken.Value<string>();
             service = profile switch
             {
                 Auth.V1.AuthLogoutService.AuthLogout1Profile => new Auth.V1.AuthLogoutService() as T,
@@ -136,11 +160,9 @@ internal class ResourceDeserialiser<T>
 
             const string auth0 = "http://iiif.io/api/auth/0/";
             const string auth1 = "http://iiif.io/api/auth/1/";
-            const string image2 = "http://iiif.io/api/image/2/";
 
             if (profile.StartsWith(auth0)) return new Auth.V0.AuthCookieService(profile) as T;
             if (profile.StartsWith(auth1)) return new Auth.V1.AuthCookieService(profile) as T;
-            if (profile.StartsWith(image2)) return new ImageService2() as T;
         }
         
         if (jsonObject.ContainsKey("motivation"))
@@ -179,4 +201,4 @@ internal class ResourceDeserialiser<T>
 
         return service;
     }
-}
+}
